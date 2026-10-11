@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>实验记录</title>
+  <style>
+    :root{color-scheme:light;--paper:#f7f7f2;--panel:#fcfcf8;--panel2:#f1f1ea;--line:#dcded6;--text:#17201e;--muted:#6b7266;--accent:#f15b2b;--orange:#ff8a2b;--orange-bg:#fdeee7;--orange-soft:#f7a283;--green:#3cf0a5;--green-bg:#e6f2ea;--red:#ff3f6c;--red-bg:#fbe9e5;--agent:#1b2521;--agent-line:#2f3b36;--agent-muted:#9aa89f;--agent-text:#e6ece2;--bg:var(--paper);--reference:#aeb8b2;--wall:#d8e0db;--wall-edge:#f5faf7;--fixture:#62a8ff;--cyan:#25d8ff;--purple:#c586ff;--yellow:#ffe066;--current:#ffffff;--gt:#adff4f;--sans:"DM Sans",Arial,sans-serif;--mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+    *{box-sizing:border-box}html{background:var(--paper)}body{margin:0;background:var(--paper);color:var(--text);font-family:var(--sans);font-size:15px;overflow:hidden}button,input,select{font:inherit;color:inherit}
+    .app{display:grid;grid-template-columns:290px minmax(480px,1fr) minmax(330px,390px);grid-template-rows:56px auto minmax(0,1fr) 52px;height:100vh;max-width:1600px;margin:0 auto;background:var(--panel);border-left:1px solid var(--line);border-right:1px solid var(--line)}
+    .topbar{grid-column:1/-1;display:flex;align-items:center;gap:28px;padding:0 22px;background:var(--panel);border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:9px;font-weight:700;white-space:nowrap;font-size:19px}.brand-mark{width:25px;height:25px;border-radius:7px;background:linear-gradient(145deg,#f7a283 0 38%,#f15b2b 38% 56%,#3f8a5f 56% 73%,#17201e 73%);box-shadow:inset 0 0 0 1px rgba(23,32,30,.1)}.brand span{color:var(--accent)}.brand small{font-size:12px;font-weight:400;color:var(--muted);margin-left:-4px}.top-nav{display:flex;align-self:stretch;gap:26px}.top-nav a{display:flex;align-items:center;text-decoration:none;color:var(--text);border-bottom:2px solid transparent;padding-top:2px}.top-nav a.active{border-color:var(--accent)}.top-meta{margin-left:auto;color:var(--muted);font-size:12px}
+    .sidebar{grid-column:1;grid-row:2/5;min-height:0;background:var(--panel);border-right:1px solid var(--line);overflow:auto;padding:14px 12px}.sidebar-heading{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:18px 4px 8px}.sidebar-heading:first-child{margin-top:2px}.dataset-switch{display:grid;grid-template-columns:repeat(3,1fr);background:var(--panel2);border-radius:8px;padding:3px;margin-bottom:12px;gap:3px}.variant-button{position:relative;border:0;background:transparent;color:var(--muted);border-radius:6px;padding:8px 7px;font-size:12px;cursor:pointer}.variant-button:hover{color:var(--text);background:rgba(255,255,255,.48)}.variant-button[aria-pressed="true"]{background:var(--panel);color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(23,32,30,.12)}.variant-button[aria-pressed="true"]::after{content:"";position:absolute;left:20%;right:20%;bottom:2px;height:2px;border-radius:2px;background:var(--accent)}.run-controls[hidden]{display:none}.run-controls{display:block}.run-controls #questionSelect{position:absolute;left:-9999px}.task-filter{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:9px 10px;outline:0}.task-filter:focus{border-color:var(--orange-soft);box-shadow:0 0 0 2px var(--orange-bg)}.task-list{display:grid;gap:2px;margin-top:14px;max-height:calc(100vh - 390px);min-height:170px;overflow:auto;padding-right:2px}.task-group{margin-top:12px}.task-group:first-child{margin-top:0}.task-group h3{margin:0 5px 5px;color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:500}.task-button{width:100%;border:0;background:transparent;text-align:left;padding:7px 8px;border-radius:6px;font-size:13px;line-height:1.25}.task-button:hover{background:var(--panel2)}.task-button[aria-current="true"]{background:var(--orange-bg);color:var(--text)}.task-button small{display:block;margin-top:2px;color:var(--muted);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sidebar-section{padding-top:14px;margin-top:15px;border-top:1px solid var(--line)}.controls{display:grid;gap:8px}.toggle{display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.35}.toggle input{margin-top:2px;accent-color:var(--accent)}.object-list{display:grid;gap:3px;max-height:260px;overflow:auto;padding-right:2px}.object{display:grid;grid-template-columns:8px minmax(0,1fr);gap:7px;align-items:center;padding:6px 7px;border-radius:6px;font-size:11px}.object:hover{background:var(--panel2)}.object i{width:7px;height:7px;border-radius:50%;box-shadow:0 0 0 1px rgba(23,32,30,.2)}.object span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.object small{display:none;color:var(--muted)}
+    .main-head{grid-column:2/4;grid-row:2;background:var(--panel);border-bottom:1px solid var(--line);padding:17px 22px 14px}.scene-row{display:flex;align-items:baseline;gap:10px;min-width:0}.scene-title{min-width:0}.scene-title strong{font-size:21px;font-weight:600}.scene-title small{color:var(--muted);margin-left:7px}.badge{margin-left:auto;border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:4px 9px;color:var(--muted);font:11px var(--mono);white-space:nowrap}.question{margin-top:10px;line-height:1.45;color:var(--text)}.question::before{content:"Instruction";font-weight:600;margin-right:7px}.head-stats{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.head-chip{border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--muted);font-size:11px}.head-chip b{color:var(--text);font-weight:600}
+    .stage{grid-column:2;grid-row:3;position:relative;min-width:0;min-height:0;background:var(--agent);border-right:1px solid var(--line)}canvas{display:block;width:100%;height:100%;touch-action:none}.legend{position:absolute;top:13px;left:14px;right:14px;display:flex;column-gap:10px;row-gap:7px;flex-wrap:wrap;color:var(--agent-text);background:rgba(27,37,33,.88);border:1px solid var(--agent-line);padding:7px 9px;border-radius:6px;font-size:10.5px}.legend span{display:flex;flex:0 0 auto;gap:5px;align-items:center;white-space:nowrap}.swatch{flex:0 0 auto;width:11px;height:4px;border-radius:4px;background:var(--cyan)}.legend span:nth-child(n+3) .swatch{width:8px;height:8px;border-radius:2px}.legend span:nth-child(n+7) .swatch{border-radius:50%}.projection-status,.hint{position:absolute;left:14px;color:var(--agent-muted);font-size:11px;background:rgba(27,37,33,.9);border:1px solid var(--agent-line);padding:6px 8px;border-radius:6px;pointer-events:none}.projection-status{top:76px}.hint{bottom:13px}.view-mode{position:absolute;top:76px;right:14px;display:flex;background:rgba(27,37,33,.94);border:1px solid var(--agent-line);padding:3px;border-radius:7px;gap:2px}.view-mode button{border:0;border-radius:5px;padding:5px 9px;background:transparent;color:var(--agent-muted);font-size:12px}.view-mode button[aria-pressed="true"]{background:var(--agent-line);color:var(--agent-text)}.fov-controls{position:absolute;left:14px;bottom:49px;width:220px;display:grid;gap:7px;padding:9px 10px;color:var(--agent-text);background:rgba(27,37,33,.94);border:1px solid var(--agent-line);border-radius:7px}.fov-controls strong{font-size:11px;font-weight:500}.fov-row{display:grid;grid-template-columns:32px minmax(86px,1fr) 38px;align-items:center;gap:7px;color:var(--agent-muted);font-size:11px}.fov-row input{min-width:0;margin:0}.fov-row output{text-align:right;color:var(--agent-text);font:11px var(--mono)}
+    aside{grid-column:3;grid-row:3;min-height:0;background:var(--panel);overflow:auto;padding:0 16px 18px}.inspector-title{position:sticky;top:0;z-index:2;margin:0 -16px 0;padding:15px 16px 11px;background:var(--panel);border-bottom:1px solid var(--line);font-size:14px;font-weight:600}.section{padding:14px 0;border-bottom:1px solid var(--line)}.section:last-child{border-bottom:0}.section h2{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 9px;font-weight:500}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.stat{background:var(--panel2);padding:8px 9px;border-radius:6px}.stat b{display:block;font-size:18px}.stat span{font-size:10px;color:var(--muted)}.note{font-size:11px;color:var(--muted);line-height:1.55;white-space:pre-line}.mono{font-family:var(--mono)}.result{display:flex;gap:6px;flex-wrap:wrap;font-size:12px}.result span{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:4px 8px}.result b{color:var(--text)}.frame-image{display:block;width:100%;height:auto;margin-top:10px;border:1px solid var(--line);border-radius:7px;background:var(--panel2)}.frame-image[hidden]{display:none}.harness-state{display:grid;gap:9px;font-size:11px}.harness-row{display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px;align-items:start}.harness-row>span:first-child{color:var(--muted)}.harness-row strong{font-weight:600;overflow-wrap:anywhere}.direction-ledger{display:flex;gap:5px;flex-wrap:wrap}.direction-chip,.phase-chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:3px 7px;background:var(--panel2);color:var(--muted)}.direction-chip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--reference)}.direction-chip.checked{background:var(--green-bg);color:var(--text)}.direction-chip.checked::before{background:#15945a}.direction-chip.partial::before{background:#d6a23c}.direction-chip.unseen::before{background:var(--red)}.phase-chip{background:var(--orange-bg);color:var(--text);font-family:var(--mono)}.blind-list{display:grid;gap:4px}.blind-item{display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:6px;align-items:start}.blind-item i{width:7px;height:7px;border-radius:50%;margin-top:4px;background:var(--reference)}.blind-item.checked i{background:#15945a}.blind-item.partial i{background:#d6a23c}.blind-item.unseen i{background:var(--red)}.blind-item small{color:var(--muted)}
+    .decision-header{display:flex;align-items:center;gap:8px;margin-bottom:9px}.decision-header strong{font-size:12px;font-weight:600}.decision-navigation{margin-left:auto;display:flex;gap:4px}.decision-navigation button{border:1px solid var(--line);background:var(--panel2);border-radius:5px;padding:4px 7px;font-size:11px;cursor:pointer}.decision-navigation button:disabled{opacity:.4;cursor:default}.decision-meta{display:grid;gap:6px;margin-bottom:10px;font-size:11px}.decision-meta>div{display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px}.decision-meta dt{color:var(--muted)}.decision-meta dd{margin:0;overflow-wrap:anywhere}.decision-reasoning{margin:0;padding:11px 12px;border-left:3px solid var(--accent);background:var(--orange-bg);border-radius:0 6px 6px 0;font-size:12px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}.decision-reasoning[data-status="missing"]{border-color:var(--reference);background:var(--panel2);color:var(--muted)}.decision-source{font-size:10px;color:var(--muted);margin:7px 0}.decision-note{font-size:11px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;color:#995330;background:var(--orange-bg);border:1px solid var(--orange-soft);padding:8px;border-radius:6px;margin:8px 0}.decision-note[hidden]{display:none}.decision-disclosure{margin-top:10px;font-size:11px}.decision-disclosure summary{cursor:pointer;color:var(--text);line-height:1.5}.decision-raw{font:10px/1.55 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;background:var(--panel2);padding:9px;border-radius:6px;max-height:300px;overflow:auto}.decision-history{display:grid;gap:6px;max-height:360px;overflow:auto;margin-top:9px;padding:1px 3px 1px 1px}.decision-entry{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:8px 9px;cursor:pointer}.decision-entry:hover{background:var(--panel2)}.decision-entry[aria-current="step"]{border-color:var(--accent);background:var(--orange-bg)}.decision-entry:focus-visible{outline:2px solid var(--accent);outline-offset:1px}.decision-entry-title{display:block;font:10px/1.5 var(--mono);color:var(--text);overflow-wrap:anywhere}.decision-entry-text{display:block;margin-top:5px;font-size:11px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}
+    .timeline{grid-column:2/4;grid-row:4;display:grid;grid-template-columns:auto minmax(160px,1fr) auto;align-items:center;gap:12px;padding:8px 15px;background:var(--panel);border-top:1px solid var(--line)}.play{border:1px solid var(--text);background:var(--text);color:var(--panel);border-radius:6px;padding:7px 13px;min-width:78px}.play:hover{background:#2f3b36}.timeline input[type=range],.fov-controls input[type=range]{width:100%;accent-color:var(--accent)}.step{min-width:205px;text-align:right;font:11px var(--mono);color:var(--muted)}.step b{color:var(--text)}
+    .variant-button{padding:8px 4px}.variant-button span{display:block;white-space:nowrap}.variant-rate{margin-top:5px;font:10px var(--mono);color:var(--accent)}.accuracy-card{border:1px solid var(--line);border-radius:7px;background:var(--panel2);padding:11px 12px;margin-bottom:12px}.accuracy-card h2{font-size:11px;font-weight:500;margin:0 0 7px;color:var(--muted)}.accuracy-card .accuracy-value{font-size:23px;font-weight:600;color:var(--accent)}.accuracy-card .accuracy-fraction{font-size:12px;margin-left:8px}.accuracy-card p{font-size:10px;line-height:1.5;color:var(--muted);margin:5px 0}.accuracy-card a{font-size:10px;color:var(--accent);text-decoration:none}.accuracy-card a:hover{text-decoration:underline}.accuracy-table{width:100%;border-collapse:collapse;font-size:12px}.accuracy-table th{font-weight:500;color:var(--muted);font-size:10px}.accuracy-table th,.accuracy-table td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:right}.accuracy-table th:first-child,.accuracy-table td:first-child{text-align:left;padding-left:0}.accuracy-table tr[data-variant="ordered-survey-v6"] td{background:var(--orange-bg);font-weight:600}.accuracy-table tr[data-variant="computer-use"] td{color:var(--accent)}.accuracy-section[hidden]{display:none}.accuracy-scope{margin:7px 0 0;font-size:10px;color:var(--muted);line-height:1.5}.accuracy-warning{color:#995330}.accuracy-warning:empty{display:none}
+    .model-output-control{display:flex;gap:8px;align-items:center;margin:0 0 10px}.model-output-control[hidden]{display:none}.model-output-control>span{font-size:10px;color:var(--muted)}.model-output-button{border:1px solid var(--orange-soft);background:var(--orange-bg);border-radius:6px;padding:6px 9px;font-size:11px;cursor:pointer}.model-output-button[aria-expanded="true"]{border-color:var(--accent)}.model-output-button:focus-visible,.model-output-popup button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.model-output-popup{position:fixed;z-index:50;width:min(560px,calc(100vw - 24px));max-height:min(480px,calc(100vh - 24px));display:flex;flex-direction:column;border:1px solid var(--orange-soft);border-radius:9px;background:var(--panel);box-shadow:0 12px 42px rgba(16,30,24,.3);color:var(--text);padding:12px}.model-output-popup[hidden]{display:none}.model-output-popup-header{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding-bottom:9px;font-size:12px}.model-output-popup-header>span{color:var(--muted);font:10px var(--mono)}.model-output-popup-header>button{margin-left:auto;border:0;background:var(--panel2);border-radius:5px;padding:3px 8px;font-size:17px;cursor:pointer}.model-output-status{font-size:10px;line-height:1.5;color:var(--muted);margin:8px 0}.model-output-status[data-kind="raw"],.model-output-status[data-kind="missing"]{color:#995330}.model-output-json{min-height:70px;overflow:auto;overscroll-behavior:contain;margin:0;padding:10px;border-radius:6px;background:var(--panel2);font:11px/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;user-select:text;flex:1 1 auto}.model-output-popup-footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:9px;font-size:10px;color:var(--muted)}.model-output-popup-footer button{border:1px solid var(--line);border-radius:5px;background:var(--panel);padding:4px 8px;font-size:11px;cursor:pointer}.model-output-popup-footer button:disabled{opacity:.5;cursor:default}
+    .model-output-control{flex-wrap:wrap}.model-output-control>span{flex-basis:100%}.model-input-popup{max-height:min(600px,calc(100vh - 24px))}.model-input-call{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:11px}.model-input-call select{min-width:0;flex:1;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:5px;padding:5px}.model-input-body{min-height:90px;overflow:auto;overscroll-behavior:contain;flex:1 1 auto;user-select:text}.model-input-part{margin:0 0 12px}.model-input-part h3{margin:0 0 5px;font-size:11px;font-weight:600;color:var(--accent)}.model-input-part pre{margin:0;padding:10px;background:var(--panel2);border-radius:6px;font:11px/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}.model-input-part img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px}.model-input-part p{font:10px/1.5 var(--mono);color:var(--muted);overflow-wrap:anywhere;margin:5px 0}.model-input-body:focus-visible,.model-input-call select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+    @media(max-width:1120px){body{overflow:auto}.app{height:auto;min-height:100vh;grid-template-columns:260px minmax(0,1fr);grid-template-rows:56px auto 62vh auto auto}.topbar{grid-column:1/3}.sidebar{grid-column:1;grid-row:2/6}.main-head{grid-column:2;grid-row:2}.stage{grid-column:2;grid-row:3;border-right:0}.app aside{grid-column:2;grid-row:4;border-top:1px solid var(--line);max-height:none}.timeline{grid-column:2;grid-row:5}.badge{display:none}}
+    @media(max-width:760px){.app{display:block}.topbar{height:auto;min-height:56px;flex-wrap:wrap;padding:10px 14px}.top-nav{order:3;width:100%;height:34px}.sidebar{border-right:0;border-bottom:1px solid var(--line);max-height:420px}.main-head{padding:14px}.stage{height:64vh;min-height:480px}.timeline{grid-template-columns:auto 1fr}.step{grid-column:1/-1;text-align:left}.top-meta{display:none}}
+    .room-region-section[hidden],.room-region-toggle[hidden],#roomCountChip[hidden]{display:none}.room-region-list{display:grid;gap:4px;max-height:240px;overflow:auto}.room-region-button{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:7px;align-items:center;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:6px 7px;font:11px var(--mono);cursor:pointer}.room-region-button i{width:10px;height:10px;border-radius:2px}.room-region-button span{overflow-wrap:anywhere}.room-region-button small{font-size:10px;color:var(--muted)}.room-region-button[aria-pressed="true"]{background:var(--orange-bg);border-color:var(--accent)}.room-region-button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}.room-region-note{font-size:10px;line-height:1.5;color:var(--muted);margin:7px 0 0}
+    .room-region-button[data-hovered="true"]{background:var(--orange-bg);border-color:var(--accent);box-shadow:inset 3px 0 var(--accent)}#roomLabelsButton[hidden],.room-hover-status[hidden]{display:none}.room-hover-status{position:absolute;right:14px;bottom:52px;max-width:calc(100% - 254px);padding:8px 10px;border:2px solid var(--cyan);border-radius:6px;background:rgba(20,29,25,.96);color:var(--agent-text);font:600 11px/1.5 var(--mono);pointer-events:none;overflow-wrap:anywhere}.view-mode button#roomLabelsButton{border-left:1px solid var(--agent-line);margin-left:3px}.view-mode button#roomLabelsButton:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+    .view-display-mode{top:114px}.view-display-mode[hidden],.room-layout-status[hidden]{display:none}.room-layout-status{position:absolute;left:14px;top:114px;max-width:calc(100% - 260px);padding:7px 8px;border:1px solid var(--agent-line);border-radius:6px;color:var(--agent-text);background:rgba(27,37,33,.94);font-size:10px;pointer-events:none}.legend[hidden],.fov-controls[hidden]{display:none}@media(max-width:760px){.stage.layout-view{min-height:580px;height:78vh}}
+    .legend span[hidden]{display:none}
+    .dataset-switch{grid-template-columns:repeat(2,minmax(0,1fr))}.variant-button{min-width:0}.task-observation{border:1px solid var(--orange-soft);border-radius:8px;background:var(--orange-bg);padding:13px;margin:13px 0}.task-observation[hidden],.section[hidden]{display:none}.observation-text{margin:0;font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}.observation-source{margin:8px 0 0;font-size:10px;line-height:1.5;color:var(--muted)}.observation-warning{color:#995330}.cu-state{display:grid;gap:8px;font-size:11px}.cu-row{display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px;align-items:start}.cu-row>span{color:var(--muted)}.cu-row strong{overflow-wrap:anywhere;font-weight:500}.cu-milestone{padding:8px 9px;background:var(--orange-bg);border-radius:6px;line-height:1.6}.walk-controls{display:flex;align-items:center;gap:8px;margin-top:8px}.walk-controls input{min-width:0;flex:1;accent-color:var(--accent)}.walk-controls button{border:1px solid var(--line);border-radius:5px;background:var(--panel2);padding:5px 8px;font-size:11px}.walk-replay-select{width:100%;font-size:11px;padding:5px;border:1px solid var(--line);border-radius:5px;background:var(--panel2)}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <nav class="top-nav" aria-label="页面导航" style="gap:20px;font-size:13px;white-space:nowrap"><a href="index.html">当前文档</a><a class="active" href="experiments.html" aria-current="page">实验记录</a></nav>
+    <div class="top-meta">ESI-BENCH · saved trajectories</div>
+  </header>
+  <nav class="sidebar" id="objectsPanel" aria-label="实验浏览器">
+    <div class="run-controls" id="runControls" hidden>
+      <div class="dataset-switch" role="group" aria-label="实验版本">
+        <button class="variant-button" id="unhintedVariant" type="button" data-variant="unhinted" aria-pressed="true"><span>不带提示</span><span class="variant-rate" id="unhintedAccuracy">统计中…</span></button>
+        <button class="variant-button" id="hintedVariant" type="button" data-variant="hinted" aria-pressed="false"><span>带提示</span><span class="variant-rate" id="hintedAccuracy">统计中…</span></button>
+        <button class="variant-button" id="harnessVariant" type="button" data-variant="ordered-survey-v6" aria-pressed="false"><span>Harness</span><span class="variant-rate" id="harnessAccuracy">统计中…</span></button>
+        <button class="variant-button" id="computerUseVariant" type="button" data-variant="computer-use" aria-pressed="false" title="GPT-6.1 Sol 直接观察"><span style="white-space:normal;line-height:1.35">GPT-6.1 Sol 直接观察</span><span class="variant-rate" id="computerUseTabAccuracy">统计中…</span></button>
+        <select id="variantSelect" aria-label="实验版本" hidden><option value="unhinted">不带提示</option><option value="hinted">带提示</option><option value="ordered-survey-v6">Harness</option><option value="computer-use">GPT-6.1 Sol 直接观察</option></select>
+      </div>
+      <input class="task-filter" id="taskFilter" type="search" placeholder="搜索任务、场景或房间…" aria-label="搜索任务、场景或房间">
+      <select id="questionSelect" aria-label="观察任务"></select>
+      <div class="task-list" id="taskList"></div>
+    </div>
+    <div class="sidebar-section"><div class="sidebar-heading">Layers</div><div class="controls">
+      <label class="toggle"><input id="showObjects" type="checkbox" checked> 陈设几何体</label>
+      <label class="toggle"><input id="showGlobalStructures" type="checkbox"> 引擎全局结构（当前房间外）</label>
+      <label class="toggle"><input id="showAssetReference" type="checkbox"> 资产参考（本题未载入）</label>
+      <label class="toggle"><input id="showBoundary" type="checkbox" checked> 实体墙体与精确轮廓</label>
+      <label class="toggle room-region-toggle" id="roomRegionToggle" hidden><input id="showRoomRegions" type="checkbox" checked> 房间区域与悬停高亮</label>
+      <label class="toggle"><input id="showDoors" type="checkbox" checked> 门窗与开口</label>
+      <label class="toggle" title="关闭后隐藏门扇/窗扇以查看开口，不改变场景记录"><input id="showLeaves" type="checkbox" checked> 门扇 / 窗扇（关闭可看开口）</label>
+      <label class="toggle"><input id="showPath" type="checkbox" checked> 位移轨迹</label>
+      <label class="toggle"><input id="showRays" type="checkbox" checked> 探测光域</label>
+      <label class="toggle"><input id="showGt" type="checkbox"> 官方参考镜头</label>
+    </div></div>
+    <section class="sidebar-section room-region-section" id="roomRegionSection" aria-labelledby="roomRegionHeading" hidden><div class="sidebar-heading" id="roomRegionHeading">Rooms</div><div class="room-region-list" id="roomRegionList"></div><p class="room-region-note">悬停房间区域、标签或列表项可高亮整个三维范围，移开恢复；点击列表可固定。按 L 或点击视图中的“标签”按钮关闭/恢复名称，悬停仍可用。范围罩沿用当前视图的房间高度，仅作分区标注，不是新增墙体。</p></section>
+    <div class="sidebar-section"><div class="sidebar-heading">Objects in view</div><div class="object-list" id="objects"></div></div>
+  </nav>
+  <section class="main-head" aria-labelledby="scene">
+    <div class="scene-row"><div class="scene-title"><strong id="scene">加载中…</strong><small id="room">—</small></div><div class="badge" id="coverage">metadata proxy</div></div>
+    <div class="question" id="question">—</div>
+    <button id="retryLoad" type="button" hidden>重新加载当前任务</button>
+    <div class="head-stats"><span class="head-chip">geometry <b id="objectCount">0</b></span><span class="head-chip">frames <b id="poseCount">0</b></span><span class="head-chip">current <b id="stepCount">—</b></span><span class="head-chip" id="uniqueViewsChip" hidden>views <b id="uniqueViews">—</b></span><span class="head-chip" id="roomCountChip" hidden>rooms <b id="roomCount">0</b></span></div>
+  </section>
+  <main class="stage" id="viewer">
+    <canvas id="view" aria-label="房间陈设、运动轨迹与镜头朝向的三维几何视图"></canvas>
+    <div class="legend" id="geometryLegend"><span><i class="swatch" style="background:var(--cyan)"></i>运动轨迹</span><span><i class="swatch" style="background:var(--orange)"></i>地面/墙面投影</span><span><i class="swatch" style="background:var(--wall)"></i>真实墙面</span><span><i class="swatch" style="background:#f0b764"></i>门与门框</span><span><i class="swatch" style="background:var(--green)"></i>运行时对象</span><span><i class="swatch" style="background:var(--fixture)"></i>墙体固有构件</span><span><i class="swatch" style="background:var(--reference)"></i>资产参考</span><span><i class="swatch" style="background:var(--yellow)"></i>题目物体</span><span><i class="swatch" style="background:var(--red)"></i>目标</span><span><i class="swatch" style="background:var(--purple)"></i>锚点</span></div>
+    <div class="legend" id="layoutLegend" hidden><span><i class="swatch" style="background:var(--cyan)"></i>模型轨迹</span><span><i class="swatch" style="background:var(--wall-edge)"></i>真实墙面剖线</span><span><i class="swatch" style="background:#f0b764"></i>门与门框</span></div>
+    <div class="projection-status" id="projectionStatus" aria-live="polite">计算视锥投影…</div>
+    <div class="view-mode" role="group" aria-label="视图拖拽模式"><button id="rotateMode" type="button" aria-pressed="true">旋转</button><button id="panMode" type="button" aria-pressed="false">平移</button><button id="roomLabelsButton" type="button" aria-label="显示或隐藏房间标签（L）" aria-pressed="true" title="L：关闭/恢复房间标签，不影响悬停高亮" hidden>标签开 [L]</button></div>
+    <div class="room-hover-status" id="roomHoverStatus" role="status" hidden></div>
+    <div class="view-mode view-display-mode" id="viewDisplayMode" role="group" aria-label="场景显示模式" hidden><button id="geometryView" type="button" aria-pressed="true">三维陈设</button><button id="layoutView" type="button" aria-pressed="false">房间平面</button><button id="fitView" type="button">全景</button></div><div class="room-layout-status" id="roomLayoutStatus" hidden></div>
+    <div class="fov-controls" aria-label="视锥参数">
+      <strong>视锥参数</strong>
+      <label class="fov-row" for="horizontalFov"><span>横向</span><input id="horizontalFov" type="range" min="30" max="120" step="1"><output id="horizontalFovValue" for="horizontalFov">70°</output></label>
+      <label class="fov-row" for="verticalFov"><span>纵向</span><input id="verticalFov" type="range" min="15" max="90" step="1"><output id="verticalFovValue" for="verticalFov">50°</output></label>
+    </div>
+    <div class="hint">切换旋转/平移后左键拖拽 · Shift/右键/中键可临时平移 · 滚轮缩放</div>
+  </main>
+  <aside id="details">
+    <h2 class="inspector-title">What the model reads</h2>
+    <section class="section task-observation" id="taskObservationSection" aria-labelledby="taskObservationHeading" hidden><h2 id="taskObservationHeading">评判</h2><p class="observation-text" id="taskObservationText"></p><p class="observation-source" id="taskObservationSource" hidden></p></section>
+    <section class="section accuracy-section" id="harnessAccuracySection" aria-labelledby="harnessAccuracyHeading" hidden>
+      <h2 id="harnessAccuracyHeading">同题正确率 · Harness 相同任务</h2>
+      <p class="accuracy-scope" id="harnessAccuracyScope">统计中…</p>
+      <table class="accuracy-table" aria-label="Harness 同题正确率比较">
+        <thead><tr><th scope="col">版本</th><th scope="col">正确 / 总数</th><th scope="col">正确率</th></tr></thead>
+        <tbody id="harnessAccuracyRows"></tbody>
+      </table>
+      <p class="accuracy-scope" id="accuracyMethod">按任务类型、场景、房间与原始题目标识匹配；不随搜索、当前题目或步骤改变。同题不代表动作预算与观察方式完全一致。</p>
+      <p class="accuracy-scope accuracy-warning" id="accuracyWarning" role="status"></p>
+    </section>
+    <section class="section"><h2>本次回答</h2><div class="result" id="result">—</div><img class="frame-image" id="frameImage" alt="当前轨迹帧的第一视角图像" hidden></section>
+    <section class="section" id="decisionSection" aria-labelledby="decisionHeading">
+      <h2 id="decisionHeading">逐步记录</h2>
+      <div class="decision-header"><strong id="decisionStep">尚无记录</strong><div class="decision-navigation"><button id="decisionPrev" type="button" disabled>上一条</button><button id="decisionNext" type="button" disabled>下一条</button></div></div>
+      <div class="model-output-control" id="modelOutputControl" hidden><button class="model-output-button" id="modelInputButton" type="button" aria-haspopup="dialog" aria-controls="modelInputPopup" aria-expanded="false" title="悬停查看保存的完整输入；点击固定窗口">完整输入</button><button class="model-output-button" id="modelOutputButton" type="button" aria-haspopup="dialog" aria-controls="modelOutputPopup" aria-expanded="false" title="悬停查看；点击固定窗口">完整输出 JSON</button><span>悬停查看 · 点击固定</span></div>
+      <dl class="decision-meta"><div><dt id="decisionActionLabel">模型选定动作</dt><dd id="decisionAction">—</dd></div><div><dt>当步回答</dt><dd id="decisionAnswer">—</dd></div><div><dt>置信度</dt><dd id="decisionConfidence">—</dd></div><div><dt>执行记录</dt><dd id="decisionExecution">—</dd></div></dl>
+      <p class="decision-reasoning" id="decisionReasoning" data-status="missing">尚无逐步推理记录。</p>
+      <div class="decision-note" id="decisionNote" hidden></div>
+    </section>
+    <section class="section" id="harnessSection" hidden><h2>Harness 协议状态</h2><div class="harness-state" id="harnessState">—</div></section>
+    <section class="section" id="computerUseSection" hidden><h2>GPT-6.1 Sol 直接观察 · 操作记录</h2><div class="cu-state" id="computerUseState"></div><details class="decision-disclosure"><summary>GPT-6.1 Sol 直接观察 记录方式</summary><p class="note" id="computerUseMethod"></p></details></section>
+    <section class="section" id="walkPanel" hidden><h2>Robot walk · 保存的实际回放</h2><select class="walk-replay-select" id="walkReplaySelect" aria-label="机器人回放视角"></select><img class="frame-image" id="walkImage" alt="实际保存的机器人行走回放图像"><div class="walk-controls"><button id="walkPlay" type="button">▶ 回放</button><input id="walkScrubber" type="range" min="0" max="0" value="0" aria-label="行走回放帧"></div><p class="note" id="walkLabel"></p></section>
+    <section class="section"><h2>选中项</h2><div class="note mono" id="selection">点击一个几何体或移动时间轴。</div></section>
+  </aside>
+  <footer class="timeline">
+    <button class="play" id="play" type="button">▶ 播放</button>
+    <input id="scrubber" type="range" min="0" max="0" value="0" aria-label="轨迹帧">
+    <div class="step" id="stepLabel"><b>帧 0</b> · 尚无轨迹</div>
+  </footer>
+</div>
+<div class="model-output-popup" id="modelOutputPopup" role="dialog" aria-modal="false" aria-labelledby="modelOutputTitle" data-pinned="false" hidden>
+  <div class="model-output-popup-header"><strong id="modelOutputTitle">完整输出 JSON</strong><span id="modelOutputStep">—</span><button id="modelOutputClose" type="button" aria-label="关闭完整输出 JSON">×</button></div>
+  <p class="model-output-status" id="modelOutputStatus">—</p>
+  <pre class="model-output-json" id="modelOutputJson" tabindex="0" aria-label="当前步骤完整保存的模型输出"></pre>
+  <div class="model-output-popup-footer"><button id="modelOutputMode" type="button" data-mode="formatted">查看原文</button><span id="modelOutputInteraction">移入窗口可滚动 · Esc 关闭</span></div>
+</div>
+<div class="model-output-popup model-input-popup" id="modelInputPopup" role="dialog" aria-modal="false" aria-labelledby="modelInputTitle" data-pinned="false" hidden>
+  <div class="model-output-popup-header"><strong id="modelInputTitle">完整输入</strong><span id="modelInputStep">—</span><button id="modelInputClose" type="button" aria-label="关闭完整输入">×</button></div>
+  <p class="model-output-status" id="modelInputStatus">—</p>
+  <label class="model-input-call">模型调用<select id="modelInputCall" aria-label="选择保存的模型输入调用"></select></label>
+  <div class="model-input-body" id="modelInputBody" tabindex="0" aria-label="当前步骤保存的完整模型输入"></div>
+  <div class="model-output-popup-footer"><button id="modelInputMode" type="button" data-mode="ordered">查看请求 JSON</button><span id="modelInputInteraction">移入窗口可滚动 · Esc 关闭</span></div>
+</div>
+<script src="assets/offline-manifest.js"></script>
+<script src="assets/static_runtime.js"></script>
+<script src="assets/architecture_geometry.js"></script>
+<script>
+(() => {
+  const canvas=document.querySelector('#view'),ctx=canvas.getContext('2d');
+  const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  const describe=value=>typeof value==='string'?value:value==null?'—':JSON.stringify(value);
+  const DEFAULT_HORIZONTAL_FOV_DEG=70,DEFAULT_VERTICAL_FOV_DEG=50,clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
+  const storedFov=(key,fallback,min,max)=>{try{const value=Number(localStorage.getItem(key));return Number.isFinite(value)&&value?clamp(value,min,max):fallback}catch{return fallback}};
+  let viewHorizontalFovDeg=storedFov('esi-view-horizontal-fov-70x50',DEFAULT_HORIZONTAL_FOV_DEG,30,120),viewVerticalFovDeg=storedFov('esi-view-vertical-fov-70x50',DEFAULT_VERTICAL_FOV_DEG,15,90);
+  let data=null,catalog=[],accuracyReport=null,accuracyError='',currentRunId=null,loadSerial=0,w=0,h=0,dpr=1,yaw=-.72,pitch=.72,distance=8,center=[0,0,1],interactionMode='rotate',drag=null,suppressClick=false,playing=false,timer=null,step=0,projectedObjects=[],renderBasis=null,renderPending=false;
+  const projectionCache=new Map();
+  let activeLoadController=null;
+  let walkReplay=0,walkStep=0,walkTimer=null,walkPlaying=false;
+  let renderPointCache=null;
+  let modelOutputHideTimer=null,modelOutputSuppressFocus=false;
+  let modelInputHideTimer=null,modelInputSuppressFocus=false,modelInputKey='',modelInputPayload=null,modelInputSelectedCall=0,modelInputError='';
+  const modelInputCache=new Map();
+  let wallSegmentsCache=null;
+  let selectedRoomName=null,hoveredRoomName=null,projectedRoomLabels=[],showRoomLabels=true;
+  let roomLayoutMode=false,geometryViewState=null,layoutViewState=null;
+  const roomObjectMembership=new Map();
+  try{showRoomLabels=localStorage.getItem('esi-show-room-labels')!=='false'}catch{}
+  const ROOM_REGION_COLORS=['#9db9ef','#e3b575','#bb9adf','#74c4bd','#de91a2','#bdc773','#90c5e5','#d7a98d','#bca7c9','#a9ce9c','#dcbd80','#80b3a3','#bcafe6','#a5bec7','#d9a6c8','#c6c2a2'];
+  const toggles={objects:document.querySelector('#showObjects'),globalStructures:document.querySelector('#showGlobalStructures'),assetReference:document.querySelector('#showAssetReference'),boundary:document.querySelector('#showBoundary'),rooms:document.querySelector('#showRoomRegions'),doors:document.querySelector('#showDoors'),leaves:document.querySelector('#showLeaves'),path:document.querySelector('#showPath'),rays:document.querySelector('#showRays'),gt:document.querySelector('#showGt')};
+  const horizontalFovInput=document.querySelector('#horizontalFov'),verticalFovInput=document.querySelector('#verticalFov'),horizontalFovValue=document.querySelector('#horizontalFovValue'),verticalFovValue=document.querySelector('#verticalFovValue');
+  const add=(a,b)=>a.map((v,i)=>v+b[i]),sub=(a,b)=>a.map((v,i)=>v-b[i]),mul=(a,s)=>a.map(v=>v*s),dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],norm=a=>{const n=Math.hypot(...a)||1;return a.map(v=>v/n)};
+  function eye(){return add(center,[distance*Math.cos(pitch)*Math.cos(yaw),distance*Math.cos(pitch)*Math.sin(yaw),distance*Math.sin(pitch)])}
+  function basis(){if(roomLayoutMode)return{e:[center[0],center[1],distance],f:[0,0,-1],r:[1,0,0],u:[0,1,0]};const e=eye(),f=norm(sub(center,e)),r=norm(cross(f,[0,0,1])),u=cross(r,f);return{e,f,r,u}}
+  function project(p){if(renderPointCache?.has(p))return renderPointCache.get(p);const b=renderBasis||basis(),v=sub(p,b.e),z=dot(v,b.f);if(z<.05){renderPointCache?.set(p,null);return null}const scale=Math.min(w,h)*.82/(roomLayoutMode?distance:z),result={x:w/2+dot(v,b.r)*scale,y:h/2+(roomLayoutMode?40:0)-dot(v,b.u)*scale,z};renderPointCache?.set(p,result);return result}
+  function quatRotate(q,v){const qv=q.slice(0,3),t=mul(cross(qv,v),2);return add(v,add(mul(t,q[3]),cross(qv,t)))}
+  function cameraFrame(q){return{f:norm(quatRotate(q,[0,0,-1])),r:norm(quatRotate(q,[1,0,0])),u:norm(quatRotate(q,[0,1,0]))}}
+  function viewMaxDistance(origin){const room=data.room_geometry,[x0,y0,x1,y1]=room.bbox_world_xy,corners=[[x0,y0],[x1,y0],[x1,y1],[x0,y1]],horizontal=Math.max(...corners.map(([x,y])=>Math.hypot(x-origin[0],y-origin[1]))),vertical=Math.max(origin[2],Number(room.height)||2.7);return Math.min(40,Math.max(7,Math.hypot(horizontal,vertical)+1.5))}
+  function boxCorners(b){const [a,c]=b;return [[a[0],a[1],a[2]],[c[0],a[1],a[2]],[c[0],c[1],a[2]],[a[0],c[1],a[2]],[a[0],a[1],c[2]],[c[0],a[1],c[2]],[c[0],c[1],c[2]],[a[0],c[1],c[2]]]}
+  const faces=[[0,1,2,3],[4,7,6,5],[0,4,5,1],[1,5,6,2],[2,6,7,3],[3,7,4,0]];
+  function rgba(hex,a){const c=hex.replace('#','');return `rgba(${parseInt(c.slice(0,2),16)},${parseInt(c.slice(2,4),16)},${parseInt(c.slice(4,6),16)},${a})`}
+  function colorFor(o){return o.role==='target'?css('--red'):o.role==='anchor'?css('--purple'):o.role==='task'?css('--yellow'):['door','sliding_door'].includes(o.category)?'#f0b764':o.runtime_presence==='baked_fixture'?css('--fixture'):o.loaded_in_run===false?css('--reference'):css('--green')}
+  function visibleObjects(){return(data?.objects||[]).filter(o=>o.role!=='scene'||o.visible_by_default!==false||(o.view_scope==='engine_global_outside_room'&&toggles.globalStructures.checked)||toggles.assetReference.checked)}
+  function roleLabel(o){return o.source_group==='mirrors'?'题目镜面':o.source_group==='placement'?'镜前对应物':o.source_group==='objects_meta'?'题目观测物':o.role==='target'?'目标':o.role==='anchor'?'锚点':o.role==='task'?'题目物体':o.runtime_presence==='baked_fixture'?'墙体固有构件':o.view_scope==='engine_global_outside_room'?'引擎全局结构（房间外）':o.runtime_presence==='asset_reference'?'资产参考（未载入）':'运行时对象'}
+  function renderObjectList(){if(!data)return;const visible=visibleObjects(),list=document.querySelector('#objects');document.querySelector('#objectCount').textContent=visible.length;list.replaceChildren(...visible.map(o=>{const row=document.createElement('div');row.className='object';row.innerHTML=`<i style="background:${colorFor(o)}"></i><span>${o.category}<small> · ${o.name}</small></span><small>${roleLabel(o)}</small>`;return row}))}
+  function drawLine(points,color,width=1,dash=[]){const pp=points.map(project);if(pp.some(x=>!x))return;ctx.save();ctx.beginPath();ctx.setLineDash(dash);ctx.moveTo(pp[0].x,pp[0].y);pp.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();ctx.restore()}
+  function ringPath(ring,z=0){const points=ring.map(([x,y])=>project([x,y,z]));if(points.some(p=>!p))return false;points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();return true}
+  function roomRegions(){return data?.room_geometry?.room_regions||[]}
+  function roomRegionColor(region){return ROOM_REGION_COLORS[(Math.max(1,Number(region.instance_id)||1)-1)%ROOM_REGION_COLORS.length]}
+  function activeRoomName(){return hoveredRoomName||selectedRoomName}
+  function syncRoomLabelControl(){const button=document.querySelector('#roomLabelsButton');button.hidden=roomRegions().length<2;button.disabled=!toggles.rooms.checked;button.setAttribute('aria-pressed',String(showRoomLabels));button.textContent=showRoomLabels?'标签开 [L]':'标签关 [L]'}
+  function setRoomLabelsVisible(visible){showRoomLabels=Boolean(visible);projectedRoomLabels=[];syncRoomLabelControl();try{localStorage.setItem('esi-show-room-labels',String(showRoomLabels))}catch{}scheduleRender()}
+  function handleRoomLabelShortcut(event){
+    if(event.key?.toLowerCase()!=='l'||event.repeat||event.isComposing||event.ctrlKey||event.altKey||event.metaKey||roomRegions().length<2||!toggles.rooms.checked)return;
+    const target=event.target;if(target?.isContentEditable||target?.closest?.('input,textarea,select,.model-output-popup'))return;
+    event.preventDefault();setRoomLabelsVisible(!showRoomLabels);
+  }
+  function setHoveredRoom(name){
+    if(hoveredRoomName===name)return;hoveredRoomName=name;
+    for(const button of document.querySelector('#roomRegionList').children)button.dataset.hovered=String(button.dataset.room===name);
+    scheduleRender();
+  }
+  function roomContainsXY(region,point){return region.polygons.some(p=>inRing(point,p.outer)&&!(p.holes||[]).some(h=>inRing(point,h)))}
+  function roomRayHit(region,origin,direction,height){
+    if(origin[2]>=0&&origin[2]<=height&&roomContainsXY(region,origin))return 0;
+    let nearest=Infinity;
+    if(Math.abs(direction[2])>1e-9)for(const z of [0,height]){
+      const t=(z-origin[2])/direction[2];if(t>=0&&t<nearest&&roomContainsXY(region,[origin[0]+direction[0]*t,origin[1]+direction[1]*t]))nearest=t;
+    }
+    const cross2=(a,b)=>a[0]*b[1]-a[1]*b[0];
+    for(const polygon of region.polygons)for(const ring of [polygon.outer,...(polygon.holes||[])])for(let index=0;index<ring.length;index++){
+      const a=ring[index],b=ring[(index+1)%ring.length],edge=[b[0]-a[0],b[1]-a[1]],delta=[a[0]-origin[0],a[1]-origin[1]],denominator=cross2(direction,edge);
+      if(Math.abs(denominator)<1e-9)continue;
+      const t=cross2(delta,edge)/denominator,s=cross2(delta,direction)/denominator,z=origin[2]+direction[2]*t;
+      if(t<0||t>=nearest||s<-1e-8||s>1+1e-8||z<0||z>height)continue;
+      if([-1,1].some(sign=>roomContainsXY(region,[origin[0]+direction[0]*(t+sign*1e-5),origin[1]+direction[1]*(t+sign*1e-5)])))nearest=t;
+    }
+    return Number.isFinite(nearest)?nearest:null;
+  }
+  function roomAtPointer(x,y){
+    if(!toggles.rooms.checked||roomRegions().length<2)return null;
+    for(let index=projectedRoomLabels.length-1;index>=0;index--){const box=projectedRoomLabels[index];if(x>=box.x&&x<=box.x+box.width&&y>=box.y&&y<=box.y+box.height)return box.name}
+    if(roomLayoutMode){const scale=Math.min(w,h)*.82/distance,point=[center[0]+(x-w/2)/scale,center[1]+(h/2+40-y)/scale];return roomRegions().find(region=>roomContainsXY(region,point))?.name||null}
+    const b=basis(),focal=Math.min(w,h)*.82,direction=norm(add(b.f,add(mul(b.r,(x-w/2)/focal),mul(b.u,(h/2-y)/focal))));
+    let nearest=Infinity,name=null;const height=Number(data.room_geometry.height)||2.7;
+    for(const region of roomRegions()){
+      const t=roomRayHit(region,b.e,direction,height);if(t!==null&&t<nearest){nearest=t;name=region.name}
+    }
+    return name;
+  }
+  function roomObjects(region){
+    if(!roomObjectMembership.has(region.name))roomObjectMembership.set(region.name,new Set((data.objects||[]).filter(o=>Array.isArray(o.position)&&roomContainsXY(region,o.position))));
+    return roomObjectMembership.get(region.name);
+  }
+  function renderRoomRegionList(){
+    const regions=roomRegions(),multiple=regions.length>1;
+    document.querySelector('#roomRegionSection').hidden=!multiple;
+    document.querySelector('#roomRegionToggle').hidden=!multiple;
+    document.querySelector('#roomCountChip').hidden=!multiple;
+    document.querySelector('#roomCount').textContent=regions.length;
+    syncRoomLabelControl();
+    const host=document.querySelector('#roomRegionList');
+    host.replaceChildren(...regions.map(region=>{
+      const button=document.createElement('button');button.type='button';button.className='room-region-button';
+      button.dataset.room=region.name;button.setAttribute('aria-pressed',String(selectedRoomName===region.name));
+      button.dataset.hovered=String(hoveredRoomName===region.name);
+      button.setAttribute('aria-label',`高亮房间 ${region.name}`);
+      button.innerHTML=`<i style="background:${roomRegionColor(region)}" aria-hidden="true"></i><span>${esc(region.name)}</span><small>${Number(region.area_m2).toFixed(1)} m²</small>`;
+      button.addEventListener('pointerenter',()=>setHoveredRoom(region.name));button.addEventListener('pointerleave',()=>setHoveredRoom(null));
+      button.addEventListener('focus',()=>setHoveredRoom(region.name));button.addEventListener('blur',()=>setHoveredRoom(null));
+      button.addEventListener('click',()=>{selectedRoomName=selectedRoomName===region.name?null:region.name;toggles.rooms.checked=true;for(const row of host.children)row.setAttribute('aria-pressed',String(row.dataset.room===selectedRoomName));syncRoomLabelControl();render()});return button;
+    }));
+  }
+  function drawRoomRegions(){
+    if(!toggles.rooms.checked||roomRegions().length<2)return;
+    ctx.save();ctx.lineJoin='round';
+    for(const region of roomRegions()){
+      const color=roomRegionColor(region),active=activeRoomName(),dimmed=active&&active!==region.name;
+      for(const polygon of region.polygons){
+        ctx.beginPath();if(!ringPath(polygon.outer,0))continue;
+        (polygon.holes||[]).forEach(hole=>ringPath(hole,0));
+        ctx.fillStyle=rgba(color,dimmed?.045:roomLayoutMode?.62:active===region.name?.44:.30);ctx.fill('evenodd');
+        ctx.strokeStyle=rgba(color,dimmed?.20:1);ctx.lineWidth=active===region.name?3.2:1.8;ctx.stroke();
+      }
+    }ctx.restore();
+  }
+  function drawRoomHighlight(){
+    const name=toggles.rooms.checked?activeRoomName():null,region=roomRegions().find(r=>r.name===name),status=document.querySelector('#roomHoverStatus');status.hidden=!region;
+    if(!region)return;
+    const height=Number(data.room_geometry.height)||2.7,color=roomRegionColor(region),sides=[];
+    status.textContent=`${region.name} · ${hoveredRoomName?'悬停高亮':'固定高亮'}`;status.style.borderColor=color;
+    for(const polygon of region.polygons)for(const ring of [polygon.outer,...(polygon.holes||[])])for(let index=0;index<ring.length;index++){
+      const a=ring[index],b=ring[(index+1)%ring.length],points=[[...a,0],[...b,0],[...b,height],[...a,height]].map(project);
+      if(points.every(Boolean))sides.push({points,depth:points.reduce((sum,p)=>sum+p.z,0)/4});
+    }
+    ctx.save();ctx.lineJoin='round';
+    for(const side of sides.sort((a,b)=>b.depth-a.depth)){
+      ctx.beginPath();side.points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.fillStyle=rgba(color,.22);ctx.fill();
+    }
+    for(const polygon of region.polygons){
+      for(const z of [0,height]){ctx.beginPath();if(!ringPath(polygon.outer,z))continue;(polygon.holes||[]).forEach(hole=>ringPath(hole,z));ctx.fillStyle=rgba(color,z===0?.20:.16);ctx.fill('evenodd')}
+      ctx.shadowColor=color;ctx.shadowBlur=9;
+      for(const ring of [polygon.outer,...(polygon.holes||[])]){
+        for(const z of [0,height])drawLine([...ring,ring[0]].map(([x,y])=>[x,y,z]),rgba(color,1),2.7);
+        for(let index=0;index<ring.length;index++){
+          const a=ring[index],previous=ring[(index+ring.length-1)%ring.length],next=ring[(index+1)%ring.length];
+          if(Math.hypot(a[0]-previous[0],a[1]-previous[1])>.22||Math.hypot(a[0]-next[0],a[1]-next[1])>.22)drawLine([[...a,0],[...a,height]],rgba(color,.95),1.8);
+        }
+      }ctx.shadowBlur=0;
+    }ctx.restore();
+  }
+  function drawRoomLabels(){
+    projectedRoomLabels=[];
+    if(!toggles.rooms.checked||!showRoomLabels||roomRegions().length<2)return;
+    ctx.save();ctx.font='600 12px Arial';
+    const occupied=[],canvasRect=canvas.getBoundingClientRect();
+    for(const selector of ['.legend:not([hidden])','.view-mode','.view-display-mode','.room-layout-status','.fov-controls','.hint','#projectionStatus']){
+      const element=document.querySelector(selector);if(element.hidden)continue;const r=element.getBoundingClientRect();
+      occupied.push({x:r.left-canvasRect.left-4,y:r.top-canvasRect.top-4,width:r.width+8,height:r.height+8});
+    }
+    occupied.push({x:Math.max(244,w-304),y:h-119,width:Math.max(0,Math.min(290,w-254)),height:70});
+    const overlaps=(a,b)=>a.x<b.x+b.width+3&&a.x+a.width+3>b.x&&a.y<b.y+b.height+3&&a.y+a.height+3>b.y;
+    const active=activeRoomName(),sorted=[...roomRegions()].sort((a,b)=>b.area_m2-a.area_m2);
+    for(const region of sorted){
+      const anchor=project([...region.label_world_xy,.035]);if(!anchor||anchor.x<0||anchor.x>w||anchor.y<0||anchor.y>h)continue;
+      const width=Math.min(w-20,ctx.measureText(region.name).width+20),height=25;
+      let box=null;
+      for(let radius=0;radius<=132&&!box;radius+=22){
+        const count=radius?12:1;
+        for(let index=0;index<count;index++){
+          const angle=index/count*Math.PI*2,candidate={x:clamp(anchor.x-width/2+Math.cos(angle)*radius,10,w-width-10),y:clamp(anchor.y-height/2+Math.sin(angle)*radius,10,h-height-10),width,height};
+          if(!occupied.some(other=>overlaps(candidate,other))){box=candidate;break}
+        }
+      }
+      // Keep every visible room named even when a very small viewport is crowded.
+      box=box||{x:clamp(anchor.x-width/2,10,w-width-10),y:clamp(anchor.y-height/2,10,h-height-10),width,height};occupied.push(box);projectedRoomLabels.push({...box,name:region.name});
+      const color=roomRegionColor(region),dimmed=active&&active!==region.name;
+      ctx.globalAlpha=dimmed?.55:1;ctx.strokeStyle=color;ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(anchor.x,anchor.y);ctx.lineTo(clamp(anchor.x,box.x,box.x+width),clamp(anchor.y,box.y,box.y+height));ctx.stroke();
+      ctx.beginPath();ctx.arc(anchor.x,anchor.y,2.3,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+      ctx.fillStyle='rgba(20,29,25,.94)';ctx.fillRect(box.x,box.y,width,height);ctx.strokeRect(box.x+.5,box.y+.5,width-1,height-1);
+      ctx.fillStyle=color;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(region.name,box.x+width/2,box.y+height/2,width-10);
+    }ctx.restore();
+  }
+  function wallSegmentCorners(a,b,height,thickness){const dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy)||1,tx=dx/length,ty=dy/length,nx=-ty,ny=tx,half=thickness/2,start=[a[0]-tx*half,a[1]-ty*half],end=[b[0]+tx*half,b[1]+ty*half],low=[[start[0]-nx*half,start[1]-ny*half,0],[end[0]-nx*half,end[1]-ny*half,0],[end[0]+nx*half,end[1]+ny*half,0],[start[0]+nx*half,start[1]+ny*half,0]];return[...low,...low.map(([x,y])=>[x,y,height])]}
+  function drawProxyWallPrisms(room,includeBoundary=true,prisms=room.wall_prisms||[]){
+    const height=Number(room.height)||2.7,thickness=Number(room.wall_thickness_m)||.12,boundary=includeBoundary?roomWallSegments().map(wall=>({name:wall.key,corners:wallSegmentCorners(wall.a,wall.b,height,thickness),source:'boundary'})):[],structural=prisms.map(wall=>({...wall,source:'asset'})),items=[];
+    for(const wall of [...boundary,...structural]){if(!Array.isArray(wall.corners)||wall.corners.length!==8)continue;for(let faceIndex=1;faceIndex<faces.length;faceIndex++){const face=faces[faceIndex],points=face.map(index=>wall.corners[index]),projected=points.map(project);if(projected.some(point=>!point))continue;items.push({wall,faceIndex,projected,depth:projected.reduce((sum,point)=>sum+point.z,0)/projected.length})}}
+    items.sort((a,b)=>b.depth-a.depth);ctx.save();ctx.lineJoin='round';for(const item of items){const isAsset=item.wall.source==='asset';ctx.beginPath();item.projected.forEach((point,index)=>index?ctx.lineTo(point.x,point.y):ctx.moveTo(point.x,point.y));ctx.closePath();ctx.fillStyle=rgba(css('--wall'),isAsset?.14:.055);ctx.fill();ctx.strokeStyle=rgba(css('--wall-edge'),isAsset?.48:.2);ctx.lineWidth=isAsset?.9:.55;ctx.stroke()}ctx.restore();
+  }
+  function drawWallPrisms(room){
+    if(!data.architecture?.available){drawProxyWallPrisms(room);return}
+    const surfaces=data.architecture.walls,names=new Set(surfaces.map(s=>s.name));
+    for(const surface of surfaces)drawMeshSurface(surface,css('--wall-edge'),.17);
+    const missing=(room.wall_prisms||[]).filter(wall=>!names.has(wall.name));if(missing.length)drawProxyWallPrisms(room,false,missing);
+  }
+  function drawRoom(room){const [x0,y0,x1,y1]=room.bbox_world_xy,polygons=room.polygons||[{outer:[[x0,y0],[x1,y0],[x1,y1],[x0,y1]],holes:[]}];ctx.save();for(let x=Math.ceil(x0);x<=x1;x++)drawLine([[x,y0,0],[x,y1,0]],rgba(css('--line'),.34));for(let y=Math.ceil(y0);y<=y1;y++)drawLine([[x0,y,0],[x1,y,0]],rgba(css('--line'),.34));for(const polygon of polygons){ctx.beginPath();ringPath(polygon.outer,0);(polygon.holes||[]).forEach(hole=>ringPath(hole,0));ctx.fillStyle=rgba(css('--cyan'),.075);ctx.fill('evenodd')}if(toggles.boundary.checked){drawWallPrisms(room);for(const polygon of polygons){for(const ring of [polygon.outer,...(polygon.holes||[])]){drawLine([...ring,ring[0]].map(([x,y])=>[x,y,0]),rgba(css('--cyan'),.86),1.55);drawLine([...ring,ring[0]].map(([x,y])=>[x,y,Number(room.height)||2.7]),rgba(css('--wall-edge'),.45),.8)}}}else drawLine([[x0,y0,0],[x1,y0,0],[x1,y1,0],[x0,y1,0],[x0,y0,0]],rgba(css('--text'),.55),1.4);ctx.restore()}
+  function drawBox(o){const corners=boxCorners(o.bbox),color=colorFor(o),pc=corners.map(project);if(pc.some(p=>!p))return;const ordered=faces.map(face=>({face,depth:face.reduce((s,i)=>s+pc[i].z,0)/4})).sort((a,b)=>b.depth-a.depth);for(const item of ordered){ctx.beginPath();item.face.forEach((idx,j)=>{const p=pc[idx];j?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)});ctx.closePath();ctx.fillStyle=rgba(color,o.role==='target'?.42:.17);ctx.fill();ctx.strokeStyle=rgba(color,.78);ctx.lineWidth=o.role==='target'?1.8:1;ctx.stroke()}const c=o.position,p=project(c);if(p)projectedObjects.push({o,x:p.x,y:p.y,r:Math.max(8,65/p.z)})}
+  function drawArrow(p,q,color,length=.58,width=1.5){const end=add(p,mul(cameraFrame(q).f,length));drawLine([p,end],color,width);const pe=project(end);if(pe){ctx.beginPath();ctx.arc(pe.x,pe.y,3,0,Math.PI*2);ctx.fillStyle=color;ctx.fill()}}
+  function inRing(point,ring){let inside=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const [xi,yi]=ring[i],[xj,yj]=ring[j],crosses=(yi>point[1])!==(yj>point[1])&&point[0]<(xj-xi)*(point[1]-yi)/(yj-yi)+xi;if(crosses)inside=!inside}return inside}
+  function onRoomFloor(point){const polygons=data.room_geometry.polygons||[];return polygons.some(p=>ArchitectureGeometry.pointInRing(point,p.outer)&&!(p.holes||[]).some(h=>ArchitectureGeometry.pointInRing(point,h)))}
+  function rayBox(origin,direction,bbox){let near=-Infinity,far=Infinity;for(let axis=0;axis<3;axis++){if(Math.abs(direction[axis])<1e-8){if(origin[axis]<bbox[0][axis]||origin[axis]>bbox[1][axis])return null;continue}let a=(bbox[0][axis]-origin[axis])/direction[axis],b=(bbox[1][axis]-origin[axis])/direction[axis];if(a>b)[a,b]=[b,a];near=Math.max(near,a);far=Math.min(far,b);if(near>far)return null}return near>.015?near:null}
+  function rayOrientedBox(origin,direction,box,maxDistance){if(!box?.center||!box?.axes||!box?.half_size)return null;const relative=sub(origin,box.center);let near=-Infinity,far=Infinity;for(let index=0;index<3;index++){const axis=box.axes[index],offset=dot(relative,axis),speed=dot(direction,axis),half=Number(box.half_size[index])||0;if(Math.abs(speed)<1e-8){if(offset < -half || offset > half)return null;continue}let first=(-half-offset)/speed,second=(half-offset)/speed;if(first>second)[first,second]=[second,first];near=Math.max(near,first);far=Math.min(far,second);if(near>far)return null}const hit=near>.015?near:far>.015?far:null;return hit!==null&&hit<maxDistance?hit:null}
+  function roomWallSegments(){if(wallSegmentsCache)return wallSegmentsCache;const segments=[];(data.room_geometry.polygons||[]).forEach((polygon,polygonIndex)=>{const rings=[{ring:polygon.outer,ringKey:`wall:${polygonIndex}:outer`}];(polygon.holes||[]).forEach((ring,holeIndex)=>rings.push({ring,ringKey:`wall:${polygonIndex}:hole:${holeIndex}`}));for(const item of rings)for(let index=0;index<item.ring.length;index++)segments.push({a:item.ring[index],b:item.ring[(index+1)%item.ring.length],key:`${item.ringKey}:segment:${index}`,ringKey:item.ringKey,segmentIndex:index})});wallSegmentsCache=segments;return segments}
+  function proxyRayRoomWall(origin,direction,maxDistance){const d=[direction[0],direction[1]],o=[origin[0],origin[1]],height=Number(data.room_geometry.height)||2.7,cross2=(a,b)=>a[0]*b[1]-a[1]*b[0];let best=null;for(const wall of roomWallSegments()){const segment=[wall.b[0]-wall.a[0],wall.b[1]-wall.a[1]],delta=[wall.a[0]-o[0],wall.a[1]-o[1]],denominator=cross2(d,segment);if(Math.abs(denominator)<1e-9)continue;const t=cross2(delta,segment)/denominator,u=cross2(delta,d)/denominator,z=origin[2]+direction[2]*t;if(t>.015&&t<maxDistance&&u>=-1e-8&&u<=1+1e-8&&z>=-1e-8&&z<=height+1e-8&&(!best||t<best.distance))best={distance:t,key:wall.key,type:'wall',label:'墙体边界',a:wall.a,b:wall.b,segmentIndex:wall.segmentIndex}}for(const wall of data.room_geometry.wall_prisms||[]){const limit=best?Math.min(maxDistance,best.distance):maxDistance,t=rayOrientedBox(origin,direction,wall,limit);if(t!==null&&(!best||t<best.distance))best={distance:t,key:`structure:${wall.name}`,type:'wall',label:'实体墙体',wallName:wall.name}}return best}
+  function rayRoomWall(origin,direction,maxDistance){
+    if(!data.architecture?.available)return proxyRayRoomWall(origin,direction,maxDistance);
+    const hit=ArchitectureGeometry.raySceneHit(origin,direction,data.architecture.walls,maxDistance);let best=hit?{...hit,key:`structure:${hit.wallName}`,type:'wall',label:'真实墙面'}:null;
+    for(const wall of ArchitectureGeometry.missingWalls(data.architecture.walls,data.room_geometry.wall_prisms||[])){const distance=rayOrientedBox(origin,direction,wall,best?.distance||maxDistance);if(distance!==null)best={distance,key:`structure:${wall.name}`,type:'wall',label:'墙体代理回退',wallName:wall.name}}
+    return best;
+  }
+  function castViewRay(origin,direction,maxDistance){let distance=maxDistance,hit={key:'open',type:'open',label:'未命中'},floorPoint=null;if(direction[2]<-1e-7){const candidate=-origin[2]/direction[2];if(candidate>.015&&candidate<=maxDistance+1e-8){floorPoint=add(origin,mul(direction,candidate));if(candidate<distance&&onRoomFloor(floorPoint)){distance=candidate;hit={key:'ground',type:'ground',label:'地面'}}}}const wall=rayRoomWall(origin,direction,distance);if(wall){distance=wall.distance;hit=wall}return{point:add(origin,mul(direction,distance)),distance,direction,floorPoint,...hit}}
+  function sampleViewProjection(p,q,maxDistance){const cacheKey=[...p,...q,maxDistance,viewHorizontalFovDeg,viewVerticalFovDeg].map(v=>Number(v).toFixed(4)).join('|');if(projectionCache.has(cacheKey))return projectionCache.get(cacheKey);const frame=cameraFrame(q),{f,r,u}=frame,columns=21,rows=13,boundaryCount=112,radialSteps=14,tanHalfX=Math.tan(viewHorizontalFovDeg*.5*Math.PI/180),tanHalfY=Math.tan(viewVerticalFovDeg*.5*Math.PI/180),grid=[],counts={ground:0,wall:0,object:0,open:0};for(let row=0;row<rows;row++){const line=[];for(let column=0;column<columns;column++){const nx=column/(columns-1)*2-1,ny=1-row/(rows-1)*2;if(nx*nx+ny*ny>1.02){line.push({point:p,distance:0,key:'outside',type:'outside',label:'',floorPoint:null,direction:null});continue}const direction=norm(add(f,add(mul(r,nx*tanHalfX),mul(u,ny*tanHalfY)))),sample=castViewRay(p,direction,maxDistance);counts[sample.type]++;line.push(sample)}grid.push(line)}const polarRings=[];for(let radialIndex=0;radialIndex<=radialSteps;radialIndex++){const radius=radialIndex/radialSteps,ring=[];for(let index=0;index<boundaryCount;index++){const angle=index/boundaryCount*Math.PI*2,direction=norm(add(f,add(mul(r,Math.cos(angle)*tanHalfX*radius),mul(u,Math.sin(angle)*tanHalfY*radius))));ring.push(castViewRay(p,direction,maxDistance))}polarRings.push(ring)}const boundary=polarRings[polarRings.length-1],result={grid,polarRings,boundary,counts,columns,rows,center:polarRings[0][0],origin:[...p],frame,tanHalfX,tanHalfY,tanAngle:Math.sqrt(tanHalfX*tanHalfY),maxDistance,wallPolygons:new Map()};projectionCache.set(cacheKey,result);return result}
+  function convexHull(points){if(points.length<3)return points;const sorted=[...points].sort((a,b)=>a.x-b.x||a.y-b.y),turn=(o,a,b)=>(a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x),lower=[],upper=[];for(const point of sorted){while(lower.length>1&&turn(lower.at(-2),lower.at(-1),point)<=0)lower.pop();lower.push(point)}for(let index=sorted.length-1;index>=0;index--){const point=sorted[index];while(upper.length>1&&turn(upper.at(-2),upper.at(-1),point)<=0)upper.pop();upper.push(point)}return lower.slice(0,-1).concat(upper.slice(0,-1))}
+  function drawConeEnvelope(origin,sampled,color){const quarter=Math.floor(sampled.boundary.length/4),indices=[0,quarter,quarter*2,quarter*3];for(const index of indices){const sample=sampled.boundary[index],dash=sample.type==='open'?[4,5]:[];drawLine([origin,sample.point],rgba(color,.16),3.6,dash);drawLine([origin,sample.point],rgba(color,.92),1.15,dash)}const center=sampled.center;drawLine([origin,center.point],rgba(color,.92),1.25,center.type==='open'?[4,5]:[])}
+  function groundFootprint(sampled){if(sampled.groundFootprint)return sampled.groundFootprint;const hits=[];for(const row of sampled.grid)for(const sample of row)if(sample.type==='ground')hits.push(sample.point);for(const sample of sampled.boundary)if(sample.type==='ground')hits.push(sample.point);if(!hits.length){sampled.groundFootprint=[];return sampled.groundFootprint}let center;if(sampled.center.type==='ground')center=sampled.center.point;else center=[hits.reduce((sum,p)=>sum+p[0],0)/hits.length,hits.reduce((sum,p)=>sum+p[1],0)/hits.length,0];const distances=hits.map(p=>Math.hypot(p[0]-center[0],p[1]-center[1])).sort((a,b)=>a-b),sampleRadius=distances[Math.min(distances.length-1,Math.floor(distances.length*.82))]||0,tilt=Math.max(.55,Math.abs(sampled.frame.f[2])),stableRadius=sampled.origin[2]*sampled.tanAngle/tilt,radius=Math.max(.18,Math.min(sampleRadius||stableRadius,stableRadius*1.15));const segments=96;sampled.groundFootprint=Array.from({length:segments},(_,index)=>{const angle=index/segments*Math.PI*2;return[center[0]+Math.cos(angle)*radius,center[1]+Math.sin(angle)*radius,0]});sampled.groundCircle={center,radius};return sampled.groundFootprint}
+  function pointOnSegment2(point,a,b,epsilon=1e-6){const ab=[b[0]-a[0],b[1]-a[1]],ap=[point[0]-a[0],point[1]-a[1]],crossValue=Math.abs(ab[0]*ap[1]-ab[1]*ap[0]);if(crossValue>epsilon*Math.max(1,Math.hypot(...ab)))return false;const t=(ap[0]*ab[0]+ap[1]*ab[1])/(ab[0]*ab[0]+ab[1]*ab[1]||1);return t>=-epsilon&&t<=1+epsilon}
+  function inOrOnRing(point,ring){return inRing(point,ring)||ring.some((a,index)=>pointOnSegment2(point,a,ring[(index+1)%ring.length]))}
+  function segmentRingIntervals(a,b,ring){if(ring.length<3)return[];const cross2=(x,y)=>x[0]*y[1]-x[1]*y[0],direction=[b[0]-a[0],b[1]-a[1]],cuts=[0,1];for(let index=0;index<ring.length;index++){const c=ring[index],d=ring[(index+1)%ring.length],edge=[d[0]-c[0],d[1]-c[1]],delta=[c[0]-a[0],c[1]-a[1]],denominator=cross2(direction,edge);if(Math.abs(denominator)<1e-9)continue;const t=cross2(delta,edge)/denominator,u=cross2(delta,direction)/denominator;if(t>-1e-8&&t<1+1e-8&&u>-1e-8&&u<1+1e-8)cuts.push(Math.max(0,Math.min(1,t)))}cuts.sort((x,y)=>x-y);const unique=cuts.filter((value,index)=>!index||Math.abs(value-cuts[index-1])>1e-7),intervals=[];for(let index=0;index<unique.length-1;index++){const t0=unique[index],t1=unique[index+1],mid=(t0+t1)/2,point=[a[0]+direction[0]*mid,a[1]+direction[1]*mid];if(t1-t0>1e-7&&inOrOnRing(point,ring))intervals.push([[a[0]+direction[0]*t0,a[1]+direction[1]*t0],[a[0]+direction[0]*t1,a[1]+direction[1]*t1]])}return intervals}
+  function paintGroundProjection(sampled,color){const footprint=groundFootprint(sampled),projected=footprint.map(project).filter(Boolean);if(projected.length<3)return;ctx.save();ctx.beginPath();for(const polygon of data.room_geometry.polygons||[]){ringPath(polygon.outer,0);(polygon.holes||[]).forEach(hole=>ringPath(hole,0))}ctx.clip('evenodd');ctx.beginPath();projected.forEach((point,index)=>index?ctx.lineTo(point.x,point.y):ctx.moveTo(point.x,point.y));ctx.closePath();ctx.fillStyle=rgba(color,.2);ctx.fill();ctx.strokeStyle=rgba(color,.92);ctx.lineWidth=1.35;ctx.stroke();ctx.restore()}
+  function pointInsideCone(point,sampled){const offset=sub(point,sampled.origin),forward=dot(offset,sampled.frame.f);if(forward<=.015||dot(offset,offset)>sampled.maxDistance*sampled.maxDistance+1e-6)return false;const x=dot(offset,sampled.frame.r)/(forward*sampled.tanHalfX),y=dot(offset,sampled.frame.u)/(forward*sampled.tanHalfY);return x*x+y*y<=1+1e-6}
+  function rayWallIntersection(origin,direction,wall,maxDistance,wallHeight){const cross2=(x,y)=>x[0]*y[1]-x[1]*y[0],ray=[direction[0],direction[1]],segment=[wall.b[0]-wall.a[0],wall.b[1]-wall.a[1]],delta=[wall.a[0]-origin[0],wall.a[1]-origin[1]],denominator=cross2(ray,segment);if(Math.abs(denominator)<1e-9)return null;const distance=cross2(delta,segment)/denominator,s=cross2(delta,ray)/denominator,z=origin[2]+direction[2]*distance;if(distance<=.015||distance>maxDistance+1e-7||s<-1e-7||s>1+1e-7||z<-1e-7||z>wallHeight+1e-7)return null;return{distance,s:Math.max(0,Math.min(1,s)),z:Math.max(0,Math.min(wallHeight,z)),point:add(origin,mul(direction,distance))}}
+  function wallConePolygon(wall,sampled,wallHeight){if(sampled.wallPolygons.has(wall.key))return sampled.wallPolygons.get(wall.key);const candidates=[],edgeSteps=56,addCandidate=(s,z,force=false)=>{const point=[wall.a[0]+(wall.b[0]-wall.a[0])*s,wall.a[1]+(wall.b[1]-wall.a[1])*s,z];if(!force&&!pointInsideCone(point,sampled))return;const offset=sub(point,sampled.origin),distance=Math.hypot(...offset),nearest=rayRoomWall(sampled.origin,norm(offset),distance+1e-4);if(!nearest||nearest.distance<distance-2e-3)return;candidates.push({x:s,y:z,world:point})};for(const sample of sampled.boundary){if(!sample.direction)continue;const hit=rayWallIntersection(sampled.origin,sample.direction,wall,sampled.maxDistance,wallHeight);if(hit){const nearest=rayRoomWall(sampled.origin,sample.direction,hit.distance+1e-4);if(nearest&&nearest.distance>=hit.distance-2e-3)candidates.push({x:hit.s,y:hit.z,world:hit.point})}}for(let index=0;index<=edgeSteps;index++){const t=index/edgeSteps;addCandidate(t,0);addCandidate(t,wallHeight);addCandidate(0,t*wallHeight);addCandidate(1,t*wallHeight)}for(const interval of segmentRingIntervals(wall.a,wall.b,groundFootprint(sampled))){const length=Math.hypot(wall.b[0]-wall.a[0],wall.b[1]-wall.a[1])||1;for(const endpoint of interval){const s=Math.hypot(endpoint[0]-wall.a[0],endpoint[1]-wall.a[1])/length;addCandidate(Math.max(0,Math.min(1,s)),0,true)}}const polygon=candidates.length<3?[]:convexHull(candidates);sampled.wallPolygons.set(wall.key,polygon);return polygon}
+  function paintWallProjections(sampled,color){const wallHeight=Number(data.room_geometry.height)||2.7;for(const wall of roomWallSegments()){const polygon=wallConePolygon(wall,sampled,wallHeight);if(polygon.length<3)continue;const projected=polygon.map(node=>project(node.world)),quad=[[...wall.a,0],[...wall.b,0],[...wall.b,wallHeight],[...wall.a,wallHeight]].map(project);if(projected.some(point=>!point)||quad.some(point=>!point))continue;ctx.save();ctx.beginPath();quad.forEach((point,index)=>index?ctx.lineTo(point.x,point.y):ctx.moveTo(point.x,point.y));ctx.closePath();ctx.clip();ctx.beginPath();projected.forEach((point,index)=>index?ctx.lineTo(point.x,point.y):ctx.moveTo(point.x,point.y));ctx.closePath();ctx.fillStyle=rgba(color,.2);ctx.fill();ctx.strokeStyle=rgba(color,.92);ctx.lineWidth=1.35;ctx.lineJoin='round';for(let index=0;index<polygon.length;index++){const next=(index+1)%polygon.length,a=polygon[index],b=polygon[next];if((Math.abs(a.x)<1e-6&&Math.abs(b.x)<1e-6)||(Math.abs(a.x-1)<1e-6&&Math.abs(b.x-1)<1e-6))continue;ctx.beginPath();ctx.moveTo(projected[index].x,projected[index].y);ctx.lineTo(projected[next].x,projected[next].y);ctx.stroke()}ctx.restore()}}
+  const projectionMask=document.createElement('canvas'),projectionOutline=document.createElement('canvas');
+  function projectedPolygonPath(context,world){
+    let points=world.map(project);if(points.some(p=>!p)){const b=renderBasis||basis();points=ArchitectureGeometry.clipNearPlane(world,b.e,b.f,.051).map(project)}if(points.length<3||points.some(p=>!p))return false;
+    // Normalize winding: two-sided meshes must not cancel overlapping paths.
+    let area=0;for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length];area+=a.x*b.y-b.x*a.y}if(area<0)points.reverse();
+    points.forEach((p,i)=>i?context.lineTo(p.x,p.y):context.moveTo(p.x,p.y));context.closePath();return true;
+  }
+  function projectionPatchGroups(sampled){
+    if(!sampled.patches){const {f,r,u}=sampled.frame;sampled.patches=ArchitectureGeometry.projectionPatches((x,y)=>{
+      const direction=norm(add(f,add(mul(r,x*sampled.tanHalfX),mul(u,y*sampled.tanHalfY))));return castViewRay(sampled.origin,direction,sampled.maxDistance);
+    })}return sampled.patches.groups;
+  }
+  function paintUnifiedProjection(sampled,color){
+    if(!(w>0&&h>0&&canvas.width>0&&canvas.height>0))return;
+    const groups=projectionPatchGroups(sampled),width=Math.ceil(w),height=Math.ceil(h);
+    for(const layer of [projectionMask,projectionOutline])if(layer.width!==width||layer.height!==height){layer.width=width;layer.height=height}
+    const mask=projectionMask.getContext('2d'),outline=projectionOutline.getContext('2d');mask.clearRect(0,0,width,height);
+    const surfaces=new Map((data.architecture?.walls||[]).map(s=>[s.name,s]));
+    for(const group of groups){
+      mask.save();mask.beginPath();
+      if(group.type==='ground'){
+        for(const polygon of data.room_geometry.polygons||[]){const ring=(points)=>{const b=renderBasis||basis(),pp=ArchitectureGeometry.clipNearPlane(points.map(p=>[...p,0]),b.e,b.f,.051).map(project);if(pp.length<3||pp.some(p=>!p))return;pp.forEach((p,i)=>i?mask.lineTo(p.x,p.y):mask.moveTo(p.x,p.y));mask.closePath()};ring(polygon.outer);(polygon.holes||[]).forEach(ring)}mask.clip('evenodd');
+      }else{
+        const surface=surfaces.get(group.wallName);if(surface){for(const triangle of ArchitectureGeometry.planeTriangles(surface,group.plane))projectedPolygonPath(mask,triangle);mask.clip()}
+      }
+      mask.beginPath();for(const triangle of group.triangles)projectedPolygonPath(mask,triangle);mask.fillStyle='#fff';mask.fill();mask.restore();
+    }
+    // One union mask: no repeated translucent triangle fills or internal edge seams.
+    outline.clearRect(0,0,width,height);outline.globalCompositeOperation='source-over';
+    for(const [x,y] of [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]])outline.drawImage(projectionMask,x,y);
+    outline.globalCompositeOperation='destination-out';outline.drawImage(projectionMask,0,0);outline.globalCompositeOperation='source-in';outline.fillStyle=rgba(color,.94);outline.fillRect(0,0,width,height);outline.globalCompositeOperation='source-over';
+    mask.globalCompositeOperation='source-in';mask.fillStyle=rgba(color,.24);mask.fillRect(0,0,width,height);mask.globalCompositeOperation='source-over';ctx.drawImage(projectionMask,0,0);ctx.drawImage(projectionOutline,0,0);
+  }
+  function drawViewProjection(p,q,color,maxDistance,report=false){const sampled=sampleViewProjection(p,q,maxDistance);drawConeEnvelope(p,sampled,color);const apex=project(p);if(apex){ctx.save();ctx.beginPath();ctx.arc(apex.x,apex.y,4.5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.restore()}if(report){const counts=sampled.counts,status=document.querySelector('#projectionStatus');status.hidden=false;status.textContent=`视场 横 ${viewHorizontalFovDeg}° × 纵 ${viewVerticalFovDeg}° · 地面 ${counts.ground} · 墙体 ${counts.wall} · 延伸 ${counts.open}`}}
+  function drawTrajectory(){const poses=data.trajectory||[];if(!poses.length)return;const shown=poses.slice(0,step+1);if(toggles.path.checked&&shown.length>1)drawLine(shown.map(x=>x.position),css('--cyan'),3);shown.forEach((pose,i)=>{const p=project(pose.position);if(!p)return;ctx.beginPath();ctx.arc(p.x,p.y,i===step?5.5:2.7,0,Math.PI*2);ctx.fillStyle=i===step?css('--current'):css('--cyan');ctx.fill();if(i===step){ctx.strokeStyle=css('--cyan');ctx.lineWidth=2;ctx.stroke()}if(toggles.rays.checked&&i!==step&&i%Math.max(1,Math.ceil(shown.length/10))===0)drawArrow(pose.position,pose.quaternion_xyzw,rgba(css(roomLayoutMode?'--cyan':'--orange'),.72),.42,1)});const status=document.querySelector('#projectionStatus');if(roomLayoutMode){status.hidden=true;if(toggles.rays.checked&&step<poses.length){const pose=poses[step];drawArrow(pose.position,pose.quaternion_xyzw,css('--current'),.65,2)}return}if(toggles.rays.checked&&step<poses.length){const pose=poses[step];drawViewProjection(pose.position,pose.quaternion_xyzw,css('--orange'),viewMaxDistance(pose.position),true)}else status.hidden=true}
+  function drawGt(){if(!toggles.gt.checked)return;(data.reference_cameras||[]).forEach(p=>roomLayoutMode?drawArrow(p.position,p.quaternion_xyzw,css('--gt'),.65,2):drawViewProjection(p.position,p.quaternion_xyzw,css('--gt'),viewMaxDistance(p.position),false))}
+  function syncLayoutControls(){
+    const multiple=roomRegions().length>1;
+    document.querySelector('#viewDisplayMode').hidden=!multiple;document.querySelector('#viewer').classList.toggle('layout-view',roomLayoutMode);
+    document.querySelector('#geometryView').setAttribute('aria-pressed',String(!roomLayoutMode));document.querySelector('#layoutView').setAttribute('aria-pressed',String(roomLayoutMode));
+    document.querySelector('#geometryLegend').hidden=roomLayoutMode;document.querySelector('#layoutLegend').hidden=!roomLayoutMode;
+    const status=document.querySelector('#roomLayoutStatus');status.hidden=!roomLayoutMode;
+    status.textContent=data?.architecture?.available?'真实墙面 · 1 m 高度剖面':'墙体代理回退 · 无法恢复真实镂空';
+    toggles.objects.disabled=roomLayoutMode;toggles.globalStructures.disabled=roomLayoutMode;toggles.assetReference.disabled=roomLayoutMode;
+    document.querySelector('.fov-controls').hidden=roomLayoutMode;
+    document.querySelector('#rotateMode').disabled=roomLayoutMode;document.querySelector('#rotateMode').setAttribute('aria-pressed',String(!roomLayoutMode&&interactionMode==='rotate'));document.querySelector('#panMode').setAttribute('aria-pressed',String(roomLayoutMode||interactionMode==='pan'));
+  }
+  function setLayoutMode(enabled){
+    const next=Boolean(enabled)&&roomRegions().length>1;
+    if(next!==roomLayoutMode){const current={center:[...center],distance};if(roomLayoutMode)layoutViewState=current;else geometryViewState=current;roomLayoutMode=next;const stored=next?layoutViewState:geometryViewState;if(stored){center=[...stored.center];distance=stored.distance}else fit()}
+    hoveredRoomName=null;projectedRoomLabels=[];syncLayoutControls();resize();
+  }
+  function resetView(){hoveredRoomName=null;fit();render();canvas.scrollIntoView({block:'center',behavior:'smooth'})}
+  function drawFloorPlan(){
+    const room=data.room_geometry;ctx.save();
+    for(const polygon of room.polygons||[]){ctx.beginPath();ringPath(polygon.outer,0);(polygon.holes||[]).forEach(hole=>ringPath(hole,0));ctx.fillStyle='rgba(110,126,116,.18)';ctx.fill('evenodd')}
+    drawRoomRegions();
+    if(toggles.boundary.checked)for(const surface of data.architecture?.walls||[])for(const segment of surface.sections)drawLine(segment.map(p=>[...p,0]),rgba(css('--wall-edge'),.95),2.2);
+    if(toggles.doors.checked)for(const surface of data.architecture?.doors||[])for(const segment of surface.sections)drawLine(segment.map(p=>[...p,0]),'#f0b764',2.8);
+    ctx.restore();
+  }
+  function drawMeshSurface(surface,color,alpha){
+    if(surface.profiles){drawDoorProfiles(surface,color);return}
+    const points=surface.vertices.map(project);ctx.save();ctx.beginPath();
+    for(const face of surface.triangles)projectedPolygonPath(ctx,face.map(i=>surface.vertices[i]));
+    ctx.fillStyle=rgba(color,alpha);ctx.fill();ctx.beginPath();
+    for(const [i,j] of surface.edges){const a=points[i],b=points[j];if(a&&b){ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y)}}
+    ctx.strokeStyle=rgba(color,.88);ctx.lineWidth=surface.category==='walls'?1:1.5;ctx.stroke();ctx.restore();
+  }
+  function drawDoorProfiles(surface,color){
+    ctx.save();ctx.lineJoin='round';
+    for(const profile of surface.profiles){
+      if(!toggles.leaves.checked&&profile.role!=='frame')continue;
+      for(const rings of [profile.front,profile.back]){
+        ctx.beginPath();for(const ring of rings){const b=renderBasis||basis(),points=ArchitectureGeometry.clipNearPlane(ring,b.e,b.f,.051).map(project);if(points.length<3||points.some(p=>!p))continue;points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath()}
+        ctx.fillStyle=rgba(color,profile.role==='frame'?.35:surface.category.includes('window')?.035:profile.role==='glass'?.025:.23);ctx.fill('evenodd');ctx.strokeStyle=rgba(color,profile.role==='frame'?1:.78);ctx.lineWidth=profile.role==='frame'?1.7:1;ctx.stroke();
+      }
+    }ctx.restore();
+  }
+  function drawArchitectureDoors(){
+    if(!toggles.doors.checked)return;
+    for(const surface of [...(data.architecture?.doors||[]),...(data.architecture?.windows||[])]){ctx.save();const name=activeRoomName();if(toggles.rooms.checked&&name&&!surface.in_rooms.includes(name))ctx.globalAlpha=.22;drawMeshSurface(surface,surface.category.includes('window')?'#74c9f3':'#f0b764',.23);ctx.restore();const o=data.objects.find(item=>item.name===surface.name)||{name:surface.name,category:surface.category,role:'scene',position:surface.bbox[0].map((v,i)=>(v+surface.bbox[1][i])/2)},p=project(o.position);if(p)projectedObjects.push({o,x:p.x,y:p.y,r:Math.max(8,65/p.z)})}
+  }
+  function drawGroundLight(){if(toggles.rays.checked&&data.trajectory?.[step]){const pose=data.trajectory[step],sampled=sampleViewProjection(pose.position,pose.quaternion_xyzw,viewMaxDistance(pose.position));paintUnifiedProjection(sampled,css('--orange'))}if(toggles.gt.checked)(data.reference_cameras||[]).forEach(pose=>{const sampled=sampleViewProjection(pose.position,pose.quaternion_xyzw,viewMaxDistance(pose.position));paintUnifiedProjection(sampled,css('--gt'))})}
+  function drawRobotWalk(){const replay=data.walk_replays?.[walkReplay];if(!replay)return;const positions=replay.frames.map(frame=>frame.robot_position).filter(Boolean);if(toggles.path.checked&&positions.length>1)drawLine(positions,'#ec4899',3);const current=replay.frames[walkStep]?.robot_position;if(current){const point=project(add(current,[0,0,.18]));if(point){ctx.save();ctx.beginPath();ctx.arc(point.x,point.y,7,0,Math.PI*2);ctx.fillStyle='#ec4899';ctx.fill();ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#ec4899';ctx.font='bold 12px sans-serif';ctx.fillText('robot',point.x+10,point.y-8);ctx.restore()}}}
+  function render(){
+    if(!data||!(w>0&&h>0&&canvas.width>0&&canvas.height>0))return;renderBasis=basis();renderPointCache=new WeakMap();ctx.clearRect(0,0,w,h);projectedObjects=[];
+    if(roomLayoutMode){drawFloorPlan();drawRoomHighlight();drawTrajectory();drawRobotWalk();drawGt();drawRoomLabels();return}
+    const active=toggles.rooms.checked?roomRegions().find(r=>r.name===activeRoomName()):null,members=active?roomObjects(active):null;
+    ctx.save();if(active)ctx.globalAlpha=.38;drawRoom(data.room_geometry);ctx.restore();drawRoomRegions();drawGroundLight();
+    const meshDoors=new Set([...(data.architecture?.doors||[]),...(data.architecture?.windows||[])].map(item=>item.name));
+    if(toggles.objects.checked)for(const object of visibleObjects()){if(meshDoors.has(object.name))continue;ctx.save();if(members&&!members.has(object))ctx.globalAlpha=.20;drawBox(object);ctx.restore()}
+    drawArchitectureDoors();drawRoomHighlight();drawTrajectory();drawRobotWalk();drawGt();drawRoomLabels();
+  }
+  function scheduleRender(){if(renderPending)return;renderPending=true;requestAnimationFrame(()=>{renderPending=false;render()})}
+  function measureCanvas(){
+    const rect=canvas.getBoundingClientRect();
+    if(!Number.isFinite(rect.width)||!Number.isFinite(rect.height)||rect.width<=0||rect.height<=0){w=0;h=0;return false}
+    dpr=Math.min(2,Number.isFinite(devicePixelRatio)&&devicePixelRatio>0?devicePixelRatio:1);w=rect.width;h=rect.height;
+    const width=Math.max(1,Math.round(w*dpr)),height=Math.max(1,Math.round(h*dpr));
+    if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height}
+    ctx.setTransform(dpr,0,0,dpr,0,0);return true;
+  }
+  function resize(){measureCanvas();renderObjectList();render()}
+  function harnessPhaseForPose(pose){const action=pose?.action_result||{},record=pose?.harness_state_record||{};return action.recovery_phase_after_action||action.recovery_phase_before_action||record.recovery_phase_after_action||record.recovery_phase||'未记录'}
+  function renderHarnessState(pose){const section=document.querySelector('#harnessSection'),host=document.querySelector('#harnessState'),isHarness=data?.run?.variant==='ordered-survey-v6';section.hidden=!isHarness;if(!isHarness)return;if(!pose){host.textContent='—';return}const belief=pose.belief||{},regions=belief.blind_regions||[],directions=['front','left','rear','right'],directionHtml=directions.map(direction=>{const region=regions.find(item=>item.region_type==='out_of_view'&&item.direction===direction),raw=region?.status||'unseen',status=['checked','partial','unseen'].includes(raw)?raw:'unseen';return`<span class="direction-chip ${status}">${direction} · ${esc(raw)}</span>`}).join(''),occlusions=regions.filter(item=>item.region_type==='occlusion'),occlusionHtml=occlusions.length?`<div class="blind-list">${occlusions.map(item=>{const raw=item.status||'unseen',status=['checked','partial','unseen'].includes(raw)?raw:'unseen';return`<div class="blind-item ${status}"><i></i><span>${esc(item.region_id)}<br><small>${esc(item.description)}</small></span><small>${esc(raw)}</small></div>`}).join('')}</div>`:'无对象遮挡记录',plan=pose.navigation_plan||{},actionResult=pose.action_result||{},phase=harnessPhaseForPose(pose),selected=pose.selected_action?.name||pose.action||'—',selectedArgs=pose.selected_action?.arguments&&Object.keys(pose.selected_action.arguments).length?` ${JSON.stringify(pose.selected_action.arguments)}`:'',execution=actionResult.success===true?'执行成功':actionResult.success===false?'执行失败':'未执行/终止帧';host.innerHTML=`<div class="harness-row"><span>协议阶段</span><div><span class="phase-chip">${esc(phase)}</span></div></div><div class="harness-row"><span>选定动作</span><strong>${esc(selected+selectedArgs)}</strong></div><div class="harness-row"><span>Harness 结果</span><div><strong>${esc(execution)}</strong><br><span>${esc(actionResult.reason||actionResult.operation||'—')}</span></div></div><div class="harness-row"><span>四方向账本</span><div class="direction-ledger">${directionHtml}</div></div><div class="harness-row"><span>锁定目标</span><div><strong>${esc(plan.target_region_id||'未锁定')}</strong><br><span>chosen side: ${esc(plan.chosen_side||'none')}</span></div></div><div class="harness-row"><span>success evidence</span><div>${esc(describe(plan.success_evidence)||(plan.target_region_id?'未提供':'不适用（本步没有对象绕行计划）'))}</div></div><div class="harness-row"><span>对象盲区</span><div>${occlusionHtml}</div></div>`}
+  function closeModelInputPopup(restoreFocus=false){
+    clearTimeout(modelInputHideTimer);const popup=document.querySelector('#modelInputPopup'),button=document.querySelector('#modelInputButton');
+    popup.hidden=true;popup.dataset.pinned='false';button.setAttribute('aria-expanded','false');
+    if(restoreFocus&&popup.contains(document.activeElement)){modelInputSuppressFocus=true;button.focus({preventScroll:true});modelInputSuppressFocus=false}
+  }
+  function positionModelInputPopup(){
+    const popup=document.querySelector('#modelInputPopup');if(popup.hidden)return;
+    const anchor=document.querySelector('#modelInputButton').getBoundingClientRect(),box=popup.getBoundingClientRect(),margin=12;
+    const left=anchor.left-box.width-10>=margin?anchor.left-box.width-10:Math.max(margin,Math.min(anchor.left,innerWidth-box.width-margin));
+    popup.style.left=`${left}px`;popup.style.top=`${Math.max(margin,Math.min(anchor.top-12,innerHeight-box.height-margin))}px`;
+  }
+  function appendModelInputText(host,title,value){
+    const section=document.createElement('section'),heading=document.createElement('h3'),pre=document.createElement('pre');
+    section.className='model-input-part';heading.textContent=title;pre.textContent=typeof value==='string'?value:JSON.stringify(value,null,2);
+    section.append(heading,pre);host.append(section);
+  }
+  function modelInputCalls(){return [...(modelInputPayload?.calls||[]),...(modelInputPayload?.unmatched_calls||[])]}
+  function paintModelInputRecord(){
+    const body=document.querySelector('#modelInputBody'),select=document.querySelector('#modelInputCall'),status=document.querySelector('#modelInputStatus'),mode=document.querySelector('#modelInputMode'),calls=modelInputCalls();
+    body.replaceChildren();select.replaceChildren();
+    if(modelInputSelectedCall>=calls.length)modelInputSelectedCall=0;
+    calls.forEach((call,index)=>{const option=document.createElement('option'),unmatched=!(call.history_indices||[]).length;option.value=index;option.textContent=`${unmatched?(call.response_error?.error?'后续失败调用':'未对应轨迹调用'):'当步调用'} #${call.call_index}${unmatched?' · 未写入步骤轨迹':''}`;select.append(option)});
+    select.value=String(modelInputSelectedCall);select.disabled=calls.length<2;mode.disabled=!calls.length;
+    mode.textContent=mode.dataset.mode==='json'?'按输入顺序查看':'查看请求 JSON';
+    const call=calls[modelInputSelectedCall];status.dataset.kind=call?'saved':'missing';
+    if(!modelInputPayload){status.textContent=modelInputError||'正在读取保存的原始请求…';positionModelInputPopup();return}
+    if(!call){status.textContent=modelInputPayload.status==='saved'?'本步骤没有可可靠匹配的原始请求，不按步骤编号猜测或重建。':modelInputPayload.message;positionModelInputPopup();return}
+    status.textContent=`${call.provider||'—'} · ${call.model||'—'} · ${call.operation||'—'} · 保存的原始请求（图片按保存路径加载，非原始 HTTP 包）${call.response_error?.error?'\n此调用失败且未形成步骤轨迹：'+Object.values(call.response_error).join(' · '):''}`;
+    const request=call.request||{};
+    if(mode.dataset.mode==='json')appendModelInputText(body,'完整 request',call.request_json);
+    else{
+      if(Object.hasOwn(request,'system_instruction'))appendModelInputText(body,'System instruction',request.system_instruction);
+      (request.contents||[]).forEach((part,index)=>{
+        const title=`输入片段 ${index+1} · ${part.type||'unknown'}`;
+        if(part.type==='text')appendModelInputText(body,title,part.text);
+        else if(part.type==='image'){
+          const section=document.createElement('section'),heading=document.createElement('h3'),caption=document.createElement('p'),saved=(call.images||[]).find(image=>image.part_index===index);
+          section.className='model-input-part';heading.textContent=title;caption.textContent=part.path||'未保存图片路径';section.append(heading);
+          if(saved?.available){const image=document.createElement('img');image.alt=`模型输入片段 ${index+1} 的原始保存图片`;image.loading='lazy';image.src=window.ESIStatic.resourceURL(`/api/model-input-image?id=${encodeURIComponent(currentRunId)}&call=${call.trace_ordinal}&part=${index}`);image.addEventListener('load',positionModelInputPopup);image.addEventListener('error',()=>{image.hidden=true;caption.textContent+=' · 图片读取失败，不以三维重建图代替'});section.append(image)}
+          else caption.textContent+=' · 原图不可用，不以三维重建图代替';
+          section.append(caption);body.append(section);
+        }else appendModelInputText(body,title,part);
+      });
+      if(Object.hasOwn(request,'generation'))appendModelInputText(body,'调用参数 · generation',request.generation);
+      const other=Object.fromEntries(Object.entries(request).filter(([key])=>!['system_instruction','contents','generation'].includes(key)));
+      if(Object.keys(other).length)appendModelInputText(body,'其他保存的请求字段',other);
+    }
+    body.scrollTop=0;positionModelInputPopup();
+  }
+  async function loadModelInputRecord(){
+    const key=modelInputKey,run=currentRunId,index=step;if(!key)return;
+    if(!modelInputCache.has(key))modelInputCache.set(key,fetch(`/api/model-input?id=${encodeURIComponent(run)}&index=${index}`,{cache:'no-store'}).then(response=>{if(!response.ok)throw Error(`HTTP ${response.status}`);return response.json()}));
+    try{const payload=await modelInputCache.get(key);if(key!==modelInputKey)return;modelInputPayload=payload;modelInputError=''}
+    catch(error){modelInputCache.delete(key);if(key!==modelInputKey)return;modelInputError=`无法读取保存的原始请求：${error.message}。不重建输入。`}
+    if(!document.querySelector('#modelInputPopup').hidden)paintModelInputRecord();
+  }
+  function renderModelInputRecord(pose){
+    const allowed=data?.run?.variant==='ordered-survey-v6'&&pose;
+    if(!allowed){modelInputKey='';modelInputPayload=null;modelInputError='';closeModelInputPopup();document.querySelector('#modelInputBody').replaceChildren();return}
+    const key=`${currentRunId}:${step}`;
+    if(key!==modelInputKey){modelInputKey=key;modelInputPayload=null;modelInputSelectedCall=0;modelInputError=''}
+    document.querySelector('#modelInputStep').textContent=`记录 ${step+1}/${data.trajectory.length} · 原始步骤 ${pose.step??step+1}`;
+    document.querySelector('#modelInputInteraction').textContent=document.querySelector('#modelInputPopup').dataset.pinned==='true'?'已固定 · 切换步骤同步更新 · Esc 关闭':'移入窗口可滚动 · 点击触发按钮固定 · Esc 关闭';
+    if(!document.querySelector('#modelInputPopup').hidden){paintModelInputRecord();if(!modelInputPayload)loadModelInputRecord()}
+  }
+  function showModelInputPopup(){
+    clearTimeout(modelInputHideTimer);if(document.querySelector('#modelOutputControl').hidden)return;
+    closeModelOutputPopup();const popup=document.querySelector('#modelInputPopup');popup.hidden=false;
+    document.querySelector('#modelInputButton').setAttribute('aria-expanded','true');renderModelInputRecord(data?.trajectory?.[step]);positionModelInputPopup();
+  }
+  function scheduleModelInputClose(){
+    clearTimeout(modelInputHideTimer);modelInputHideTimer=setTimeout(()=>{
+      const popup=document.querySelector('#modelInputPopup'),button=document.querySelector('#modelInputButton');
+      if(popup.dataset.pinned==='true'||popup.matches(':hover')||button.matches(':hover')||document.activeElement===button||popup.contains(document.activeElement))return;
+      closeModelInputPopup();
+    },220);
+  }
+  function prettySavedJson(text){
+    let output='',depth=0,inString=false,escaped=false;
+    const newline=()=>{output+='\n'+'  '.repeat(Math.max(0,depth))};
+    for(let index=0;index<text.length;index++){
+      const char=text[index];
+      if(inString){output+=char;if(escaped)escaped=false;else if(char==='\\')escaped=true;else if(char==='"')inString=false;continue}
+      if(char==='"'){output+=char;inString=true;continue}
+      if(/\s/.test(char))continue;
+      if(char==='{'||char==='['){output+=char;depth++;let next=index+1;while(next<text.length&&/\s/.test(text[next]))next++;if(text[next]!=='}'&&text[next]!==']')newline()}
+      else if(char==='}'||char===']'){depth--;let previous=index-1;while(previous>=0&&/\s/.test(text[previous]))previous--;if(text[previous]!=='{'&&text[previous]!=='[')newline();output+=char}
+      else if(char===','){output+=char;newline()}
+      else if(char===':')output+=': ';
+      else output+=char;
+    }
+    return output;
+  }
+  function modelOutputRecord(raw){
+    if(raw==null||typeof raw==='string'&&!raw.trim())return{kind:'missing',raw:'',formatted:''};
+    const text=typeof raw==='string'?raw:JSON.stringify(raw);
+    try{JSON.parse(text);return{kind:'json',raw:text,formatted:prettySavedJson(text)}}catch{return{kind:'raw',raw:text,formatted:text}}
+  }
+  function closeModelOutputPopup(restoreFocus=false){
+    clearTimeout(modelOutputHideTimer);const popup=document.querySelector('#modelOutputPopup'),button=document.querySelector('#modelOutputButton');
+    popup.hidden=true;popup.dataset.pinned='false';button.setAttribute('aria-expanded','false');
+    if(restoreFocus&&popup.contains(document.activeElement)){modelOutputSuppressFocus=true;button.focus({preventScroll:true});modelOutputSuppressFocus=false}
+  }
+  function positionModelOutputPopup(){
+    const popup=document.querySelector('#modelOutputPopup');if(popup.hidden)return;
+    const anchor=document.querySelector('#modelOutputButton').getBoundingClientRect(),box=popup.getBoundingClientRect(),margin=12;
+    const left=anchor.left-box.width-10>=margin?anchor.left-box.width-10:Math.max(margin,Math.min(anchor.left,innerWidth-box.width-margin));
+    popup.style.left=`${left}px`;popup.style.top=`${Math.max(margin,Math.min(anchor.top-12,innerHeight-box.height-margin))}px`;
+  }
+  function renderModelOutputRecord(pose){
+    const control=document.querySelector('#modelOutputControl'),popup=document.querySelector('#modelOutputPopup'),pre=document.querySelector('#modelOutputJson'),mode=document.querySelector('#modelOutputMode');
+    control.hidden=data?.run?.variant!=='ordered-survey-v6'||!pose;
+    if(control.hidden){closeModelOutputPopup();pre.textContent='';return}
+    const record=modelOutputRecord(pose.raw_output),rawMode=mode.dataset.mode==='raw';
+    pre.dataset.kind=record.kind;pre.textContent=record.kind==='missing'?'本步骤未保存原始模型输出。':rawMode?record.raw:record.formatted;pre.scrollTop=0;
+    document.querySelector('#modelOutputStep').textContent=`记录 ${step+1}/${data.trajectory.length} · 原始步骤 ${pose.step??step+1}`;
+    const status=document.querySelector('#modelOutputStatus');status.dataset.kind=record.kind;
+    status.textContent=record.kind==='json'?`完整保存的 JSON · ${rawMode?'原文':'格式化（仅调整缩进，保留全部字段与数值）'}`:record.kind==='raw'?'保存内容不是单一合法 JSON（可能含拼接片段或截断）；按原文显示，不补全。':'本步骤未保存原始输出，不补写 JSON。';
+    mode.disabled=record.kind!=='json';mode.textContent=rawMode?'格式化 JSON':'查看原文';
+    document.querySelector('#modelOutputInteraction').textContent=popup.dataset.pinned==='true'?'已固定 · 切换步骤同步更新 · Esc 关闭':'移入窗口可滚动 · 点击触发按钮固定 · Esc 关闭';
+    if(!popup.hidden)positionModelOutputPopup();
+  }
+  function showModelOutputPopup(){
+    clearTimeout(modelOutputHideTimer);if(document.querySelector('#modelOutputControl').hidden)return;
+    if(typeof closeModelInputPopup==='function')closeModelInputPopup();
+    renderModelOutputRecord(data?.trajectory?.[step]);const popup=document.querySelector('#modelOutputPopup');
+    popup.hidden=false;document.querySelector('#modelOutputButton').setAttribute('aria-expanded','true');positionModelOutputPopup();
+  }
+  function scheduleModelOutputClose(){
+    clearTimeout(modelOutputHideTimer);modelOutputHideTimer=setTimeout(()=>{
+      const popup=document.querySelector('#modelOutputPopup'),button=document.querySelector('#modelOutputButton');
+      if(popup.dataset.pinned==='true'||popup.matches(':hover')||button.matches(':hover')||document.activeElement===button||popup.contains(document.activeElement))return;
+      closeModelOutputPopup();
+    },220);
+  }
+  function decisionActionLabel(pose){const selected=pose?.selected_action||{},args=selected.arguments;return `${selected.name||pose?.action||'—'}${args&&Object.keys(args).length?' '+JSON.stringify(args):''}`}
+  function renderDecisionRecord(pose){
+    const poses=data.trajectory||[];
+    const isComputerUse=data.run?.variant==='computer-use';
+    document.querySelector('#decisionHeading').textContent='逐步记录';
+    document.querySelector('#decisionActionLabel').textContent=isComputerUse?'UI 引擎动作':'模型选定动作';
+    document.querySelector('#decisionStep').textContent=pose?`记录 ${step+1}/${poses.length} · 原始步骤 ${pose.step??step+1}`:'尚无记录';
+    document.querySelector('#decisionPrev').disabled=!pose||step===0;
+    document.querySelector('#decisionNext').disabled=!pose||step===poses.length-1;
+    document.querySelector('#decisionAction').textContent=decisionActionLabel(pose);
+    document.querySelector('#decisionAnswer').textContent=describe(pose?.model_answer??pose?.answer);
+    document.querySelector('#decisionConfidence').textContent=describe(pose?.model_confidence??pose?.confidence);
+    const result=pose?.action_result||{},execution=result.success===true?'执行成功':result.success===false?'执行失败':result.handled===true?'已处理':result.handled===false?'未执行/终止帧':'未保存成功状态';
+    document.querySelector('#decisionExecution').textContent=pose?`${pose.action||'—'} · ${execution}${result.reason||result.operation?' · '+(result.reason||result.operation):''}`:'—';
+    const reasoning=document.querySelector('#decisionReasoning'),status=pose?.reasoning_status||(pose?.reasoning?'recorded':'missing');
+    reasoning.dataset.status=status;reasoning.textContent=pose?.reasoning?`${pose.reasoning}${status==='partial'?'\n[记录已截断]':''}`:isComputerUse?'此步骤未保存观察或推理摘要；不补写。':'此步骤未保存推理摘要。';
+    const note=document.querySelector('#decisionNote');note.hidden=!pose?.record_note;note.textContent=pose?.record_note?`系统记录（不是 AI 推理）：${pose.record_note}`:'';
+    renderModelOutputRecord(pose);
+    renderModelInputRecord(pose);
+  }
+  function renderTaskObservation(){const section=document.querySelector('#taskObservationSection'),record=data.task_observation,warning=document.querySelector('#taskObservationSource'),visible=Boolean(record?.text?.trim())&&record?.status!=='skipped'&&!/^\s*跳过[；;。．.\s]*$/.test(record?.text||'');section.hidden=!visible;warning.hidden=!visible||!record?.different_run;warning.textContent=visible&&record?.different_run?'当前实验已更新，该观察对应此前记录，需重新复核。':'';warning.classList.toggle('observation-warning',Boolean(visible&&record?.different_run));document.querySelector('#taskObservationText').textContent=visible?record.text:''}
+  function renderComputerUseState(pose){
+    const section=document.querySelector('#computerUseSection'),host=document.querySelector('#computerUseState'),isComputerUse=data.run?.variant==='computer-use';
+    section.hidden=!isComputerUse;if(!isComputerUse)return;
+    document.querySelector('#computerUseMethod').textContent='通过浏览器手操界面读取任务和画面，点击界面按钮执行动作，根据反馈与新画面继续判断，最后提交整数答案并结束会话。不是 Harness 强制规定的巡视与绕行序列。\n\n'+(data.run.scope_note||'仅展示保存的 UI 操作、引擎反馈和观察图片。');
+    host.replaceChildren();if(!pose)return;
+    const result=pose.action_result||{},status=pose.step===0?'初始观察':result.success===true?'执行成功':result.success===false?'执行失败':'未保存成功状态';
+    for(const [label,value] of [['操作记录',pose.computer_use_title||'未保存'],['引擎动作',pose.action||'—'],['动作参数',JSON.stringify(pose.requested_arguments||{})],['执行结果',`${status}${result.reason?' · '+result.reason:''}`]]){
+      const row=document.createElement('div');row.className='cu-row';const key=document.createElement('span'),body=document.createElement('strong');key.textContent=label;body.textContent=value;row.append(key,body);host.append(row);
+    }
+    if(pose.computer_use_milestone){const milestone=document.createElement('div');milestone.className='cu-milestone';milestone.textContent=pose.computer_use_milestone;host.append(milestone)}
+  }
+  function setWalkStep(value){const replay=data?.walk_replays?.[walkReplay];if(!replay)return;walkStep=clamp(Number(value)||0,0,replay.frames.length-1);document.querySelector('#walkScrubber').value=walkStep;const image=document.querySelector('#walkImage');image.hidden=false;image.src=window.ESIStatic.resourceURL(`/api/walk-frame?id=${encodeURIComponent(currentRunId)}&replay=${walkReplay}&index=${walkStep}`);const frame=replay.frames[walkStep];document.querySelector('#walkLabel').textContent=`回放 ${walkReplay+1} · ${walkStep+1}/${replay.frames.length} 帧${frame.robot_position?` · robot (${frame.robot_position.map(v=>Number(v).toFixed(2)).join(', ')})`:''}\n粉色：机器人保存路径；青色：观察相机轨迹。回放图片来自本轮保存记录。`;scheduleRender()}
+  function initWalk(){clearInterval(walkTimer);walkPlaying=false;walkReplay=0;walkStep=0;document.querySelector('#walkPlay').textContent='▶ 回放';const replays=data.walk_replays||[];document.querySelector('#walkPanel').hidden=!replays.length;document.querySelector('#walkReplaySelect').replaceChildren(...replays.map((replay,index)=>{const option=document.createElement('option');option.value=index;option.textContent=`回放 ${index+1} · ${replay.frames.length} 帧 · ${replay.at||''}`;return option}));if(replays.length){document.querySelector('#walkScrubber').max=replays[0].frames.length-1;setWalkStep(0)}else document.querySelector('#walkImage').removeAttribute('src')}
+  function setStep(value){
+    const poses=data.trajectory||[];step=Math.max(0,Math.min(Math.max(0,poses.length-1),Number(value)||0));
+    document.querySelector('#scrubber').value=step;document.querySelector('#stepCount').textContent=poses.length?step+1:'—';
+    const pose=poses[step],actionResult=pose?.action_result||{},phase=actionResult.recovery_phase_after_action||actionResult.recovery_phase_before_action;
+    document.querySelector('#stepLabel').innerHTML=pose?`<b>帧 ${step+1}/${poses.length}</b> · ${esc(pose.action||pose.kind||'camera')}${phase?` · ${esc(phase)}`:''} · (${pose.position.map(v=>v.toFixed(2)).join(', ')})`:'<b>帧 0</b> · 尚无轨迹';
+    const image=document.querySelector('#frameImage');if(pose&&pose.image&&currentRunId){image.src=window.ESIStatic.resourceURL(`/api/frame?id=${encodeURIComponent(currentRunId)}&index=${step}`);image.hidden=false}else{image.removeAttribute('src');image.hidden=true}
+    renderDecisionRecord(pose);renderHarnessState(pose);renderComputerUseState(pose);
+    if(pose){const forward=cameraFrame(pose.quaternion_xyzw).f,selected=pose.selected_action||{},harnessDetail=data?.run?.variant==='ordered-survey-v6'?`\nview: ${pose.view_id||'—'}\nharness phase: ${actionResult.recovery_phase_before_action||'idle'} → ${actionResult.recovery_phase_after_action||'idle'}\nmodel selected action: ${selected.name||pose.action||'—'} ${selected.arguments?JSON.stringify(selected.arguments):''}\nexecution: ${actionResult.success===true?'success':actionResult.success===false?'failed':'not executed'} · ${actionResult.reason||actionResult.operation||'—'}`:'';document.querySelector('#selection').textContent=`camera\nposition: ${pose.position.map(v=>v.toFixed(4)).join(', ')}\noptical axis (-Z): ${forward.map(v=>v.toFixed(4)).join(', ')}\nquaternion xyzw: ${pose.quaternion_xyzw.map(v=>v.toFixed(4)).join(', ')}${harnessDetail}\naction: ${pose.action||'—'}\nanswer: ${pose.answer??'—'}\nconfidence: ${pose.confidence??'—'}`}
+    render();
+  }
+  function fit(){const r=data.room_geometry.bbox_world_xy;center=[(r[0]+r[2])/2,(r[1]+r[3])/2,1];if(roomLayoutMode){const rect=canvas.getBoundingClientRect(),width=rect.width||w,height=rect.height||h;distance=Math.max(3,Math.min(width,height)*.82*Math.max((r[2]-r[0])/Math.max(120,width-100),(r[3]-r[1])/Math.max(160,height-190)))}else distance=Math.max(5,Math.hypot(r[2]-r[0],r[3]-r[1])*1.25)}
+  function init(payload){
+    data=payload;document.title=data.run?.display_name?`${data.run.display_name} · ESI Spatial Viewer`:'ESI Spatial Viewer';
+    projectionCache.clear();wallSegmentsCache=null;selectedRoomName=null;hoveredRoomName=null;projectedRoomLabels=[];roomObjectMembership.clear();roomLayoutMode=false;renderRoomRegionList();syncLayoutControls();playing=false;clearInterval(timer);document.querySelector('#play').textContent='▶ 播放';
+    geometryViewState=null;layoutViewState=null;
+    const room=data.room_geometry,isHarness=data.run?.variant==='ordered-survey-v6';
+    document.querySelector('#scene').textContent=data.scene;document.querySelector('#room').textContent=`${data.room} · ${room.source_type==='omnigibson_room_instance_segmentation'?'分割多边形':'边界框回退'}`;
+    document.querySelector('#question').textContent=data.question;document.querySelector('#coverage').textContent=`${room.wall_segment_count||room.vertex_count||0} wall segments · ${room.wall_prism_count||0} asset parts · ${Number(room.area_m2||0).toFixed(2)} m²`;
+    document.querySelector('#poseCount').textContent=data.trajectory.length;const viewsChip=document.querySelector('#uniqueViewsChip');viewsChip.hidden=!isHarness&&data.run?.variant!=='computer-use';document.querySelector('#uniqueViews').textContent=data.run?.unique_views??'—';
+    const result=data.result||{},correct=result.correct===true?'正确':result.correct===false?'错误':'未知',variantLabel=isHarness?'Harness':data.run?.variant_label||(result.variant==='hinted'?'带提示':result.variant==='ordered-survey-v6'?'Harness':'不带提示');
+    document.querySelector('#result').innerHTML=data.result?`<span><b>${esc(variantLabel)}</b> · ${correct}</span><span>回答：<b>${esc(result.final_answer??'—')}</b></span><span>标准答案：${esc(result.ground_truth??'—')} · 置信度：${esc(result.confidence??'—')}</span>`:'—';
+    const slider=document.querySelector('#scrubber');slider.max=Math.max(0,data.trajectory.length-1);measureCanvas();fit();renderObjectList();renderTaskObservation();initWalk();setStep(0);
+  }
+  function showLoadError(err){document.querySelector('#scene').textContent='加载失败';document.querySelector('#question').textContent=err.message;document.querySelector('#retryLoad').hidden=false;console.error('Viewer load failed:',currentRunId,err)}
+  async function requestRunData(id,serial){
+    for(let attempt=0;attempt<3;attempt++){
+      if(serial!==loadSerial)return null;
+      const controller=new AbortController();activeLoadController=controller;
+      const timeout=setTimeout(()=>controller.abort(),45000);let retry=false;
+      try{
+        const response=await fetch(`/api/data?id=${encodeURIComponent(id)}`,{cache:'no-store',signal:controller.signal});
+        if(!response.ok){const error=Error(`HTTP ${response.status}`);error.retryable=[500,502,503,504].includes(response.status);throw error}
+        return await response.json();
+      }catch(error){
+        if(serial!==loadSerial)return null;
+        retry=error.retryable===true||error.name==='TypeError'||error.name==='AbortError';
+        if(!retry||attempt===2)throw error.name==='AbortError'?Error('场景加载超时，请重新加载当前任务。'):error;
+      }finally{clearTimeout(timeout);if(activeLoadController===controller)activeLoadController=null}
+      if(retry){document.querySelector('#scene').textContent=`连接重试 ${attempt+1}/2…`;await new Promise(resolve=>setTimeout(resolve,350*(attempt+1)))}
+    }
+  }
+  async function loadRun(id){
+    const serial=++loadSerial;activeLoadController?.abort();closeModelOutputPopup();closeModelInputPopup();modelInputKey='';modelInputPayload=null;
+    document.querySelector('#modelOutputControl').hidden=true;document.querySelector('#retryLoad').hidden=true;currentRunId=id;playing=false;clearInterval(timer);
+    clearInterval(walkTimer);walkPlaying=false;document.querySelector('#walkPlay').textContent='▶ 回放';document.querySelector('#walkPanel').hidden=true;document.querySelector('#taskObservationSection').hidden=true;document.querySelector('#computerUseSection').hidden=true;
+    document.querySelector('#play').textContent='▶ 播放';document.querySelector('#scene').textContent='加载中…';
+    try{const payload=await requestRunData(id,serial);if(serial!==loadSerial||!payload)return;
+      if(typeof ArchitectureGeometry==='undefined'||typeof ArchitectureGeometry.raySceneHit!=='function')throw Error('绘制组件没有完整加载，请刷新网页后重试。');
+      init(payload);
+    }catch(error){if(serial===loadSerial)showLoadError(error)}
+  }
+  function accuracyValue(stats){return stats?.total&&Number.isFinite(stats.percent)?`${stats.percent.toFixed(1)}%${stats.complete?'':'*'}`:'—'}
+  function accuracyFraction(stats){return stats?.total?`${stats.correct}/${stats.total}`:'—'}
+  function renderAccuracyStats(){
+    const variant=document.querySelector('#variantSelect').value,section=document.querySelector('#harnessAccuracySection');
+    section.hidden=variant!=='ordered-survey-v6';
+    const ids={unhinted:'#unhintedAccuracy',hinted:'#hintedAccuracy','ordered-survey-v6':'#harnessAccuracy'};
+    for(const [key,id] of Object.entries(ids)){
+      const stats=accuracyReport?.overall?.[key];
+      document.querySelector(id).textContent=stats?`${accuracyValue(stats)} · ${accuracyFraction(stats)}`:accuracyError?'统计不可用':'统计中…';
+      document.querySelector(id).title=stats?`当前栏目全部 ${stats.total} 个任务，${stats.correct} 个正确；不是同题子集。`:'等待原始保存结果统计';
+    }
+    const computer=accuracyReport?.computer_use,computerStats=computer?.stats,available=Boolean(computer?.available);
+    document.querySelector('#computerUseTabAccuracy').textContent=available?`${accuracyValue(computerStats)} · ${accuracyFraction(computerStats)}`:accuracyError?'统计不可用':'统计中…';
+    const cohort=accuracyReport?.harness_cohort;
+    document.querySelector('#harnessAccuracyScope').textContent=cohort?`比较范围：当前 Harness 的 ${cohort.total} 个任务；下列各版本使用相同分母。`:accuracyError?'正确率统计加载失败。':'统计中…';
+    document.querySelector('#harnessAccuracyRows').innerHTML=cohort?['unhinted','hinted','ordered-survey-v6','computer-use'].map(key=>{
+      const stats=cohort.variants[key],unresolved=(stats?.missing||0)+(stats?.unscored||0);
+      return `<tr data-variant="${key}"><th scope="row">${esc(key==='ordered-survey-v6'?'Harness':accuracyReport.labels[key])}</th><td>${esc(accuracyFraction(stats))}${unresolved?`<br><small>${unresolved} 项缺失/未评分</small>`:''}</td><td>${esc(accuracyValue(stats))}</td></tr>`;
+    }).join(''):'';
+    document.querySelector('#accuracyWarning').textContent=accuracyError?accuracyError:accuracyReport?.issues?.length||cohort&&Object.values(cohort.variants).some(stats=>!stats.complete)?'* 结果未全部评分：缺失/未评分项仍保留在分母中，不能视为完整正确率。':'';
+  }
+  function entriesForVariant(){const variant=document.querySelector('#variantSelect').value;return catalog.filter(item=>item.variant===variant).sort((a,b)=>a.question_number-b.question_number)}
+  function syncQuestionOptions(){const select=document.querySelector('#questionSelect'),preferred=Number(select.value),entries=entriesForVariant(),questions=[...new Map(entries.map(item=>[item.question_number,item])).values()];select.replaceChildren(...questions.map(item=>{const option=document.createElement('option');option.value=item.question_number;option.textContent=item.display_name||`${item.task_label||item.task} · ${item.scene} / ${item.room}`;return option}));if(questions.some(item=>item.question_number===preferred))select.value=String(preferred);else if(questions.length)select.value=String(questions[0].question_number)}
+  function renderTaskList(){
+    const list=document.querySelector('#taskList'),filter=(document.querySelector('#taskFilter')?.value||'').trim().toLowerCase(),selected=Number(document.querySelector('#questionSelect').value),variant=document.querySelector('#variantSelect').value,questions=[...new Map(entriesForVariant().map(item=>[item.question_number,item])).values()],groups=new Map();
+    for(const item of questions){
+      const searchable=`${item.task} ${item.task_label||''} ${item.display_name||''} ${item.scene} ${item.room} ${item.question_id||''} ${item.protocol||''}`.toLowerCase();
+      if(filter&&!searchable.includes(filter))continue;
+      const groupName=item.task_label||item.task;
+      if(!groups.has(groupName))groups.set(groupName,[]);
+      groups.get(groupName).push(item);
+    }
+    const nodes=[];
+    for(const [task,items] of groups){
+      const group=document.createElement('section');group.className='task-group';
+      const heading=document.createElement('h3');heading.textContent=task.replaceAll('_',' ');
+      group.append(heading,...items.map(item=>{
+        const button=document.createElement('button');button.type='button';button.className='task-button';
+        button.setAttribute('aria-current',String(item.question_number===selected));
+        button.title=`${item.display_name||item.run_label||item.task}\n任务标识：${item.question_id||'—'}\n${item.variant==='ordered-survey-v6'?'Harness':item.variant_label||variant}`;
+        button.innerHTML=`${esc(item.task_label||item.task)}<small>${esc(item.scene)} / ${esc(item.room)}</small>`;
+        button.addEventListener('click',()=>{document.querySelector('#questionSelect').value=String(item.question_number);syncRun()});
+        return button;
+      }));
+      nodes.push(group);
+    }
+    list.replaceChildren(...nodes);
+  }
+  function syncVariantButtons(){const value=document.querySelector('#variantSelect').value;document.querySelectorAll('.variant-button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.variant===value)))}
+  function syncRun(){syncQuestionOptions();const number=Number(document.querySelector('#questionSelect').value),variant=document.querySelector('#variantSelect').value,entry=catalog.find(item=>item.question_number===number&&item.variant===variant);syncVariantButtons();renderTaskList();renderAccuracyStats();if(entry)loadRun(entry.id)}
+  function initCatalog(items){catalog=items||[];if(!catalog.length){fetch('/api/data',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`HTTP ${r.status}`);return r.json()}).then(init).catch(showLoadError);return}const controls=document.querySelector('#runControls'),select=document.querySelector('#questionSelect'),variantSelect=document.querySelector('#variantSelect');controls.hidden=false;select.addEventListener('change',syncRun);variantSelect.addEventListener('change',syncRun);document.querySelectorAll('.variant-button').forEach(button=>button.addEventListener('click',()=>{if(variantSelect.value===button.dataset.variant)return;variantSelect.value=button.dataset.variant;variantSelect.dispatchEvent(new Event('change',{bubbles:true}))}));document.querySelector('#taskFilter').addEventListener('input',renderTaskList);syncRun()}
+  function setInteractionMode(mode){interactionMode=mode;syncLayoutControls()}
+  function syncFovControls(){horizontalFovInput.value=viewHorizontalFovDeg;verticalFovInput.value=viewVerticalFovDeg;horizontalFovValue.value=`${viewHorizontalFovDeg}°`;verticalFovValue.value=`${viewVerticalFovDeg}°`}
+  function applyFov(axis,value){const numeric=Number(value);if(axis==='horizontal')viewHorizontalFovDeg=clamp(Number.isFinite(numeric)?numeric:DEFAULT_HORIZONTAL_FOV_DEG,30,120);else viewVerticalFovDeg=clamp(Number.isFinite(numeric)?numeric:DEFAULT_VERTICAL_FOV_DEG,15,90);syncFovControls();try{localStorage.setItem('esi-view-horizontal-fov-70x50',String(viewHorizontalFovDeg));localStorage.setItem('esi-view-vertical-fov-70x50',String(viewVerticalFovDeg))}catch{}projectionCache.clear();scheduleRender()}
+  syncFovControls();horizontalFovInput.addEventListener('input',e=>applyFov('horizontal',e.target.value));verticalFovInput.addEventListener('input',e=>applyFov('vertical',e.target.value));
+  function updateCanvasHover(event){if(!data)return;const rect=canvas.getBoundingClientRect(),name=roomAtPointer(event.clientX-rect.left,event.clientY-rect.top);setHoveredRoom(name);canvas.style.cursor=name?'pointer':interactionMode==='pan'?'move':'grab'}
+  canvas.addEventListener('pointerdown',e=>{setHoveredRoom(null);const mode=roomLayoutMode||e.shiftKey||e.button===1||e.button===2?'pan':interactionMode;suppressClick=false;drag={mode,x:e.clientX,y:e.clientY,yaw,pitch,center:[...center],view:basis(),moved:false};canvas.setPointerCapture(e.pointerId)});
+  canvas.addEventListener('pointermove',e=>{if(!drag){updateCanvasHover(e);return}const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.moved=drag.moved||Math.hypot(dx,dy)>3;if(drag.mode==='pan'){const scale=distance/Math.max(320,Math.min(w,h))*1.65,offset=add(mul(drag.view.r,-dx*scale),mul(drag.view.u,dy*scale));center=add(drag.center,offset);center[2]=Math.max(-1,Math.min((Number(data?.room_geometry?.height)||2.7)*2,center[2]))}else{yaw=drag.yaw-dx*.008;pitch=Math.max(.18,Math.min(1.42,drag.pitch+dy*.006))}scheduleRender()});
+  canvas.addEventListener('pointerup',e=>{suppressClick=Boolean(drag?.moved);if(drag?.moved)projectedRoomLabels=[];drag=null;canvas.releasePointerCapture(e.pointerId);updateCanvasHover(e)});
+  canvas.addEventListener('pointercancel',()=>{drag=null;setHoveredRoom(null)});canvas.addEventListener('pointerleave',()=>setHoveredRoom(null));addEventListener('blur',()=>setHoveredRoom(null));
+  canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('wheel',e=>{e.preventDefault();setHoveredRoom(null);projectedRoomLabels=[];distance=Math.max(2,Math.min(roomLayoutMode?200:35,distance*Math.exp(e.deltaY*.001)));scheduleRender()},{passive:false});
+  canvas.addEventListener('click',e=>{if(suppressClick){suppressClick=false;return}if(!projectedObjects.length)return;const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;const hit=projectedObjects.map(p=>({...p,d:Math.hypot(p.x-x,p.y-y)})).sort((a,b)=>a.d-b.d)[0];if(hit&&hit.d<Math.max(18,hit.r)){const o=hit.o;document.querySelector('#selection').textContent=`${o.category}\n${o.name}\nrole: ${o.role}\ncenter: ${o.position.map(v=>v.toFixed(3)).join(', ')}`}});
+  document.querySelector('#rotateMode').addEventListener('click',()=>setInteractionMode('rotate'));document.querySelector('#panMode').addEventListener('click',()=>setInteractionMode('pan'));
+  Object.values(toggles).forEach(el=>el.addEventListener('change',()=>{if(!toggles.rooms.checked)setHoveredRoom(null);syncRoomLabelControl();renderObjectList();render()}));document.querySelector('#scrubber').addEventListener('input',e=>setStep(e.target.value));document.querySelector('#play').addEventListener('click',()=>{playing=!playing;const b=document.querySelector('#play');b.textContent=playing?'❚❚ 暂停':'▶ 播放';clearInterval(timer);if(playing)timer=setInterval(()=>{const n=data.trajectory.length;if(!n)return;setStep((step+1)%n)},650)});addEventListener('resize',resize);
+  document.querySelector('#roomLabelsButton').addEventListener('click',()=>setRoomLabelsVisible(!showRoomLabels));document.addEventListener('keydown',handleRoomLabelShortcut);
+  document.querySelector('#geometryView').addEventListener('click',()=>setLayoutMode(false));document.querySelector('#layoutView').addEventListener('click',()=>setLayoutMode(true));
+  document.querySelector('#retryLoad').addEventListener('click',()=>{if(currentRunId)loadRun(currentRunId);else location.reload()});
+  document.querySelector('#fitView').addEventListener('click',resetView);
+  if(typeof ResizeObserver==='function')new ResizeObserver(()=>resize()).observe(canvas);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)resize()});
+  document.querySelector('#frameImage').addEventListener('error',e=>{e.currentTarget.hidden=true});
+  document.querySelector('#decisionPrev').addEventListener('click',()=>setStep(step-1));
+  document.querySelector('#decisionNext').addEventListener('click',()=>setStep(step+1));
+  document.querySelector('#walkReplaySelect').addEventListener('change',event=>{walkReplay=Number(event.target.value)||0;const replay=data.walk_replays?.[walkReplay];if(!replay)return;document.querySelector('#walkScrubber').max=replay.frames.length-1;if(Number.isInteger(replay.after_step))setStep(replay.after_step);setWalkStep(0)});
+  document.querySelector('#walkScrubber').addEventListener('input',event=>setWalkStep(event.target.value));
+  document.querySelector('#walkPlay').addEventListener('click',()=>{walkPlaying=!walkPlaying;document.querySelector('#walkPlay').textContent=walkPlaying?'❚❚ 暂停':'▶ 回放';clearInterval(walkTimer);if(walkPlaying)walkTimer=setInterval(()=>{const replay=data.walk_replays?.[walkReplay];if(replay)setWalkStep((walkStep+1)%replay.frames.length)},180)});
+  document.querySelector('#walkImage').addEventListener('error',event=>{event.currentTarget.hidden=true;document.querySelector('#walkLabel').textContent='这帧回放图片加载失败，请重新选择回放。'});
+  const modelOutputButton=document.querySelector('#modelOutputButton'),modelOutputPopup=document.querySelector('#modelOutputPopup');
+  modelOutputButton.addEventListener('pointerenter',showModelOutputPopup);modelOutputButton.addEventListener('pointerleave',scheduleModelOutputClose);
+  modelOutputButton.addEventListener('focus',()=>{if(!modelOutputSuppressFocus)showModelOutputPopup()});modelOutputButton.addEventListener('blur',scheduleModelOutputClose);
+  modelOutputButton.addEventListener('click',event=>{if(modelOutputPopup.dataset.pinned==='true')closeModelOutputPopup(true);else{modelOutputPopup.dataset.pinned='true';showModelOutputPopup();if(event.detail===0)document.querySelector('#modelOutputClose').focus({preventScroll:true})}});
+  modelOutputPopup.addEventListener('pointerenter',()=>clearTimeout(modelOutputHideTimer));modelOutputPopup.addEventListener('pointerleave',scheduleModelOutputClose);modelOutputPopup.addEventListener('focusout',scheduleModelOutputClose);
+  document.querySelector('#modelOutputClose').addEventListener('click',()=>closeModelOutputPopup(true));
+  document.querySelector('#modelOutputMode').addEventListener('click',event=>{event.currentTarget.dataset.mode=event.currentTarget.dataset.mode==='raw'?'formatted':'raw';renderModelOutputRecord(data?.trajectory?.[step])});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!modelOutputPopup.hidden){event.preventDefault();closeModelOutputPopup(true)}if(event.key==='Escape'&&!document.querySelector('#modelInputPopup').hidden){event.preventDefault();closeModelInputPopup(true)}});
+  document.addEventListener('pointerdown',event=>{if(!modelOutputPopup.hidden&&modelOutputPopup.dataset.pinned!=='true'&&!modelOutputPopup.contains(event.target)&&!modelOutputButton.contains(event.target))closeModelOutputPopup()});
+  addEventListener('resize',positionModelOutputPopup);document.addEventListener('scroll',positionModelOutputPopup,true);
+  const modelInputButton=document.querySelector('#modelInputButton'),modelInputPopup=document.querySelector('#modelInputPopup');
+  modelInputButton.addEventListener('pointerenter',showModelInputPopup);modelInputButton.addEventListener('pointerleave',scheduleModelInputClose);
+  modelInputButton.addEventListener('focus',()=>{if(!modelInputSuppressFocus)showModelInputPopup()});modelInputButton.addEventListener('blur',scheduleModelInputClose);
+  modelInputButton.addEventListener('click',event=>{if(modelInputPopup.dataset.pinned==='true')closeModelInputPopup(true);else{modelInputPopup.dataset.pinned='true';showModelInputPopup();if(event.detail===0)document.querySelector('#modelInputClose').focus({preventScroll:true})}});
+  modelInputPopup.addEventListener('pointerenter',()=>clearTimeout(modelInputHideTimer));modelInputPopup.addEventListener('pointerleave',scheduleModelInputClose);modelInputPopup.addEventListener('focusout',scheduleModelInputClose);
+  document.querySelector('#modelInputClose').addEventListener('click',()=>closeModelInputPopup(true));
+  document.querySelector('#modelInputCall').addEventListener('change',event=>{modelInputSelectedCall=Number(event.target.value)||0;paintModelInputRecord()});
+  document.querySelector('#modelInputMode').addEventListener('click',event=>{event.currentTarget.dataset.mode=event.currentTarget.dataset.mode==='json'?'ordered':'json';paintModelInputRecord()});
+  document.addEventListener('pointerdown',event=>{if(!modelInputPopup.hidden&&modelInputPopup.dataset.pinned!=='true'&&!modelInputPopup.contains(event.target)&&!modelInputButton.contains(event.target))closeModelInputPopup()});
+  addEventListener('resize',positionModelInputPopup);document.addEventListener('scroll',positionModelInputPopup,true);
+  fetch('/api/catalog',{cache:'no-store'}).then(r=>r.ok?r.json():[]).then(initCatalog).catch(()=>initCatalog([]));
+  fetch('/api/accuracy',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`HTTP ${r.status}`);return r.json()}).then(report=>{accuracyReport=report;renderAccuracyStats()}).catch(error=>{accuracyError=`无法读取保存结果统计：${error.message}`;renderAccuracyStats()});
+})();
+</script>
+</body>
+</html>
