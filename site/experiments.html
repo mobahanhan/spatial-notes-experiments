@@ -31,7 +31,7 @@
 <body>
 <div class="app">
   <header class="topbar">
-    <nav class="top-nav" aria-label="页面导航" style="gap:20px;font-size:13px;white-space:nowrap"><a href="index.html">当前文档</a><a class="active" href="experiments.html" aria-current="page">实验记录</a></nav>
+    <nav class="top-nav" aria-label="页面导航" style="gap:20px;font-size:13px;white-space:nowrap"><a href="index.html" data-site-page="document">当前文档</a><a class="active" href="experiments.html" data-site-page="experiments" aria-current="page">实验记录</a></nav>
     <div class="top-meta">ESI-BENCH · saved trajectories</div>
   </header>
   <nav class="sidebar" id="objectsPanel" aria-label="实验浏览器">
@@ -129,6 +129,7 @@
   <div class="model-input-body" id="modelInputBody" tabindex="0" aria-label="当前步骤保存的完整模型输入"></div>
   <div class="model-output-popup-footer"><button id="modelInputMode" type="button" data-mode="ordered">查看请求 JSON</button><span id="modelInputInteraction">移入窗口可滚动 · Esc 关闭</span></div>
 </div>
+<script src="assets/page_navigation.js" defer></script>
 <script src="assets/offline-manifest.js"></script>
 <script src="assets/static_runtime.js"></script>
 <script src="assets/architecture_geometry.js"></script>
@@ -745,7 +746,9 @@
   document.querySelector('#retryLoad').addEventListener('click',()=>{if(currentRunId)loadRun(currentRunId);else location.reload()});
   document.querySelector('#fitView').addEventListener('click',resetView);
   if(typeof ResizeObserver==='function')new ResizeObserver(()=>resize()).observe(canvas);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)resize()});
+  function pausePlayback(){playing=false;walkPlaying=false;clearInterval(timer);clearInterval(walkTimer);document.querySelector('#play').textContent='▶ 播放';document.querySelector('#walkPlay').textContent='▶ 回放'}
+  window.addEventListener('spatialnotes:activechange',event=>{if(!event.detail.active)pausePlayback();else requestAnimationFrame(resize)});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)pausePlayback();else resize()});
   document.querySelector('#frameImage').addEventListener('error',e=>{e.currentTarget.hidden=true});
   document.querySelector('#decisionPrev').addEventListener('click',()=>setStep(step-1));
   document.querySelector('#decisionNext').addEventListener('click',()=>setStep(step+1));
