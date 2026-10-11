@@ -18,7 +18,7 @@ Run `node verify-site.cjs` to check the exported file hashes, recorded-data cove
 
 In repository Settings → Pages, select **GitHub Actions**. Pushing `main`, or manually running the **Publish static experiment archive** workflow, verifies and publishes `site/`. The workflow uses the official GitHub Pages actions pinned to verified commit IDs.
 
-The proposed personal-account GitHub Pages website would be public, even when its source repository is private. Private repository publishing requires a supported paid GitHub plan; private website access requires an eligible Enterprise Cloud organization. Publication has not been authorized yet: keep this checkout local until the user chooses the website access scope and hosting destination. Full saved experiment inputs/outputs and local source-path provenance included in the snapshot are archive content. Do not add API credentials, unrelated personal files, or simulator installations.
+The user authorized a public repository and public GitHub Pages website on 2026-10-11. Full saved experiment inputs/outputs and local source-path provenance included in the snapshot are archive content. Do not add API credentials, unrelated personal files, or simulator installations.
 
 `.gitattributes` disables newline conversion to keep the original snapshot bytes and recorded file hashes identical on Windows and GitHub Actions Linux runners.
 
