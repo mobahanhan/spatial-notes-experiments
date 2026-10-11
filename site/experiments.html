@@ -25,6 +25,7 @@
     .room-region-button[data-hovered="true"]{background:var(--orange-bg);border-color:var(--accent);box-shadow:inset 3px 0 var(--accent)}#roomLabelsButton[hidden],.room-hover-status[hidden]{display:none}.room-hover-status{position:absolute;right:14px;bottom:52px;max-width:calc(100% - 254px);padding:8px 10px;border:2px solid var(--cyan);border-radius:6px;background:rgba(20,29,25,.96);color:var(--agent-text);font:600 11px/1.5 var(--mono);pointer-events:none;overflow-wrap:anywhere}.view-mode button#roomLabelsButton{border-left:1px solid var(--agent-line);margin-left:3px}.view-mode button#roomLabelsButton:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
     .view-display-mode{top:114px}.view-display-mode[hidden],.room-layout-status[hidden]{display:none}.room-layout-status{position:absolute;left:14px;top:114px;max-width:calc(100% - 260px);padding:7px 8px;border:1px solid var(--agent-line);border-radius:6px;color:var(--agent-text);background:rgba(27,37,33,.94);font-size:10px;pointer-events:none}.legend[hidden],.fov-controls[hidden]{display:none}@media(max-width:760px){.stage.layout-view{min-height:580px;height:78vh}}
     .legend span[hidden]{display:none}
+    .experiment-methods{border:1px solid var(--line);border-radius:7px;background:var(--panel2);margin:0 0 12px;padding:9px 10px;font-size:12px;line-height:1.65}.experiment-methods summary{cursor:pointer;color:var(--text);font-weight:600}.experiment-methods summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.experiment-methods dl{margin:10px 0 0}.experiment-methods dt{color:var(--accent);font-weight:600;margin:12px 0 3px}.experiment-methods dt:first-child{margin-top:0}.experiment-methods dd{margin:0;color:var(--text);overflow-wrap:anywhere}
     .dataset-switch{grid-template-columns:repeat(2,minmax(0,1fr))}.variant-button{min-width:0}.task-observation{border:1px solid var(--orange-soft);border-radius:8px;background:var(--orange-bg);padding:13px;margin:13px 0}.task-observation[hidden],.section[hidden]{display:none}.observation-text{margin:0;font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}.observation-source{margin:8px 0 0;font-size:10px;line-height:1.5;color:var(--muted)}.observation-warning{color:#995330}.cu-state{display:grid;gap:8px;font-size:11px}.cu-row{display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px;align-items:start}.cu-row>span{color:var(--muted)}.cu-row strong{overflow-wrap:anywhere;font-weight:500}.cu-milestone{padding:8px 9px;background:var(--orange-bg);border-radius:6px;line-height:1.6}.walk-controls{display:flex;align-items:center;gap:8px;margin-top:8px}.walk-controls input{min-width:0;flex:1;accent-color:var(--accent)}.walk-controls button{border:1px solid var(--line);border-radius:5px;background:var(--panel2);padding:5px 8px;font-size:11px}.walk-replay-select{width:100%;font-size:11px;padding:5px;border:1px solid var(--line);border-radius:5px;background:var(--panel2)}
   </style>
 </head>
@@ -43,6 +44,15 @@
         <button class="variant-button" id="computerUseVariant" type="button" data-variant="computer-use" aria-pressed="false" title="GPT-6.1 Sol 直接观察"><span style="white-space:normal;line-height:1.35">GPT-6.1 Sol 直接观察</span><span class="variant-rate" id="computerUseTabAccuracy">统计中…</span></button>
         <select id="variantSelect" aria-label="实验版本" hidden><option value="unhinted">不带提示</option><option value="hinted">带提示</option><option value="ordered-survey-v6">Harness</option><option value="computer-use">GPT-6.1 Sol 直接观察</option></select>
       </div>
+      <details class="experiment-methods" id="experimentMethods">
+        <summary>实验栏目说明</summary>
+        <dl>
+          <dt>不带提示</dt><dd>GPT-5.5 直接在原版 Benchmark 上完成的测试结果。</dd>
+          <dt>带提示</dt><dd>GPT-5.5 在加入为每道题定制的、带有明显提醒与暗示功能的提示词后所得的结果。提示包括物体的大小、需要采用空间探索方法而非常识推断等。</dd>
+          <dt>Harness</dt><dd>在本框架下进行实验所得的结果。</dd>
+          <dt>GPT-6.1 Sol 直接观察</dt><dd>不采用模型动作接口，而是由 GPT-6.1 Sol 使用 Computer use 功能直接观察并操作手操网页，得到的实验结果。</dd>
+        </dl>
+      </details>
       <input class="task-filter" id="taskFilter" type="search" placeholder="搜索任务、场景或房间…" aria-label="搜索任务、场景或房间">
       <select id="questionSelect" aria-label="观察任务"></select>
       <div class="task-list" id="taskList"></div>
