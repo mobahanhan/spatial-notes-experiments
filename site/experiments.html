@@ -25,6 +25,7 @@
     .room-region-button[data-hovered="true"]{background:var(--orange-bg);border-color:var(--accent);box-shadow:inset 3px 0 var(--accent)}#roomLabelsButton[hidden],.room-hover-status[hidden]{display:none}.room-hover-status{position:absolute;right:14px;bottom:52px;max-width:calc(100% - 254px);padding:8px 10px;border:2px solid var(--cyan);border-radius:6px;background:rgba(20,29,25,.96);color:var(--agent-text);font:600 11px/1.5 var(--mono);pointer-events:none;overflow-wrap:anywhere}.view-mode button#roomLabelsButton{border-left:1px solid var(--agent-line);margin-left:3px}.view-mode button#roomLabelsButton:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
     .view-display-mode{top:114px}.view-display-mode[hidden],.room-layout-status[hidden]{display:none}.room-layout-status{position:absolute;left:14px;top:114px;max-width:calc(100% - 260px);padding:7px 8px;border:1px solid var(--agent-line);border-radius:6px;color:var(--agent-text);background:rgba(27,37,33,.94);font-size:10px;pointer-events:none}.legend[hidden],.fov-controls[hidden]{display:none}@media(max-width:760px){.stage.layout-view{min-height:580px;height:78vh}}
     .legend span[hidden]{display:none}
+    .playback-status{margin:7px 0 0;font-size:11px;line-height:1.5;color:var(--muted)}.playback-status:empty{display:none}.playback-status[data-error="true"]{color:#a33a25}.image-retry[hidden]{display:none}.image-retry{margin-top:7px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);padding:5px 8px;font-size:11px;cursor:pointer}.play:disabled,.walk-controls button:disabled{opacity:.5;cursor:default}
     .experiment-methods{border:1px solid var(--line);border-radius:7px;background:var(--panel2);margin:0 0 12px;padding:9px 10px;font-size:12px;line-height:1.65}.experiment-methods summary{cursor:pointer;color:var(--text);font-weight:600}.experiment-methods summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.experiment-methods dl{margin:10px 0 0}.experiment-methods dt{color:var(--accent);font-weight:600;margin:12px 0 3px}.experiment-methods dt:first-child{margin-top:0}.experiment-methods dd{margin:0;color:var(--text);overflow-wrap:anywhere}
     .dataset-switch{grid-template-columns:repeat(2,minmax(0,1fr))}.variant-button{min-width:0}.task-observation{border:1px solid var(--orange-soft);border-radius:8px;background:var(--orange-bg);padding:13px;margin:13px 0}.task-observation[hidden],.section[hidden]{display:none}.observation-text{margin:0;font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}.observation-source{margin:8px 0 0;font-size:10px;line-height:1.5;color:var(--muted)}.observation-warning{color:#995330}.cu-state{display:grid;gap:8px;font-size:11px}.cu-row{display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px;align-items:start}.cu-row>span{color:var(--muted)}.cu-row strong{overflow-wrap:anywhere;font-weight:500}.cu-milestone{padding:8px 9px;background:var(--orange-bg);border-radius:6px;line-height:1.6}.walk-controls{display:flex;align-items:center;gap:8px;margin-top:8px}.walk-controls input{min-width:0;flex:1;accent-color:var(--accent)}.walk-controls button{border:1px solid var(--line);border-radius:5px;background:var(--panel2);padding:5px 8px;font-size:11px}.walk-replay-select{width:100%;font-size:11px;padding:5px;border:1px solid var(--line);border-radius:5px;background:var(--panel2)}
   </style>
@@ -106,7 +107,7 @@
       <p class="accuracy-scope" id="accuracyMethod">按任务类型、场景、房间与原始题目标识匹配；不随搜索、当前题目或步骤改变。同题不代表动作预算与观察方式完全一致。</p>
       <p class="accuracy-scope accuracy-warning" id="accuracyWarning" role="status"></p>
     </section>
-    <section class="section"><h2>本次回答</h2><div class="result" id="result">—</div><img class="frame-image" id="frameImage" alt="当前轨迹帧的第一视角图像" hidden></section>
+    <section class="section"><h2>本次回答</h2><div class="result" id="result">—</div><img class="frame-image" id="frameImage" alt="当前轨迹帧的第一视角图像" hidden><p class="playback-status" id="framePlaybackStatus" role="status"></p><button class="image-retry" id="retryFrameImage" type="button" hidden>重试当前图片</button></section>
     <section class="section" id="decisionSection" aria-labelledby="decisionHeading">
       <h2 id="decisionHeading">逐步记录</h2>
       <div class="decision-header"><strong id="decisionStep">尚无记录</strong><div class="decision-navigation"><button id="decisionPrev" type="button" disabled>上一条</button><button id="decisionNext" type="button" disabled>下一条</button></div></div>
@@ -117,7 +118,7 @@
     </section>
     <section class="section" id="harnessSection" hidden><h2>Harness 协议状态</h2><div class="harness-state" id="harnessState">—</div></section>
     <section class="section" id="computerUseSection" hidden><h2>GPT-6.1 Sol 直接观察 · 操作记录</h2><div class="cu-state" id="computerUseState"></div><details class="decision-disclosure"><summary>GPT-6.1 Sol 直接观察 记录方式</summary><p class="note" id="computerUseMethod"></p></details></section>
-    <section class="section" id="walkPanel" hidden><h2>Robot walk · 保存的实际回放</h2><select class="walk-replay-select" id="walkReplaySelect" aria-label="机器人回放视角"></select><img class="frame-image" id="walkImage" alt="实际保存的机器人行走回放图像"><div class="walk-controls"><button id="walkPlay" type="button">▶ 回放</button><input id="walkScrubber" type="range" min="0" max="0" value="0" aria-label="行走回放帧"></div><p class="note" id="walkLabel"></p></section>
+    <section class="section" id="walkPanel" hidden><h2>Robot walk · 保存的实际回放</h2><select class="walk-replay-select" id="walkReplaySelect" aria-label="机器人回放视角"></select><img class="frame-image" id="walkImage" alt="实际保存的机器人行走回放图像"><p class="playback-status" id="walkPlaybackStatus" role="status"></p><button class="image-retry" id="retryWalkImage" type="button" hidden>重试当前回放图片</button><div class="walk-controls"><button id="walkPlay" type="button">▶ 回放</button><input id="walkScrubber" type="range" min="0" max="0" value="0" aria-label="行走回放帧"></div><p class="note" id="walkLabel"></p></section>
     <section class="section"><h2>选中项</h2><div class="note mono" id="selection">点击一个几何体或移动时间轴。</div></section>
   </aside>
   <footer class="timeline">
@@ -140,6 +141,7 @@
   <div class="model-output-popup-footer"><button id="modelInputMode" type="button" data-mode="ordered">查看请求 JSON</button><span id="modelInputInteraction">移入窗口可滚动 · Esc 关闭</span></div>
 </div>
 <script src="assets/page_navigation.js" defer></script>
+<script src="assets/frame_playback.js"></script>
 <script src="assets/offline-manifest.js"></script>
 <script src="assets/static_runtime.js"></script>
 <script src="assets/architecture_geometry.js"></script>
@@ -152,10 +154,10 @@
   const DEFAULT_HORIZONTAL_FOV_DEG=70,DEFAULT_VERTICAL_FOV_DEG=50,clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const storedFov=(key,fallback,min,max)=>{try{const value=Number(localStorage.getItem(key));return Number.isFinite(value)&&value?clamp(value,min,max):fallback}catch{return fallback}};
   let viewHorizontalFovDeg=storedFov('esi-view-horizontal-fov-70x50',DEFAULT_HORIZONTAL_FOV_DEG,30,120),viewVerticalFovDeg=storedFov('esi-view-vertical-fov-70x50',DEFAULT_VERTICAL_FOV_DEG,15,90);
-  let data=null,catalog=[],accuracyReport=null,accuracyError='',currentRunId=null,loadSerial=0,w=0,h=0,dpr=1,yaw=-.72,pitch=.72,distance=8,center=[0,0,1],interactionMode='rotate',drag=null,suppressClick=false,playing=false,timer=null,step=0,projectedObjects=[],renderBasis=null,renderPending=false;
+  let data=null,catalog=[],accuracyReport=null,accuracyError='',currentRunId=null,loadSerial=0,w=0,h=0,dpr=1,yaw=-.72,pitch=.72,distance=8,center=[0,0,1],interactionMode='rotate',drag=null,suppressClick=false,playing=false,step=0,projectedObjects=[],renderBasis=null,renderPending=false;
   const projectionCache=new Map();
   let activeLoadController=null;
-  let walkReplay=0,walkStep=0,walkTimer=null,walkPlaying=false;
+  let walkReplay=0,walkStep=0,walkPlaying=false;
   let renderPointCache=null;
   let modelOutputHideTimer=null,modelOutputSuppressFocus=false;
   let modelInputHideTimer=null,modelInputSuppressFocus=false,modelInputKey='',modelInputPayload=null,modelInputSelectedCall=0,modelInputError='';
@@ -634,14 +636,17 @@
     }
     if(pose.computer_use_milestone){const milestone=document.createElement('div');milestone.className='cu-milestone';milestone.textContent=pose.computer_use_milestone;host.append(milestone)}
   }
-  function setWalkStep(value){const replay=data?.walk_replays?.[walkReplay];if(!replay)return;walkStep=clamp(Number(value)||0,0,replay.frames.length-1);document.querySelector('#walkScrubber').value=walkStep;const image=document.querySelector('#walkImage');image.hidden=false;image.src=window.ESIStatic.resourceURL(`/api/walk-frame?id=${encodeURIComponent(currentRunId)}&replay=${walkReplay}&index=${walkStep}`);const frame=replay.frames[walkStep];document.querySelector('#walkLabel').textContent=`回放 ${walkReplay+1} · ${walkStep+1}/${replay.frames.length} 帧${frame.robot_position?` · robot (${frame.robot_position.map(v=>Number(v).toFixed(2)).join(', ')})`:''}\n粉色：机器人保存路径；青色：观察相机轨迹。回放图片来自本轮保存记录。`;scheduleRender()}
-  function initWalk(){clearInterval(walkTimer);walkPlaying=false;walkReplay=0;walkStep=0;document.querySelector('#walkPlay').textContent='▶ 回放';const replays=data.walk_replays||[];document.querySelector('#walkPanel').hidden=!replays.length;document.querySelector('#walkReplaySelect').replaceChildren(...replays.map((replay,index)=>{const option=document.createElement('option');option.value=index;option.textContent=`回放 ${index+1} · ${replay.frames.length} 帧 · ${replay.at||''}`;return option}));if(replays.length){document.querySelector('#walkScrubber').max=replays[0].frames.length-1;setWalkStep(0)}else document.querySelector('#walkImage').removeAttribute('src')}
+  function setWalkStep(value){return walkPlayer.seek(value)}
+  function commitWalkStep(value){const replay=data?.walk_replays?.[walkReplay];if(!replay)return;walkStep=value;document.querySelector('#walkScrubber').value=walkStep;const frame=replay.frames[walkStep];document.querySelector('#walkLabel').textContent=`回放 ${walkReplay+1} · ${walkStep+1}/${replay.frames.length} 帧${frame.robot_position?` · robot (${frame.robot_position.map(v=>Number(v).toFixed(2)).join(', ')})`:''}\n粉色：机器人保存路径；青色：观察相机轨迹。回放图片来自本轮保存记录。`;scheduleRender()}
+  function initWalk(){walkReplay=0;walkStep=0;walkPlayer.reset();const replays=data.walk_replays||[];document.querySelector('#walkPanel').hidden=!replays.length;document.querySelector('#walkReplaySelect').replaceChildren(...replays.map((replay,index)=>{const option=document.createElement('option');option.value=index;option.textContent=`回放 ${index+1} · ${replay.frames.length} 帧 · ${replay.at||''}`;return option}));if(replays.length){document.querySelector('#walkScrubber').max=replays[0].frames.length-1;setWalkStep(0)}}
   function setStep(value){
+    return framePlayer.seek(value);
+  }
+  function commitStep(value){
     const poses=data.trajectory||[];step=Math.max(0,Math.min(Math.max(0,poses.length-1),Number(value)||0));
     document.querySelector('#scrubber').value=step;document.querySelector('#stepCount').textContent=poses.length?step+1:'—';
     const pose=poses[step],actionResult=pose?.action_result||{},phase=actionResult.recovery_phase_after_action||actionResult.recovery_phase_before_action;
     document.querySelector('#stepLabel').innerHTML=pose?`<b>帧 ${step+1}/${poses.length}</b> · ${esc(pose.action||pose.kind||'camera')}${phase?` · ${esc(phase)}`:''} · (${pose.position.map(v=>v.toFixed(2)).join(', ')})`:'<b>帧 0</b> · 尚无轨迹';
-    const image=document.querySelector('#frameImage');if(pose&&pose.image&&currentRunId){image.src=window.ESIStatic.resourceURL(`/api/frame?id=${encodeURIComponent(currentRunId)}&index=${step}`);image.hidden=false}else{image.removeAttribute('src');image.hidden=true}
     renderDecisionRecord(pose);renderHarnessState(pose);renderComputerUseState(pose);
     if(pose){const forward=cameraFrame(pose.quaternion_xyzw).f,selected=pose.selected_action||{},harnessDetail=data?.run?.variant==='ordered-survey-v6'?`\nview: ${pose.view_id||'—'}\nharness phase: ${actionResult.recovery_phase_before_action||'idle'} → ${actionResult.recovery_phase_after_action||'idle'}\nmodel selected action: ${selected.name||pose.action||'—'} ${selected.arguments?JSON.stringify(selected.arguments):''}\nexecution: ${actionResult.success===true?'success':actionResult.success===false?'failed':'not executed'} · ${actionResult.reason||actionResult.operation||'—'}`:'';document.querySelector('#selection').textContent=`camera\nposition: ${pose.position.map(v=>v.toFixed(4)).join(', ')}\noptical axis (-Z): ${forward.map(v=>v.toFixed(4)).join(', ')}\nquaternion xyzw: ${pose.quaternion_xyzw.map(v=>v.toFixed(4)).join(', ')}${harnessDetail}\naction: ${pose.action||'—'}\nanswer: ${pose.answer??'—'}\nconfidence: ${pose.confidence??'—'}`}
     render();
@@ -649,7 +654,7 @@
   function fit(){const r=data.room_geometry.bbox_world_xy;center=[(r[0]+r[2])/2,(r[1]+r[3])/2,1];if(roomLayoutMode){const rect=canvas.getBoundingClientRect(),width=rect.width||w,height=rect.height||h;distance=Math.max(3,Math.min(width,height)*.82*Math.max((r[2]-r[0])/Math.max(120,width-100),(r[3]-r[1])/Math.max(160,height-190)))}else distance=Math.max(5,Math.hypot(r[2]-r[0],r[3]-r[1])*1.25)}
   function init(payload){
     data=payload;document.title=data.run?.display_name?`${data.run.display_name} · ESI Spatial Viewer`:'ESI Spatial Viewer';
-    projectionCache.clear();wallSegmentsCache=null;selectedRoomName=null;hoveredRoomName=null;projectedRoomLabels=[];roomObjectMembership.clear();roomLayoutMode=false;renderRoomRegionList();syncLayoutControls();playing=false;clearInterval(timer);document.querySelector('#play').textContent='▶ 播放';
+    projectionCache.clear();wallSegmentsCache=null;selectedRoomName=null;hoveredRoomName=null;projectedRoomLabels=[];roomObjectMembership.clear();roomLayoutMode=false;renderRoomRegionList();syncLayoutControls();framePlayer.reset();
     geometryViewState=null;layoutViewState=null;
     const room=data.room_geometry,isHarness=data.run?.variant==='ordered-survey-v6';
     document.querySelector('#scene').textContent=data.scene;document.querySelector('#room').textContent=`${data.room} · ${room.source_type==='omnigibson_room_instance_segmentation'?'分割多边形':'边界框回退'}`;
@@ -679,9 +684,9 @@
   }
   async function loadRun(id){
     const serial=++loadSerial;activeLoadController?.abort();closeModelOutputPopup();closeModelInputPopup();modelInputKey='';modelInputPayload=null;
-    document.querySelector('#modelOutputControl').hidden=true;document.querySelector('#retryLoad').hidden=true;currentRunId=id;playing=false;clearInterval(timer);
-    clearInterval(walkTimer);walkPlaying=false;document.querySelector('#walkPlay').textContent='▶ 回放';document.querySelector('#walkPanel').hidden=true;document.querySelector('#taskObservationSection').hidden=true;document.querySelector('#computerUseSection').hidden=true;
-    document.querySelector('#play').textContent='▶ 播放';document.querySelector('#scene').textContent='加载中…';
+    document.querySelector('#modelOutputControl').hidden=true;document.querySelector('#retryLoad').hidden=true;currentRunId=id;framePlayer.reset();walkPlayer.reset();
+    document.querySelector('#walkPanel').hidden=true;document.querySelector('#taskObservationSection').hidden=true;document.querySelector('#computerUseSection').hidden=true;
+    document.querySelector('#play').disabled=true;document.querySelector('#scrubber').disabled=true;document.querySelector('#scene').textContent='加载中…';
     try{const payload=await requestRunData(id,serial);if(serial!==loadSerial||!payload)return;
       if(typeof ArchitectureGeometry==='undefined'||typeof ArchitectureGeometry.raySceneHit!=='function')throw Error('绘制组件没有完整加载，请刷新网页后重试。');
       init(payload);
@@ -750,22 +755,31 @@
   canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('wheel',e=>{e.preventDefault();setHoveredRoom(null);projectedRoomLabels=[];distance=Math.max(2,Math.min(roomLayoutMode?200:35,distance*Math.exp(e.deltaY*.001)));scheduleRender()},{passive:false});
   canvas.addEventListener('click',e=>{if(suppressClick){suppressClick=false;return}if(!projectedObjects.length)return;const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;const hit=projectedObjects.map(p=>({...p,d:Math.hypot(p.x-x,p.y-y)})).sort((a,b)=>a.d-b.d)[0];if(hit&&hit.d<Math.max(18,hit.r)){const o=hit.o;document.querySelector('#selection').textContent=`${o.category}\n${o.name}\nrole: ${o.role}\ncenter: ${o.position.map(v=>v.toFixed(3)).join(', ')}`}});
   document.querySelector('#rotateMode').addEventListener('click',()=>setInteractionMode('rotate'));document.querySelector('#panMode').addEventListener('click',()=>setInteractionMode('pan'));
-  Object.values(toggles).forEach(el=>el.addEventListener('change',()=>{if(!toggles.rooms.checked)setHoveredRoom(null);syncRoomLabelControl();renderObjectList();render()}));document.querySelector('#scrubber').addEventListener('input',e=>setStep(e.target.value));document.querySelector('#play').addEventListener('click',()=>{playing=!playing;const b=document.querySelector('#play');b.textContent=playing?'❚❚ 暂停':'▶ 播放';clearInterval(timer);if(playing)timer=setInterval(()=>{const n=data.trajectory.length;if(!n)return;setStep((step+1)%n)},650)});addEventListener('resize',resize);
+  function playbackState(state,walk=false){
+    const button=document.querySelector(walk?'#walkPlay':'#play'),slider=document.querySelector(walk?'#walkScrubber':'#scrubber'),status=document.querySelector(walk?'#walkPlaybackStatus':'#framePlaybackStatus');
+    button.disabled=state.count<2;button.textContent=state.count===1?'仅1帧':state.playing?'❚❚ 暂停':walk?'▶ 回放':'▶ 播放';button.title=state.count===1?'原始记录仅保存一帧，没有连续图片可播放':state.count>1&&state.index===state.count-1?'已到末帧，点击从头播放':'';
+    slider.disabled=!state.count;if(state.error&&state.index>=0)slider.value=state.index;
+    status.textContent=state.error|| (state.busy?`正在加载帧 ${state.wanted+1}/${state.count}${state.index>=0?` · 当前显示 ${state.index+1}`:''}`:'');status.dataset.error=String(Boolean(state.error));document.querySelector(walk?'#retryWalkImage':'#retryFrameImage').hidden=!state.error;
+    if(walk){walkPlaying=state.playing;if(state.playing)framePlayer.pause()}else{playing=state.playing;if(state.playing)walkPlayer.pause()}
+  }
+  const framePlayer=FramePlayback.create({image:document.querySelector('#frameImage'),count:()=>data?.trajectory?.length||0,url:index=>data?.trajectory?.[index]?.image&&currentRunId?`/api/frame?id=${encodeURIComponent(currentRunId)}&index=${index}`:null,interval:650,onCommit:commitStep,onState:state=>playbackState(state)});
+  const walkPlayer=FramePlayback.create({image:document.querySelector('#walkImage'),count:()=>data?.walk_replays?.[walkReplay]?.frames?.length||0,url:index=>`/api/walk-frame?id=${encodeURIComponent(currentRunId)}&replay=${walkReplay}&index=${index}`,interval:180,onCommit:commitWalkStep,onState:state=>playbackState(state,true)});
+  Object.values(toggles).forEach(el=>el.addEventListener('change',()=>{if(!toggles.rooms.checked)setHoveredRoom(null);syncRoomLabelControl();renderObjectList();render()}));document.querySelector('#scrubber').addEventListener('input',e=>{framePlayer.pause();setStep(e.target.value)});document.querySelector('#play').addEventListener('click',()=>framePlayer.toggle());addEventListener('resize',resize);
   document.querySelector('#roomLabelsButton').addEventListener('click',()=>setRoomLabelsVisible(!showRoomLabels));document.addEventListener('keydown',handleRoomLabelShortcut);
   document.querySelector('#geometryView').addEventListener('click',()=>setLayoutMode(false));document.querySelector('#layoutView').addEventListener('click',()=>setLayoutMode(true));
   document.querySelector('#retryLoad').addEventListener('click',()=>{if(currentRunId)loadRun(currentRunId);else location.reload()});
   document.querySelector('#fitView').addEventListener('click',resetView);
   if(typeof ResizeObserver==='function')new ResizeObserver(()=>resize()).observe(canvas);
-  function pausePlayback(){playing=false;walkPlaying=false;clearInterval(timer);clearInterval(walkTimer);document.querySelector('#play').textContent='▶ 播放';document.querySelector('#walkPlay').textContent='▶ 回放'}
-  window.addEventListener('spatialnotes:activechange',event=>{if(!event.detail.active)pausePlayback();else requestAnimationFrame(resize)});
+  function pausePlayback(){framePlayer.pause();walkPlayer.pause()}
+  window.addEventListener('spatialnotes:activechange',event=>{framePlayer.setActive(event.detail.active);walkPlayer.setActive(event.detail.active);if(event.detail.active)requestAnimationFrame(resize)});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pausePlayback();else resize()});
-  document.querySelector('#frameImage').addEventListener('error',e=>{e.currentTarget.hidden=true});
-  document.querySelector('#decisionPrev').addEventListener('click',()=>setStep(step-1));
-  document.querySelector('#decisionNext').addEventListener('click',()=>setStep(step+1));
-  document.querySelector('#walkReplaySelect').addEventListener('change',event=>{walkReplay=Number(event.target.value)||0;const replay=data.walk_replays?.[walkReplay];if(!replay)return;document.querySelector('#walkScrubber').max=replay.frames.length-1;if(Number.isInteger(replay.after_step))setStep(replay.after_step);setWalkStep(0)});
-  document.querySelector('#walkScrubber').addEventListener('input',event=>setWalkStep(event.target.value));
-  document.querySelector('#walkPlay').addEventListener('click',()=>{walkPlaying=!walkPlaying;document.querySelector('#walkPlay').textContent=walkPlaying?'❚❚ 暂停':'▶ 回放';clearInterval(walkTimer);if(walkPlaying)walkTimer=setInterval(()=>{const replay=data.walk_replays?.[walkReplay];if(replay)setWalkStep((walkStep+1)%replay.frames.length)},180)});
-  document.querySelector('#walkImage').addEventListener('error',event=>{event.currentTarget.hidden=true;document.querySelector('#walkLabel').textContent='这帧回放图片加载失败，请重新选择回放。'});
+  document.querySelector('#decisionPrev').addEventListener('click',()=>{framePlayer.pause();setStep(framePlayer.wanted-1)});
+  document.querySelector('#decisionNext').addEventListener('click',()=>{framePlayer.pause();setStep(framePlayer.wanted+1)});
+  document.querySelector('#walkReplaySelect').addEventListener('change',event=>{walkReplay=Number(event.target.value)||0;const replay=data.walk_replays?.[walkReplay];if(!replay)return;walkPlayer.reset();document.querySelector('#walkScrubber').max=replay.frames.length-1;if(Number.isInteger(replay.after_step))setStep(replay.after_step);setWalkStep(0)});
+  document.querySelector('#walkScrubber').addEventListener('input',event=>{walkPlayer.pause();setWalkStep(event.target.value)});
+  document.querySelector('#walkPlay').addEventListener('click',()=>walkPlayer.toggle());
+  document.querySelector('#retryFrameImage').addEventListener('click',()=>framePlayer.seek(framePlayer.wanted));
+  document.querySelector('#retryWalkImage').addEventListener('click',()=>walkPlayer.seek(walkPlayer.wanted));
   const modelOutputButton=document.querySelector('#modelOutputButton'),modelOutputPopup=document.querySelector('#modelOutputPopup');
   modelOutputButton.addEventListener('pointerenter',showModelOutputPopup);modelOutputButton.addEventListener('pointerleave',scheduleModelOutputClose);
   modelOutputButton.addEventListener('focus',()=>{if(!modelOutputSuppressFocus)showModelOutputPopup()});modelOutputButton.addEventListener('blur',scheduleModelOutputClose);

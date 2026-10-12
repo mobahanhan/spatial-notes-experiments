@@ -122,13 +122,12 @@ for (const base of ['https://pages.invalid/spatial-notes-experiments/', 'file://
 // task, frame, geometry, camera or layer state.
 const viewer = fs.readFileSync(__dirname + '/site/experiments.html', 'utf8');
 const pause = viewer.match(/function pausePlayback\(\)\{[^\n]+\}/)[0];
-const buttons = {'#play': {}, '#walkPlay': {}}, cleared = [];
-const replay = vm.createContext({playing: true, walkPlaying: true, timer: 12, walkTimer: 23, step: 17,
-  document: {querySelector: id => buttons[id]}, clearInterval: id => cleared.push(id)});
+const paused=[];
+const replay = vm.createContext({playing: true, walkPlaying: true, step: 17,
+  framePlayer:{pause(){replay.playing=false;paused.push('observation')}},walkPlayer:{pause(){replay.walkPlaying=false;paused.push('walk')}}});
 vm.runInContext(pause + ';pausePlayback();', replay);
 assert.equal(replay.playing, false);
 assert.equal(replay.walkPlaying, false);
 assert.equal(replay.step, 17);
-assert.deepEqual(cleared, [12, 23]);
-assert.equal(buttons['#play'].textContent, '▶ 播放');
+assert.deepEqual(paused, ['observation', 'walk']);
 console.log(`Navigation lifecycle tests passed: ${cases} HTTPS/file and embedded scenarios; cached DOM, scroll, history, messages and playback.`);
