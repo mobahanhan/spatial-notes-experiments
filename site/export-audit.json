@@ -2,7 +2,7 @@
   "schema_version": 1,
   "exported_at": "2026-10-12T23:34:51.326245+08:00",
   "source_catalog_sha256": "bb57d4ed5ed10cbfde26b3acda15fc4de688acb74cf7a8ce3e9b2113678938b0",
-  "source_article_sha256": "304923328aa6dd640b6c8f4ed0071327b6cf7deda494b9f9456e5ed07ad2dd77",
+  "source_article_sha256": "49dbbdf89665b7eeb21ab2d49f567548753d5c6d5cf4049425e65a9372198c47",
   "runs": 69,
   "variants": {
     "unhinted": 20,
@@ -506,7 +506,7 @@
     }
   ],
   "file_sha256": {
-    "article.md": "304923328aa6dd640b6c8f4ed0071327b6cf7deda494b9f9456e5ed07ad2dd77",
+    "article.md": "49dbbdf89665b7eeb21ab2d49f567548753d5c6d5cf4049425e65a9372198c47",
     "assets/architecture_geometry.js": "f6999f9582a3f9419d3959d291e3d4b8f9dc30548b1e497456654a2ffce36220",
     "assets/blog.css": "835890e9de96c34ff00dc14147be2032279af780ed572b78b30258921ddff841",
     "assets/blog.js": "be4df34faeeea9b1f06a8ff177f935c574ad62b9aa13a18caf6e3ac6d18b85c7",
@@ -1654,21 +1654,34 @@
     "assets/page_navigation.js": "15be9be9bd2131227bbfe5222a033d6ccf07967c976b9a60638fd60a914fed02",
     "assets/static_runtime.js": "707e9022c9e31c6b7c3335415655325de0f7a0188317a464e689238efc9294e9",
     "experiments.html": "b5235f7a39d2fe5a5211e0d79aac0196bd54893acbcbe151b0b0e1cb5a656a39",
-    "index.html": "5cc7250d17094df0747c755f4fc32ab2923b6b2a464152f04f06fbd151362ba0",
+    "index.html": "26444ea7d18267389934eabc2a1a4c49a1baf40bb27119d7b9aaa10a3b7c9657",
     "reasons.html": "dc80036d5b1292b15de7bc4aab44bcbee8585943c9178d9c87851252a78218c5",
     "使用说明.md": "452944ba3c69f99b6f260cfc95d73391ba80760f955402731c3e19fa3451c189"
   },
   "image_format": "original",
   "image_audit": {},
   "review_revision": {
-    "date": "2026-10-12",
-    "scope": "Connectivity / GPT-6.1 Sol direct observation only",
-    "reviewed_correct": 11,
-    "suspected_correct": 2,
+    "date": "2026-10-13",
+    "scope": "Correspondence / GPT-6.1 Sol direct observation only",
+    "reviewed_correct": 13,
+    "suspected_correct": 0,
     "incorrect": 7,
     "answer_accuracy": "13/20",
-    "reviewed_accuracy": "11/20",
-    "source_review_audit_sha256": "13baf1460f1f3a9c1b35eabe3ab74484543bdd25d1081cc76d3207411ee37f9a",
+    "reviewed_accuracy": "13/20",
+    "source_review_audit_sha256": "42d37fe32cfea4515c8dcfcadd953cde25b4ae831a76cdccfc4fe9d7c881f4d9",
     "experimental_data_changed": false
-  }
+  },
+  "review_revision_history": [
+    {
+      "date": "2026-10-12",
+      "scope": "Connectivity / GPT-6.1 Sol direct observation only",
+      "reviewed_correct": 11,
+      "suspected_correct": 2,
+      "incorrect": 7,
+      "answer_accuracy": "13/20",
+      "reviewed_accuracy": "11/20",
+      "source_review_audit_sha256": "13baf1460f1f3a9c1b35eabe3ab74484543bdd25d1081cc76d3207411ee37f9a",
+      "experimental_data_changed": false
+    }
+  ]
 }
