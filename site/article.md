@@ -86,19 +86,19 @@ GPT-6.1 的实验结果也表明，在部分成功的任务中，也确实是先
 | Agent Observation | 统计机器人行走时经过的 1 米范围内的棒球数量（Beechwood_0_garden / garden_0） | 错误 | 正确 | 正确 | 错误 |
 | Agent Observation | 统计机器人行走时经过的 1 米范围内的苹果酒瓶数量（Beechwood_0_int / living_room_1） | 正确 | 正确 | 正确 | 正确 |
 | Category Ambiguity | 区分花椰菜与相似食品，统计花椰菜数量（Beechwood_0_garden / living_room_0） | 错误 | 错误 | 错误 | 正确 |
-| Connectivity | 判断 bathroom_0 与 utility_room_0 是否直接连通（Beechwood_0_garden / full_scene） | 疑似猜对 | 疑似猜对 | - | - |
-| Connectivity | 判断走廊旁与儿童房旁的两个壁橱是否直接连通（Beechwood_1_int / full_scene） | 疑似猜对 | 疑似猜对 | - | - |
-| Connectivity | 判断 playroom_0 与 utility_room_0 是否直接连通（Merom_0_int / full_scene） | 疑似猜对 | 疑似猜对 | - | - |
-| Connectivity | 判断 entryway_0 与 kitchen_0 是否直接连通（Rs_int / full_scene） | 疑似猜对 | 疑似猜对 | - | - |
-| Correspondence | 根据镜面反射，判断对应的是左、中、右哪个意面盒（Beechwood_0_garden / living_room_0） | 错误 | 疑似猜对 | - | - |
-| Correspondence | 根据镜面反射，判断对应的是左、中、右哪个圣诞人物摆件（Beechwood_1_int / bedroom_0） | 错误 | 错误 | - | - |
-| Counting w Occlusion | 探索物体遮挡后的区域，统计三明治总数（Beechwood_0_int / living_room_1） | 错误 | 错误 | - | - |
+| Connectivity | 判断 bathroom_0 与 utility_room_0 是否直接连通（Beechwood_0_garden / full_scene） | 疑似猜对 | 疑似猜对 | - | 疑似猜对 |
+| Connectivity | 判断走廊旁与儿童房旁的两个壁橱是否直接连通（Beechwood_1_int / full_scene） | 疑似猜对 | 疑似猜对 | - | 疑似猜对 |
+| Connectivity | 判断 playroom_0 与 utility_room_0 是否直接连通（Merom_0_int / full_scene） | 疑似猜对 | 疑似猜对 | - | 疑似猜对 |
+| Connectivity | 判断 entryway_0 与 kitchen_0 是否直接连通（Rs_int / full_scene） | 疑似猜对 | 疑似猜对 | - | 疑似猜对 |
+| Correspondence | 根据镜面反射，判断对应的是左、中、右哪个意面盒（Beechwood_0_garden / living_room_0） | 错误 | 疑似猜对 | - | 疑似猜对 |
+| Correspondence | 根据镜面反射，判断对应的是左、中、右哪个圣诞人物摆件（Beechwood_1_int / bedroom_0） | 错误 | 错误 | - | 疑似猜对 |
+| Counting w Occlusion | 探索物体遮挡后的区域，统计三明治总数（Beechwood_0_int / living_room_1） | 错误 | 错误 | - | 错误 |
 | Illumination Variability | 在照明变化下统计客厅中的三明治数量（Beechwood_0_int / living_room_1） | 错误 | 错误 | 正确 | 正确 |
 | Illumination Variability | 在照明变化下统计活动室中的三明治数量（Beechwood_1_int / playroom_0） | 错误 | 错误 | 错误 | 正确 |
-| Long-Term Navigation | 沿客厅至储藏室的指定跨房间路线，补全三次转向（Beechwood_0_int / full_scene） | 错误 | 错误 | - | - |
-| Merged Observation | 结合不同视角，分辨叠放物体并统计三明治总数（Beechwood_0_int / living_room_1） | 错误 | 错误 | - | - |
-| Merged Observation | 结合不同视角，统计电视房里叠放的三明治总数（Beechwood_1_int / television_room_0） | 错误 | 错误 | - | - |
-| Spatial Segmentation | 综合分区视角，统计客厅中的三明治总数（Beechwood_0_int / living_room_1） | 错误 | 错误 | - | - |
+| Long-Term Navigation | 沿客厅至储藏室的指定跨房间路线，补全三次转向（Beechwood_0_int / full_scene） | 错误 | 错误 | - | 错误 |
+| Merged Observation | 结合不同视角，分辨叠放物体并统计三明治总数（Beechwood_0_int / living_room_1） | 错误 | 错误 | - | 错误 |
+| Merged Observation | 结合不同视角，统计电视房里叠放的三明治总数（Beechwood_1_int / television_room_0） | 错误 | 错误 | - | 错误 |
+| Spatial Segmentation | 综合分区视角，统计客厅中的三明治总数（Beechwood_0_int / living_room_1） | 错误 | 错误 | - | 错误 |
 | Spatial Segmentation | 综合分区视角，统计活动室中的三明治总数（Beechwood_1_int / playroom_0） | 疑似猜对 | 错误 | 正确 | 正确 |
 | Spatial Segmentation | 综合分区视角，统计餐厅中的三明治总数（grocery_store_cafe / dining_room_0） | 错误 | 错误 | 错误 | 错误 |
 | Spatial Segmentation | 综合分区视角，统计 Merom 客厅中的三明治总数（Merom_0_int / living_room_0） | 正确 | 正确 | 正确 | 正确 |
@@ -111,7 +111,7 @@ GPT-6.1 的实验结果也表明，在部分成功的任务中，也确实是先
 | 不带提示 | 20 | 3 | 5 | 12 | 8/20（40.0%） | 3/20（15.0%） |
 | 带提示 | 20 | 4 | 5 | 11 | 9/20（45.0%） | 4/20（20.0%） |
 | Harness | 9 | 5 | 0 | 4 | 5/9（55.6%） | 5/9（55.6%） |
-| GPT-6.1 Sol 直接观察 | 9 | 7 | 0 | 2 | 7/9（77.8%） | 7/9（77.8%） |
+| GPT-6.1 Sol 直接观察 | 20 | 7 | 6 | 7 | 13/20（65.0%） | 7/20（35.0%） |
 
 ### 共同实验
 
@@ -121,7 +121,3 @@ GPT-6.1 的实验结果也表明，在部分成功的任务中，也确实是先
 | 带提示 | 9 | 4 | 0 | 5 | 4/9（44.4%） | 4/9（44.4%） |
 | Harness | 9 | 5 | 0 | 4 | 5/9（55.6%） | 5/9（55.6%） |
 | GPT-6.1 Sol 直接观察 | 9 | 7 | 0 | 2 | 7/9（77.8%） | 7/9（77.8%） |
-
-
-
-

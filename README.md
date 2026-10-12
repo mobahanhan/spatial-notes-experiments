@@ -8,7 +8,11 @@ This repository publishes a frozen static snapshot of the research document and 
 - `site/experiments.html`: 实验记录, including the four saved experiment variants
 - `site/reasons.html`: the separately generated Chinese step-record reader
 
-The snapshot contains 58 runs, 777 trajectory frames, 128 robot replay frames, 259 Harness input steps, and 890 deduplicated original images. Saved observations, geometry, model inputs, and model outputs are retained. The standalone Chinese reader covers its original 49 records; it is not a newly expanded 58-record reader.
+The snapshot contains 69 runs, 928 trajectory frames, 128 robot replay frames, 259 Harness input steps, and 1041 original PNG images. Saved observations, geometry, model inputs, and model outputs are retained. The standalone Chinese reader covers its original 49 records; it is not a newly expanded 69-record reader.
+
+The direct-observation column now covers all 20 tasks: the original nine sessions and eleven additional UI-only sessions, each assigned to an independent Agent with no parent conversation inherited. New sessions use at most 30 engine actions; scoring is performed after submission and is never supplied as feedback for a retry. The original 58 catalog entries and nine-task common comparison cohort are preserved. Answer accuracy is 13/20 (65%); the reviewed count excluding six suspected-correct results is 7/20 (35%). Correct connectivity and mirror-correspondence submissions retain the user's suspected-correct classification rule. Incorrect submissions and renderer anomalies are not removed.
+
+New run provenance identifies any batch-local dependency-loading override. The simulator, dependency wheels and private task manifests are not deployed or executed by this static website. No existing simulator environment package or system DLL was replaced for this continuation.
 
 All website dependencies are under `site/`. Links and data/image paths are relative, allowing deployment under a GitHub project-site path. The export does not automatically synchronize with later local experiment changes.
 

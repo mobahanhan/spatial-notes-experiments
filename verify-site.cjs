@@ -89,13 +89,20 @@ async function request(route) {
 function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); }
 (async () => {
   const catalog = await request('/api/catalog');
-  assert.equal(catalog.length, 58);
+  assert.equal(catalog.length, 69);
+  assert.equal(catalog.length, audit.runs);
   const variants = {};
-  let frames = 0, walks = 0, inputSteps = 0, inputImageReferences = 0;
+  let frames = 0, walks = 0, inputSteps = 0, inputImageReferences = 0, directCorrect = 0;
   for (const run of catalog) {
     variants[run.variant] = (variants[run.variant] || 0) + 1;
     const data = await request('/api/data?id=' + encodeURIComponent(run.id));
     assert.equal(data.run.id, run.id);
+    assert.equal(data.trajectory.length, audit.run_audit.find(item => item.id === run.id).frames);
+    if (run.variant === 'computer-use') {
+      assert.equal(typeof data.result.correct, 'boolean');
+      assert.ok(data.submission?.answer, 'A direct-observation answer must be a saved submission');
+      directCorrect += Number(data.result.correct);
+    }
     assert.ok(data.room_geometry.polygons.length);
     assert.ok(data.objects.length);
     assert.ok(!data.task_observation || data.task_observation.status !== 'skipped');
@@ -122,8 +129,8 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
       }
     }
   }
-  assert.deepEqual(variants, {unhinted: 20, hinted: 20, 'ordered-survey-v6': 9, 'computer-use': 9});
-  assert.equal(frames, 777);
+  assert.deepEqual(variants, {unhinted: 20, hinted: 20, 'ordered-survey-v6': 9, 'computer-use': 20});
+  assert.ok(frames >= 788, 'The original 777 frames and each newly completed task must remain present');
   assert.equal(walks, 128);
   assert.equal(inputSteps, 259);
   assert.equal(frames, audit.counts.trajectory_frames);
@@ -131,7 +138,21 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
   assert.equal(inputSteps, audit.counts.harness_input_steps);
   const accuracy = await request('/api/accuracy');
   assert.equal(accuracy.labels['computer-use'], 'GPT-6.1 Sol 直接观察');
-  assert.equal(accuracy.computer_use.stats.correct, 7);
+  assert.equal(accuracy.computer_use.stats.total, 20);
+  assert.equal(accuracy.computer_use.stats.scored, 20);
+  assert.equal(accuracy.computer_use.stats.correct, directCorrect);
+  assert.equal(accuracy.computer_use.stats.complete, true);
+  assert.equal(accuracy.harness_cohort.variants['computer-use'].correct, 7, 'The original common cohort must be unchanged');
+  if (audit.image_format === 'lossless-webp') {
+    assert.equal(Object.keys(audit.image_audit).length, audit.unique_images);
+    for (const [relative, entry] of Object.entries(audit.image_audit)) {
+      assert.ok(relative.endsWith('.webp'));
+      assert.equal(entry.pixels_verified_identical, true);
+      assert.match(entry.original_sha256, /^[0-9a-f]{64}$/);
+      assert.match(entry.pixel_rgba_sha256, /^[0-9a-f]{64}$/);
+      assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root, relative))).digest('hex'), entry.sha256);
+    }
+  }
   assert.equal((await context.window.fetch('/api/not-exported')).status, 404);
   const abort = new AbortController();
   abort.abort();
