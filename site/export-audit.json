@@ -2,7 +2,7 @@
   "schema_version": 1,
   "exported_at": "2026-10-12T23:34:51.326245+08:00",
   "source_catalog_sha256": "bb57d4ed5ed10cbfde26b3acda15fc4de688acb74cf7a8ce3e9b2113678938b0",
-  "source_article_sha256": "db02faf9a5a74d6c66a6750e3d587b28b541630847932c915eb6d8c0a8b73922",
+  "source_article_sha256": "304923328aa6dd640b6c8f4ed0071327b6cf7deda494b9f9456e5ed07ad2dd77",
   "runs": 69,
   "variants": {
     "unhinted": 20,
@@ -506,7 +506,7 @@
     }
   ],
   "file_sha256": {
-    "article.md": "db02faf9a5a74d6c66a6750e3d587b28b541630847932c915eb6d8c0a8b73922",
+    "article.md": "304923328aa6dd640b6c8f4ed0071327b6cf7deda494b9f9456e5ed07ad2dd77",
     "assets/architecture_geometry.js": "f6999f9582a3f9419d3959d291e3d4b8f9dc30548b1e497456654a2ffce36220",
     "assets/blog.css": "835890e9de96c34ff00dc14147be2032279af780ed572b78b30258921ddff841",
     "assets/blog.js": "be4df34faeeea9b1f06a8ff177f935c574ad62b9aa13a18caf6e3ac6d18b85c7",
@@ -1654,10 +1654,21 @@
     "assets/page_navigation.js": "15be9be9bd2131227bbfe5222a033d6ccf07967c976b9a60638fd60a914fed02",
     "assets/static_runtime.js": "707e9022c9e31c6b7c3335415655325de0f7a0188317a464e689238efc9294e9",
     "experiments.html": "b5235f7a39d2fe5a5211e0d79aac0196bd54893acbcbe151b0b0e1cb5a656a39",
-    "index.html": "16134b8ec9539531e82fb95383d8057f09b69a66ba07e5782ecf4074c532e489",
+    "index.html": "5cc7250d17094df0747c755f4fc32ab2923b6b2a464152f04f06fbd151362ba0",
     "reasons.html": "dc80036d5b1292b15de7bc4aab44bcbee8585943c9178d9c87851252a78218c5",
     "使用说明.md": "452944ba3c69f99b6f260cfc95d73391ba80760f955402731c3e19fa3451c189"
   },
   "image_format": "original",
-  "image_audit": {}
+  "image_audit": {},
+  "review_revision": {
+    "date": "2026-10-12",
+    "scope": "Connectivity / GPT-6.1 Sol direct observation only",
+    "reviewed_correct": 11,
+    "suspected_correct": 2,
+    "incorrect": 7,
+    "answer_accuracy": "13/20",
+    "reviewed_accuracy": "11/20",
+    "source_review_audit_sha256": "13baf1460f1f3a9c1b35eabe3ab74484543bdd25d1081cc76d3207411ee37f9a",
+    "experimental_data_changed": false
+  }
 }
