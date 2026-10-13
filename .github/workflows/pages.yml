@@ -30,6 +30,8 @@ jobs:
         run: node test-navigation.cjs
       - name: Verify load-aware observation and robot playback
         run: node test-playback.cjs
+      - name: Verify displayed progress and pending seeks
+        run: node test-progress.cjs
       - name: Configure GitHub Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - name: Upload the static site
