@@ -92,7 +92,7 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
   assert.equal(catalog.length, 69);
   assert.equal(catalog.length, audit.runs);
   const variants = {};
-  let frames = 0, walks = 0, inputSteps = 0, inputImageReferences = 0, directCorrect = 0;
+  let frames = 0, walks = 0, inputSteps = 0, inputImageReferences = 0, directCorrect = 0, alignedFrames = 0;
   for (const run of catalog) {
     variants[run.variant] = (variants[run.variant] || 0) + 1;
     const data = await request('/api/data?id=' + encodeURIComponent(run.id));
@@ -110,6 +110,19 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
     for (let index = 0; index < data.trajectory.length; index++) {
       image('/api/frame?id=' + encodeURIComponent(run.id) + '&index=' + index);
       frames++;
+      const pose = data.trajectory[index];
+      if (pose.observation_camera) {
+        const camera = pose.observation_camera, correction = pose.observation_alignment;
+        assert.ok(Number.isInteger(camera.source_frame_index) && camera.source_frame_index >= 0 && camera.source_frame_index < index);
+        assert.equal(correction.frame_index, index);
+        assert.equal(correction.observation_pose_frame_index, camera.source_frame_index);
+        assert.deepEqual(camera.position, data.trajectory[camera.source_frame_index].position);
+        assert.deepEqual(camera.quaternion_xyzw, data.trajectory[camera.source_frame_index].quaternion_xyzw);
+        const originalHash = audit.image_format === 'lossless-webp' ? audit.image_audit[pose.image].original_sha256 : path.basename(pose.image, '.png');
+        assert.equal(originalHash, correction.image_sha256, 'Only the original audited image may use this observation pose');
+        assert.equal(data.observation_alignment_audit.original_images_actions_and_recorded_poses_preserved, true);
+        alignedFrames++;
+      }
       if (run.variant !== 'ordered-survey-v6') continue;
       const inputs = await request('/api/model-input?id=' + encodeURIComponent(run.id) + '&index=' + index);
       for (const call of [...inputs.calls, ...inputs.unmatched_calls]) {
@@ -134,6 +147,7 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
   assert.equal(walks, 128);
   assert.equal(inputSteps, 259);
   assert.equal(frames, audit.counts.trajectory_frames);
+  assert.equal(alignedFrames, audit.observation_alignment_revision.annotated_frames);
   assert.equal(walks, audit.counts.robot_replay_frames);
   assert.equal(inputSteps, audit.counts.harness_input_steps);
   const accuracy = await request('/api/accuracy');
@@ -157,5 +171,5 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
   const abort = new AbortController();
   abort.abort();
   await assert.rejects(context.window.fetch('/api/data', {signal: abort.signal}), {name: 'AbortError'});
-  console.log(JSON.stringify({verified: true, files: files.length, bytes, runs: catalog.length, variants, frames, walks, inputSteps, inputImageReferences, scripts, knownSecretFindings: 0, projectPathSafe: true, networkRequests: 0}, null, 2));
+  console.log(JSON.stringify({verified: true, files: files.length, bytes, runs: catalog.length, variants, frames, walks, inputSteps, inputImageReferences, alignedFrames, scripts, knownSecretFindings: 0, projectPathSafe: true, networkRequests: 0}, null, 2));
 })().catch(error => { console.error(error.message); process.exitCode = 1; });

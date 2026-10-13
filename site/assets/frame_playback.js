@@ -46,8 +46,9 @@
       });
       this.cache.set(url, promise);
       promise.catch(() => { if (this.cache.get(url) === promise) this.cache.delete(url); });
-      // Small look-ahead only: do not decode an entire experiment into memory.
-      while (this.cache.size > 3) this.cache.delete(this.cache.keys().next().value);
+      // Current + two upcoming images, with one spare for rapid seeks.
+      // Never decode an entire experiment into memory.
+      while (this.cache.size > 4) this.cache.delete(this.cache.keys().next().value);
       return promise;
     }
     url(index) {
@@ -120,11 +121,12 @@
         const url = this.url(index);
         const image = url ? await this.load(url) : null;
         if (request !== this.request || !this.active) return false;
+        // Start network look-ahead before synchronous 3D rendering, rather than
+        // making the next image wait until expensive ray casts have completed.
+        for (let nextIndex = index + 1; nextIndex <= Math.min(index + 2, this.count - 1); nextIndex++) {
+          try { const next = this.url(nextIndex); if (next) this.load(next).catch(() => {}); } catch {}
+        }
         if (!await this.present(image, index, request)) return false;
-        try { if (index + 1 < this.count) {
-          const next = this.url(index + 1);
-          if (next) this.load(next).catch(() => {});
-        } } catch {} // A look-ahead failure must not invalidate the current frame.
         return true;
       } catch (error) {
         if (request !== this.request || !this.active) return false;

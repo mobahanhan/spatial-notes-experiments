@@ -83,6 +83,9 @@ function fixture({count=3,interval=650,staticSite=false,paint=false,surface=fals
   assert.equal(await cancelled,false);assert.equal(atomic.pixels.length,2,'a cancelled queued paint must not show a stale frame');
   assert.equal(atomic.screen.hidden,true);assert.equal(atomic.screen.dataset.displayedFrame,undefined);
   const canvasRapid=fixture({paint:true,surface:true});const canvasOld=canvasRapid.player.seek(0);await canvasRapid.loaded(0);
+  assert.ok(canvasRapid.images.some(image=>image.src===canvasRapid.url(1)&&image.onload),'next frame loads before the expensive render transaction');
+  assert.ok(canvasRapid.images.some(image=>image.src===canvasRapid.url(2)&&image.onload),'two-frame look-ahead starts before paint');
+  assert.equal(canvasRapid.commits.length,0,'prefetch does not prematurely commit a new camera');
   const canvasLatest=canvasRapid.player.seek(2);await canvasRapid.loaded(2);await canvasRapid.flushPaint();
   assert.equal(await canvasOld,false);assert.equal(await canvasLatest,true);assert.deepEqual(canvasRapid.commits.map(commit=>commit.index),[2]);
   assert.equal(canvasRapid.pixels.length,1,'a superseded frame cannot paint before the latest RGB/geometry commit');

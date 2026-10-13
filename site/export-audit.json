@@ -382,14 +382,14 @@
       "id": "computer-use-category-ambiguity-beechwood-0-garden-living-room-0",
       "variant": "computer-use",
       "frames": 7,
-      "source_payload_sha256": "9912ed7c2414dc39bf23014157d9a6d17196a81610659151403dd095aa6ca695",
+      "source_payload_sha256": "43348bad3c678317e3b7599b1c844e1eb174424785a89313bd085d5436db89aa",
       "geometry_key": "geometry/784386ae4194f0335fbff60a1a408c1ae84aa2af833d02a03c4c942bd60883a1"
     },
     {
       "id": "computer-use-illumination-variability-beechwood-0-int-living-room-1",
       "variant": "computer-use",
       "frames": 6,
-      "source_payload_sha256": "c1d3c23a5d9f427b07699ee7a854861a9178adb497d25f9ce02ab48fa2ffbb3b",
+      "source_payload_sha256": "1506b7d41b7ffc89cf6fad25084fa51a2d8a688c192cd6f7d924aed03247fa64",
       "geometry_key": "geometry/2cbcf6b49c107417a26c6332f796656d3b98bf4246dbc9bfc79e7d55ad6283bc"
     },
     {
@@ -403,28 +403,28 @@
       "id": "computer-use-spatial-segmentation-beechwood-1-int-playroom-0",
       "variant": "computer-use",
       "frames": 13,
-      "source_payload_sha256": "30217959ffe05aa04b77372291214893980f16a846eb1d78d6a0cfb23adab7fb",
+      "source_payload_sha256": "16d421352d2fac2f2874897395a1674f1ba166f3e6ed5eac0f21d2efd1cdae4a",
       "geometry_key": "geometry/3b9c49a2612ed71e37a80a6d586ac10ab62d894dc603a94be142558036c9e16b"
     },
     {
       "id": "computer-use-spatial-segmentation-grocery-store-cafe-dining-room-0",
       "variant": "computer-use",
       "frames": 13,
-      "source_payload_sha256": "6ac2bb4e0ed27cb1c2c44fee3cae3dd3e148b5e88ce9caec8ea2fa414c9704e9",
+      "source_payload_sha256": "91a353d7311cb0c6ac5c03d9c43501bffdbf6b9805e072d0f337fca9dea20e4e",
       "geometry_key": "geometry/32256e39b5ae1dc36e2404c1d7d48b30e3199fd19eb72c4d99a36d70de20b0d8"
     },
     {
       "id": "computer-use-spatial-segmentation-merom-0-int-living-room-0",
       "variant": "computer-use",
       "frames": 19,
-      "source_payload_sha256": "2f921d05851227ca20f198201488e2f4915e5ea6b15571851096ee3d1ee695e1",
+      "source_payload_sha256": "148d9dd78e29606cc9262dd86121b985ec76719b79d0ae4cf498f769e82233b6",
       "geometry_key": "geometry/4d2146f26cfec81acd1d1e3404afc97263531271989da262fea208c585e24efe"
     },
     {
       "id": "computer-use-structural-enclosure-beechwood-1-int-playroom-0",
       "variant": "computer-use",
       "frames": 14,
-      "source_payload_sha256": "f9f0ac3ef7c5c20b693277a20715d4eeb5222be7fe074f4d6a4431fc00572b17",
+      "source_payload_sha256": "65a0939c12cbbf2375202a583e56d341a6caf054fb89549acf7aea686ee8dd10",
       "geometry_key": "geometry/0247a9608650d9ad7ff822ac4736ec5e88cc924e4dcfac088f8b579c474f9af0"
     },
     {
@@ -528,7 +528,7 @@
     "assets/data/2bce5e2bf4e9bc8a264e5b78.js": "33aee1b0aa4609de3bd7267edf66ba524901e9fe86d512786ff262247e2b84c9",
     "assets/data/3017bcf69dd14ec0823ed162.js": "25b2a736175f4481af82863e37e236dff66c7a3a2aba0c49929a48d01d98ee03",
     "assets/data/331b704f10440fce57f25ba9.js": "28e064673e671f9caf3caab6e22c4d2269434eb256ad9ba61c03d111e66f98aa",
-    "assets/data/3a9527f2d2a8b5cab88dc96e.js": "1816e58ea4e1b091213efacde825f38a25f83b1c28969f58a3104cdac792f1c6",
+    "assets/data/3a9527f2d2a8b5cab88dc96e.js": "6d963bc806ab852c461ffd3ea9e45c7b20e90815ff9e36b5173de975254949f4",
     "assets/data/40347b849907b6125eef9882.js": "f62abfece7faf5f398dfcf2c5b068599d9cab30ec523d9a321d51a2d5257b526",
     "assets/data/415fd647c0a08d72ba899e1c.js": "318b8b2c6a31990ebe404569a9e55ef1d5809c58cf4af28b2d31fb555ac1ff2c",
     "assets/data/418cf554ca32442a9c3966d4.js": "bc6cd53e3800d6e874d17c07f3718893ca7333945a7e453e1f1e778726cfd88c",
@@ -559,7 +559,7 @@
     "assets/data/710169a5f40a02ad5b3c64b6.js": "4cd519cad7ba8dc924eb2eb2b36d62fdb04c384856b81bc9106088a7711cf31f",
     "assets/data/74debc6c95c3e7ef0d7a7432.js": "e0e669e666bf43e2980c1e63a7eb6a8b08b2ab4a23696c79db565f0b41c17ef6",
     "assets/data/7a22a902dbc5bc5b83568af2.js": "ad3958a72c32dbdf4f2201d4f4a392b4397e0a69e3e06386898c6f31ada89b71",
-    "assets/data/7a668f1b98be2e3c7bebd260.js": "19dd7f6c5a57199844aa0267d8588883895a30e58710f54d2776ab963a19458f",
+    "assets/data/7a668f1b98be2e3c7bebd260.js": "ff76f56752b60209e06ced7376dc00c6f780b0f917eeed8d0c65e6f2decdbf4c",
     "assets/data/7c18cb81230714edcda11143.js": "524e9ca08ff0efd5fba9ab8fb1b7d5bd013bec1b047f413d745022695c8322b3",
     "assets/data/7c339c49c99661fe1f4b3044.js": "6363556420357ec52f8926f0e24b03ccdc1fcb52acf1c24ce4b880c06cae7561",
     "assets/data/7d394de7317870cd9b9884aa.js": "6c2d8bf47c5534ffd97fd0cb4a36c7011b50367606cb6f97f1106f87d8038875",
@@ -582,16 +582,16 @@
     "assets/data/ad6f9b1bec4759a3fb71ef49.js": "601ecbfc0f920f2c0bf5f5c9700a487b04c868423cbbd8f0e9f31c71f54e9b75",
     "assets/data/b0747a20c13ebdf30de01a05.js": "bd82a1827a2a38481456c433ac6c1a0f6529a7a8eb16c051505a7d4d93303ba6",
     "assets/data/b392f784635795e18cc68289.js": "f699e46333a8deb9b8dbbc7d555ce918a791e6d19b5215a819ee66af3cf6bd11",
-    "assets/data/b406fda1c78d542db5e4c662.js": "a362e8fa602657b7a6482940ec0010fe8209417adccab206b9ae1c91137277de",
+    "assets/data/b406fda1c78d542db5e4c662.js": "008045a38ba6ac37ca0b32c2aff32e05e4c8f907a3b598ecc0a31e46c15fcb2e",
     "assets/data/b52cce14f8879c7eaca2cd29.js": "75f4482de5cce8dfa79ad0e5edd9b6383708c8a2a5f82afcc155c3e802fff5bd",
     "assets/data/b8a35a247ac78a34f8b7a263.js": "64bbf65af34b3700498b803df3bd36e41195dffafdded4772ab37e34ad4f83a7",
     "assets/data/b90c4c0f3dd544b596e94fde.js": "3588738dcbee1827132eee108334254c518c31af5f274144334c8fa3c5602f6b",
-    "assets/data/bbeeeaf0aa497fee606eddd2.js": "bb9ecb3a9d72222800c21b28b4b6248243299ea6cd1757641f2369afd49a50c2",
+    "assets/data/bbeeeaf0aa497fee606eddd2.js": "9c2ed8749ab7ee07ac00b59e7ad6cfd23d304c420360ecb57c029b3dd9323e6c",
     "assets/data/c86b4b2436bb8c6f5d789f43.js": "e625051d9ba7e014ff869386fdd6e40f7b432184ab339fa50b1fc9b3a43d1d1a",
     "assets/data/cadfaa75b9a743ed02eb8474.js": "757e68155a2e34f92c2c2b61c37c46ff0a07dcdc82eca2afe8c1c54e2b251126",
     "assets/data/cf7bbfdc0f2846c64124c855.js": "d4c298bf4cf7131445f50f75bb6ec884be2e07f4c9e9b0912f5c9835ab8c583e",
     "assets/data/d259a5cfbbbd8145e1b0241a.js": "21df641d6236b847df3371c5607415721e22d7b3cc2388371cb26a8fdc538584",
-    "assets/data/d86e56f1c2b2803fc0b1de27.js": "b4c83feaa50c282bf2d401fb342716fd7b19bd6a87c3c09b2cc17360aa205faa",
+    "assets/data/d86e56f1c2b2803fc0b1de27.js": "eab35d459004cf169aa1394ff5c03a8c0a32b2e2c31484e5a61bdf98b271e567",
     "assets/data/dd8d0e59ea985fe11c444023.js": "c70e5cf7e53628b0f3318fc28c89def2d909eada82fec7acfd6c0c051b38b5ce",
     "assets/data/df705ad8fd08afe607a581ab.js": "522da7edb1d79e3b3a4f6eea1f733bbd1349aff7819ccd3421bd7c49e43858fb",
     "assets/data/e22dc4452e795953ce79083c.js": "9fd97b6bf6efc9ef2ee0d1dfa9c20bc9fb20831bde45056ec8823c2bb614452a",
@@ -600,7 +600,7 @@
     "assets/data/e937d6b9f855537361fc024e.js": "b7a28ff66cc21abfb8e24ed7110338e7b42231f92aa8b4197bbd16d1282d3cdc",
     "assets/data/e9d64123e849771935a10386.js": "44c219c33f3bf1d90d05dc61f4c5a59135381b1162f858170bf7f6bfd1f8d8d4",
     "assets/data/ea7d846cdccad93030b2bc11.js": "c048f10ae199ed15ada13430f2e1c93f9a725b5451c85a30a1b0de5ad16b4c47",
-    "assets/data/ec27bceee827855992a279b3.js": "05b6a1c03d7bcfd1eae3f479cd87429d5cb2ff258eaf260d2bd21f1182106370",
+    "assets/data/ec27bceee827855992a279b3.js": "847f5df21ade66b1a149466b4b813fed2e5c023dbe702a56faf9dd92d9c8bf41",
     "assets/data/f338fe333a09e9095eb6180b.js": "ee14d87d974bd21b9d46adaaf1fa5fa2cfbe6dbc6a155d5a15a8a848c933ac71",
     "assets/data/f4d26d2d57a1efd01dfdbd6f.js": "e2e40323709241e3a1ae7e1c5ff8366fa3f66c82def70f8794884cecd1829bfc",
     "assets/data/f62b7188243c746f5d742d31.js": "8353552d9cf81407ee91640cc76b80230d60779e8e53bfb0d3fbe1f328932ccc",
@@ -608,7 +608,7 @@
     "assets/data/f7ded134058a75737c6f3b69.js": "c81236346e44fd3d96e071877d60d635e009bf2858ef8ce9d73ec201a45baa78",
     "assets/data/f8ebb221c2432961312cf7c9.js": "83d443310a81ec22ee800b71cab58cfa64248f9a71cbcb42c47adda6c1f956ca",
     "assets/data/fbd1c896618390a9fa29fd46.js": "8a75a8778b8049dbb3cddef569aa370576fd9a0cfc9d785719f3b30e11141466",
-    "assets/frame_playback.js": "aca931cb40652da290e32378bd5b291d23eb09ad124ba9234e5b04dcc613d515",
+    "assets/frame_playback.js": "e6ee30d3ab919d7eb5d53a5332005ca3f526ac6dd0dd29244e17743237fcf3dc",
     "assets/images/005aee9e15230a39fc671fa6e2dd70d66dee12d6b6860faf89af0fba0a33b0cb.png": "005aee9e15230a39fc671fa6e2dd70d66dee12d6b6860faf89af0fba0a33b0cb",
     "assets/images/0083ac7432c4d568c64746dbff974979aa1241588a83927988b9c040f4d5f5d0.png": "0083ac7432c4d568c64746dbff974979aa1241588a83927988b9c040f4d5f5d0",
     "assets/images/008b4d997c29ab855790b9b2bcedab3c3e8271fe979b191e9b1fd195766681b2.png": "008b4d997c29ab855790b9b2bcedab3c3e8271fe979b191e9b1fd195766681b2",
@@ -1653,7 +1653,7 @@
     "assets/offline-manifest.js": "af75749b0dd6c8e7de68e3ca5a956bb56026a1b485fae5705bd2d1ea1ad52bbe",
     "assets/page_navigation.js": "15be9be9bd2131227bbfe5222a033d6ccf07967c976b9a60638fd60a914fed02",
     "assets/static_runtime.js": "707e9022c9e31c6b7c3335415655325de0f7a0188317a464e689238efc9294e9",
-    "experiments.html": "48d494355cb3eb86cf11151905442d0731d531578bf6774ad6977e3ca2aa24f2",
+    "experiments.html": "521cf6d80d0887bd530fe453f30de1c60a6eae0a9fc3d49c2deccc67f82b4790",
     "index.html": "26444ea7d18267389934eabc2a1a4c49a1baf40bb27119d7b9aaa10a3b7c9657",
     "reasons.html": "dc80036d5b1292b15de7bc4aab44bcbee8585943c9178d9c87851252a78218c5",
     "使用说明.md": "452944ba3c69f99b6f260cfc95d73391ba80760f955402731c3e19fa3451c189"
@@ -1686,11 +1686,21 @@
   ],
   "presentation_revision": {
     "date": "2026-10-13",
-    "scope": "Observation and robot playback synchronization",
-    "method": "Decode saved RGB, then paint its stable canvas and the 3D scene/step labels in one requestAnimationFrame transaction",
+    "scope": "Audited image/observation-pose alignment and playback optimization",
+    "method": "Preserve saved RGB/actions/raw poses; render audited observation camera, decoded RGB and labels atomically. Remove unused interior-ring rays and prefetch two upcoming images before rendering.",
+    "unused_rays_removed_per_cold_pose": 1568,
     "cancel_stale_queued_paints": true,
     "experimental_data_changed": false,
-    "source_viewer_sha256": "b2784d1b37c7655ea9c29c4221ff49fa9ee51cd7728d54221f36a66b79ea5472",
-    "source_player_sha256": "aca931cb40652da290e32378bd5b291d23eb09ad124ba9234e5b04dcc613d515"
+    "source_viewer_sha256": "1cc2cc33399fac491e863dec6c8e5b395c75ab195e9bff91cb8dfb2e95d8318d",
+    "source_player_sha256": "e6ee30d3ab919d7eb5d53a5332005ca3f526ac6dd0dd29244e17743237fcf3dc"
+  },
+  "observation_alignment_revision": {
+    "date": "2026-10-13",
+    "runs": 6,
+    "annotated_frames": 21,
+    "manifest_sha256": "20cc0159f1473d48bb7d29bc3e2c45fb687073a3cc9a57035f7f5313a51778f6",
+    "method": "Conservative unchanged-image motion alignment, not a universal frame offset",
+    "raw_images_actions_and_poses_changed": false,
+    "annotations_are_presentation_metadata_not_new_experiments": true
   }
 }
