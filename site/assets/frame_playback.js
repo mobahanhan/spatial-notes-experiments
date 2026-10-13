@@ -57,6 +57,21 @@
       return resolve(route);
     }
     display(image, index) {
+      const surface = this.options.surface;
+      if (surface) {
+        // Paint the decoded RGB into a stable canvas. Replacing an <img> can
+        // leave its old compositor layer visible while the 3D canvas advances.
+        // Both canvases now receive their pixels in the same animation frame.
+        if (image) {
+          const width = image.naturalWidth, height = image.naturalHeight;
+          if (!(width > 0 && height > 0)) throw Error('图片尺寸无效，请重试');
+          if (surface.width !== width) surface.width = width;
+          if (surface.height !== height) surface.height = height;
+          surface.getContext('2d').drawImage(image, 0, 0, width, height);
+        }
+        surface.hidden = !image;
+        surface.dataset.displayedFrame = String(index);
+      }
       if (image && image !== this.image) {
         // Swap the already decoded element, so there is no blank intermediate
         // image and geometry/labels can be committed in the same browser task.
@@ -66,9 +81,29 @@
         this.image.replaceWith(image);
         this.image = image;
       }
-      this.image.hidden = !image;
+      // Keep the original image/URL available for inspection, not as a second
+      // asynchronously painted visible layer when a synchronized surface exists.
+      this.image.hidden = Boolean(surface) || !image;
       if (!image) this.image.removeAttribute('src');
       this.image.dataset.displayedFrame = String(index);
+    }
+    present(image, index, request) {
+      return new Promise((resolve, reject) => {
+        const paint = () => {
+          if (request !== this.request || !this.active) { resolve(false); return; }
+          try {
+            this.display(image, index);
+            this.index = index;
+            this.busy = false;
+            this.options.onCommit(index, this.image);
+            if (this.playing && index === this.count - 1) this.pause();
+            else this.notify();
+            resolve(true);
+          } catch (error) { reject(error); }
+        };
+        const requestFrame = this.options.requestFrame || window.requestAnimationFrame?.bind(window);
+        if (requestFrame) requestFrame(paint); else paint();
+      });
     }
     async seek(value, {playback = false} = {}) {
       if (!this.count) return false;
@@ -85,12 +120,7 @@
         const url = this.url(index);
         const image = url ? await this.load(url) : null;
         if (request !== this.request || !this.active) return false;
-        this.display(image, index);
-        this.index = index;
-        this.busy = false;
-        this.options.onCommit(index, this.image);
-        if (this.playing && index === this.count - 1) this.pause();
-        else this.notify();
+        if (!await this.present(image, index, request)) return false;
         try { if (index + 1 < this.count) {
           const next = this.url(index + 1);
           if (next) this.load(next).catch(() => {});
@@ -157,6 +187,11 @@
       this.cache.clear();
       this.image.hidden = true;
       this.image.removeAttribute('src');
+      delete this.image.dataset.displayedFrame;
+      if (this.options.surface) {
+        this.options.surface.hidden = true;
+        delete this.options.surface.dataset.displayedFrame;
+      }
       this.notify();
     }
   }

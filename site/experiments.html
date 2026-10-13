@@ -107,7 +107,7 @@
       <p class="accuracy-scope" id="accuracyMethod">按任务类型、场景、房间与原始题目标识匹配；不随搜索、当前题目或步骤改变。同题不代表动作预算与观察方式完全一致。</p>
       <p class="accuracy-scope accuracy-warning" id="accuracyWarning" role="status"></p>
     </section>
-    <section class="section"><h2>本次回答</h2><div class="result" id="result">—</div><img class="frame-image" id="frameImage" alt="当前轨迹帧的第一视角图像" hidden><p class="playback-status" id="framePlaybackStatus" role="status"></p><button class="image-retry" id="retryFrameImage" type="button" hidden>重试当前图片</button></section>
+    <section class="section"><h2>本次回答</h2><div class="result" id="result">—</div><img class="frame-image" id="frameImage" alt="当前轨迹帧的第一视角图像" hidden><canvas class="frame-image" id="frameImageSurface" role="img" aria-label="与三维镜头同步的原始第一视角图像" hidden></canvas><p class="playback-status" id="framePlaybackStatus" role="status"></p><button class="image-retry" id="retryFrameImage" type="button" hidden>重试当前图片</button></section>
     <section class="section" id="decisionSection" aria-labelledby="decisionHeading">
       <h2 id="decisionHeading">逐步记录</h2>
       <div class="decision-header"><strong id="decisionStep">尚无记录</strong><div class="decision-navigation"><button id="decisionPrev" type="button" disabled>上一条</button><button id="decisionNext" type="button" disabled>下一条</button></div></div>
@@ -118,7 +118,7 @@
     </section>
     <section class="section" id="harnessSection" hidden><h2>Harness 协议状态</h2><div class="harness-state" id="harnessState">—</div></section>
     <section class="section" id="computerUseSection" hidden><h2>GPT-6.1 Sol 直接观察 · 操作记录</h2><div class="cu-state" id="computerUseState"></div><details class="decision-disclosure"><summary>GPT-6.1 Sol 直接观察 记录方式</summary><p class="note" id="computerUseMethod"></p></details></section>
-    <section class="section" id="walkPanel" hidden><h2>Robot walk · 保存的实际回放</h2><select class="walk-replay-select" id="walkReplaySelect" aria-label="机器人回放视角"></select><img class="frame-image" id="walkImage" alt="实际保存的机器人行走回放图像"><p class="playback-status" id="walkPlaybackStatus" role="status"></p><button class="image-retry" id="retryWalkImage" type="button" hidden>重试当前回放图片</button><div class="walk-controls"><button id="walkPlay" type="button">▶ 回放</button><input id="walkScrubber" type="range" min="0" max="0" value="0" aria-label="行走回放帧"></div><p class="note" id="walkLabel"></p></section>
+    <section class="section" id="walkPanel" hidden><h2>Robot walk · 保存的实际回放</h2><select class="walk-replay-select" id="walkReplaySelect" aria-label="机器人回放视角"></select><img class="frame-image" id="walkImage" alt="实际保存的机器人行走回放图像" hidden><canvas class="frame-image" id="walkImageSurface" role="img" aria-label="与机器人轨迹同步的原始行走回放图像" hidden></canvas><p class="playback-status" id="walkPlaybackStatus" role="status"></p><button class="image-retry" id="retryWalkImage" type="button" hidden>重试当前回放图片</button><div class="walk-controls"><button id="walkPlay" type="button">▶ 回放</button><input id="walkScrubber" type="range" min="0" max="0" value="0" aria-label="行走回放帧"></div><p class="note" id="walkLabel"></p></section>
     <section class="section"><h2>选中项</h2><div class="note mono" id="selection">点击一个几何体或移动时间轴。</div></section>
   </aside>
   <footer class="timeline">
@@ -449,14 +449,15 @@
   function drawGroundLight(){if(toggles.rays.checked&&data.trajectory?.[step]){const pose=data.trajectory[step],sampled=sampleViewProjection(pose.position,pose.quaternion_xyzw,viewMaxDistance(pose.position));paintUnifiedProjection(sampled,css('--orange'))}if(toggles.gt.checked)(data.reference_cameras||[]).forEach(pose=>{const sampled=sampleViewProjection(pose.position,pose.quaternion_xyzw,viewMaxDistance(pose.position));paintUnifiedProjection(sampled,css('--gt'))})}
   function drawRobotWalk(){const replay=data.walk_replays?.[walkReplay];if(!replay)return;const positions=replay.frames.map(frame=>frame.robot_position).filter(Boolean);if(toggles.path.checked&&positions.length>1)drawLine(positions,'#ec4899',3);const current=replay.frames[walkStep]?.robot_position;if(current){const point=project(add(current,[0,0,.18]));if(point){ctx.save();ctx.beginPath();ctx.arc(point.x,point.y,7,0,Math.PI*2);ctx.fillStyle='#ec4899';ctx.fill();ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#ec4899';ctx.font='bold 12px sans-serif';ctx.fillText('robot',point.x+10,point.y-8);ctx.restore()}}}
   function render(){
-    if(!data||!(w>0&&h>0&&canvas.width>0&&canvas.height>0))return;renderBasis=basis();renderPointCache=new WeakMap();ctx.clearRect(0,0,w,h);projectedObjects=[];
-    if(roomLayoutMode){drawFloorPlan();drawRoomHighlight();drawTrajectory();drawRobotWalk();drawGt();drawRoomLabels();return}
+    if(!data||framePlayer.index<0||!(w>0&&h>0&&canvas.width>0&&canvas.height>0))return;renderBasis=basis();renderPointCache=new WeakMap();ctx.clearRect(0,0,w,h);projectedObjects=[];
+    if(roomLayoutMode){drawFloorPlan();drawRoomHighlight();drawTrajectory();drawRobotWalk();drawGt();drawRoomLabels();markRenderedFrame();return}
     const active=toggles.rooms.checked?roomRegions().find(r=>r.name===activeRoomName()):null,members=active?roomObjects(active):null;
     ctx.save();if(active)ctx.globalAlpha=.38;drawRoom(data.room_geometry);ctx.restore();drawRoomRegions();drawGroundLight();
     const meshDoors=new Set([...(data.architecture?.doors||[]),...(data.architecture?.windows||[])].map(item=>item.name));
     if(toggles.objects.checked)for(const object of visibleObjects()){if(meshDoors.has(object.name))continue;ctx.save();if(members&&!members.has(object))ctx.globalAlpha=.20;drawBox(object);ctx.restore()}
-    drawArchitectureDoors();drawRoomHighlight();drawTrajectory();drawRobotWalk();drawGt();drawRoomLabels();
+    drawArchitectureDoors();drawRoomHighlight();drawTrajectory();drawRobotWalk();drawGt();drawRoomLabels();markRenderedFrame();
   }
+  function markRenderedFrame(){canvas.dataset.displayedFrame=String(step);canvas.dataset.displayedWalkFrame=String(walkStep);canvas.dataset.runId=currentRunId||''}
   function scheduleRender(){if(renderPending)return;renderPending=true;requestAnimationFrame(()=>{renderPending=false;render()})}
   function measureCanvas(){
     const rect=canvas.getBoundingClientRect();
@@ -637,7 +638,7 @@
     if(pose.computer_use_milestone){const milestone=document.createElement('div');milestone.className='cu-milestone';milestone.textContent=pose.computer_use_milestone;host.append(milestone)}
   }
   function setWalkStep(value){return walkPlayer.seek(value)}
-  function commitWalkStep(value){const replay=data?.walk_replays?.[walkReplay];if(!replay)return;walkStep=value;document.querySelector('#walkScrubber').value=walkStep;const frame=replay.frames[walkStep];document.querySelector('#walkLabel').textContent=`回放 ${walkReplay+1} · ${walkStep+1}/${replay.frames.length} 帧${frame.robot_position?` · robot (${frame.robot_position.map(v=>Number(v).toFixed(2)).join(', ')})`:''}\n粉色：机器人保存路径；青色：观察相机轨迹。回放图片来自本轮保存记录。`;scheduleRender()}
+  function commitWalkStep(value){const replay=data?.walk_replays?.[walkReplay];if(!replay)return;walkStep=value;document.querySelector('#walkScrubber').value=walkStep;const frame=replay.frames[walkStep];document.querySelector('#walkLabel').textContent=`回放 ${walkReplay+1} · ${walkStep+1}/${replay.frames.length} 帧${frame.robot_position?` · robot (${frame.robot_position.map(v=>Number(v).toFixed(2)).join(', ')})`:''}\n粉色：机器人保存路径；青色：观察相机轨迹。回放图片来自本轮保存记录。`;render()}
   function initWalk(){walkReplay=0;walkStep=0;walkPlayer.reset();const replays=data.walk_replays||[];document.querySelector('#walkPanel').hidden=!replays.length;document.querySelector('#walkReplaySelect').replaceChildren(...replays.map((replay,index)=>{const option=document.createElement('option');option.value=index;option.textContent=`回放 ${index+1} · ${replay.frames.length} 帧 · ${replay.at||''}`;return option}));if(replays.length){document.querySelector('#walkScrubber').max=replays[0].frames.length-1;setWalkStep(0)}}
   function setStep(value){
     return framePlayer.seek(value);
@@ -685,6 +686,7 @@
   async function loadRun(id){
     const serial=++loadSerial;activeLoadController?.abort();closeModelOutputPopup();closeModelInputPopup();modelInputKey='';modelInputPayload=null;
     document.querySelector('#modelOutputControl').hidden=true;document.querySelector('#retryLoad').hidden=true;currentRunId=id;framePlayer.reset();walkPlayer.reset();
+    ctx.clearRect(0,0,w,h);delete canvas.dataset.displayedFrame;delete canvas.dataset.displayedWalkFrame;delete canvas.dataset.runId;document.querySelector('#stepCount').textContent='—';document.querySelector('#stepLabel').textContent='载入当前任务图片…';
     document.querySelector('#walkPanel').hidden=true;document.querySelector('#taskObservationSection').hidden=true;document.querySelector('#computerUseSection').hidden=true;
     document.querySelector('#play').disabled=true;document.querySelector('#scrubber').disabled=true;document.querySelector('#scene').textContent='加载中…';
     try{const payload=await requestRunData(id,serial);if(serial!==loadSerial||!payload)return;
@@ -762,8 +764,8 @@
     status.textContent=state.error|| (state.busy?`正在加载帧 ${state.wanted+1}/${state.count}${state.index>=0?` · 当前显示 ${state.index+1}`:''}`:'');status.dataset.error=String(Boolean(state.error));document.querySelector(walk?'#retryWalkImage':'#retryFrameImage').hidden=!state.error;
     if(walk){walkPlaying=state.playing;if(state.playing)framePlayer.pause()}else{playing=state.playing;if(state.playing)walkPlayer.pause()}
   }
-  const framePlayer=FramePlayback.create({image:document.querySelector('#frameImage'),count:()=>data?.trajectory?.length||0,url:index=>data?.trajectory?.[index]?.image&&currentRunId?`/api/frame?id=${encodeURIComponent(currentRunId)}&index=${index}`:null,interval:650,onCommit:commitStep,onState:state=>playbackState(state)});
-  const walkPlayer=FramePlayback.create({image:document.querySelector('#walkImage'),count:()=>data?.walk_replays?.[walkReplay]?.frames?.length||0,url:index=>`/api/walk-frame?id=${encodeURIComponent(currentRunId)}&replay=${walkReplay}&index=${index}`,interval:180,onCommit:commitWalkStep,onState:state=>playbackState(state,true)});
+  const framePlayer=FramePlayback.create({image:document.querySelector('#frameImage'),surface:document.querySelector('#frameImageSurface'),count:()=>data?.trajectory?.length||0,url:index=>data?.trajectory?.[index]?.image&&currentRunId?`/api/frame?id=${encodeURIComponent(currentRunId)}&index=${index}`:null,interval:650,onCommit:commitStep,onState:state=>playbackState(state)});
+  const walkPlayer=FramePlayback.create({image:document.querySelector('#walkImage'),surface:document.querySelector('#walkImageSurface'),count:()=>data?.walk_replays?.[walkReplay]?.frames?.length||0,url:index=>`/api/walk-frame?id=${encodeURIComponent(currentRunId)}&replay=${walkReplay}&index=${index}`,interval:180,onCommit:commitWalkStep,onState:state=>playbackState(state,true)});
   Object.values(toggles).forEach(el=>el.addEventListener('change',()=>{if(!toggles.rooms.checked)setHoveredRoom(null);syncRoomLabelControl();renderObjectList();render()}));document.querySelector('#scrubber').addEventListener('input',e=>{framePlayer.pause();setStep(e.target.value)});document.querySelector('#play').addEventListener('click',()=>framePlayer.toggle());addEventListener('resize',resize);
   document.querySelector('#roomLabelsButton').addEventListener('click',()=>setRoomLabelsVisible(!showRoomLabels));document.addEventListener('keydown',handleRoomLabelShortcut);
   document.querySelector('#geometryView').addEventListener('click',()=>setLayoutMode(false));document.querySelector('#layoutView').addEventListener('click',()=>setLayoutMode(true));
