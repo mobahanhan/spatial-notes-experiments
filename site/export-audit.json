@@ -1650,10 +1650,10 @@
     "assets/images/feaaef17c782578a9601a4a5322d91ffedf9d48fc868e44450d1fc641435c0f3.png": "feaaef17c782578a9601a4a5322d91ffedf9d48fc868e44450d1fc641435c0f3",
     "assets/images/ff741fb56b9f4d86a6c18445f803eb9850543a74dee83b4c14491785eefafcd9.png": "ff741fb56b9f4d86a6c18445f803eb9850543a74dee83b4c14491785eefafcd9",
     "assets/images/ff8bfbc7df3b0f3442913e91b92b408300b21709b6d589d4bc7c70282f1ca2ca.png": "ff8bfbc7df3b0f3442913e91b92b408300b21709b6d589d4bc7c70282f1ca2ca",
-    "assets/offline-manifest.js": "af75749b0dd6c8e7de68e3ca5a956bb56026a1b485fae5705bd2d1ea1ad52bbe",
+    "assets/offline-manifest.js": "a9eeaceb2b6e58330526293e29a8ad490514363d16aaf5cbbb3a34e57a275018",
     "assets/page_navigation.js": "15be9be9bd2131227bbfe5222a033d6ccf07967c976b9a60638fd60a914fed02",
     "assets/static_runtime.js": "707e9022c9e31c6b7c3335415655325de0f7a0188317a464e689238efc9294e9",
-    "experiments.html": "521cf6d80d0887bd530fe453f30de1c60a6eae0a9fc3d49c2deccc67f82b4790",
+    "experiments.html": "300690571e06fd4e800cdefd186755275be307ba02e2d53364e4c5325e385d42",
     "index.html": "26444ea7d18267389934eabc2a1a4c49a1baf40bb27119d7b9aaa10a3b7c9657",
     "reasons.html": "dc80036d5b1292b15de7bc4aab44bcbee8585943c9178d9c87851252a78218c5",
     "使用说明.md": "452944ba3c69f99b6f260cfc95d73391ba80760f955402731c3e19fa3451c189"
@@ -1701,6 +1701,7 @@
     "manifest_sha256": "20cc0159f1473d48bb7d29bc3e2c45fb687073a3cc9a57035f7f5313a51778f6",
     "method": "Conservative unchanged-image motion alignment, not a universal frame offset",
     "raw_images_actions_and_poses_changed": false,
-    "annotations_are_presentation_metadata_not_new_experiments": true
+    "annotations_are_presentation_metadata_not_new_experiments": true,
+    "updated_data_urls_versioned": true
   }
 }
