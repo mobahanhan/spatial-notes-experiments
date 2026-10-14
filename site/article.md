@@ -103,6 +103,21 @@ GPT-6.1 的实验结果也表明，在部分成功的任务中，也确实是先
 | Spatial Segmentation | 综合分区视角，统计餐厅中的三明治总数（grocery_store_cafe / dining_room_0） | 错误 | 错误 | 错误 | 错误 |
 | Spatial Segmentation | 综合分区视角，统计 Merom 客厅中的三明治总数（Merom_0_int / living_room_0） | 正确 | 正确 | 正确 | 正确 |
 | Structural Enclosure | 检查箱体内部，统计三明治总数（Beechwood_1_int / playroom_0） | 正确 | 正确 | 错误 | 正确 |
+| Category Ambiguity | 区分相似食物，统计三明治数量 · q_001（hall_glass_ceiling / bathroom_0） | - | - | - | 正确 |
+| Category Ambiguity | 区分相似食物，统计三明治数量 · q_004（house_double_floor_lower / kitchen_0） | - | - | - | 错误 |
+| Category Ambiguity | 区分相似食物，统计三明治数量 · q_002（house_double_floor_upper / bedroom_0） | - | - | - | 正确 |
+| Counting w Occlusion | 检查遮挡区域，统计三明治数量 · q_003（house_single_floor / living_room_0） | - | - | - | 错误 |
+| Counting w Occlusion | 检查遮挡区域，统计三明治数量 · q_000（Merom_0_int / playroom_0） | - | - | - | 错误 |
+| Counting w Occlusion | 检查遮挡区域，统计三明治数量 · q_001（grocery_store_cafe / dining_room_0） | - | - | - | 正确 |
+| Spatial Segmentation | 综合分区视角，统计三明治数量 · q_003（gates_bedroom / bedroom_0） | - | - | - | 正确 |
+| Spatial Segmentation | 综合分区视角，统计三明治数量 · q_002（Ihlen_1_int / living_room_0） | - | - | - | 错误 |
+| Spatial Segmentation | 综合分区视角，统计三明治数量 · q_001（Beechwood_0_int / living_room_1） | - | - | - | 错误 |
+| Category Ambiguity | 区分相似食物，统计三明治数量 · q_002（Merom_1_int / childs_room_0） | - | - | - | 错误 |
+| Category Ambiguity | 区分相似食物，统计三明治数量 · q_004（office_cubicles_right / lobby_0） | - | - | - | 错误 |
+| Counting w Occlusion | 检查遮挡区域，统计三明治数量 · q_004（house_single_floor / living_room_1） | - | - | - | 错误 |
+| Counting w Occlusion | 检查遮挡区域，统计三明治数量 · q_001（hotel_gym_spa / spa_1） | - | - | - | 错误 |
+| Spatial Segmentation | 综合分区视角，统计三明治数量 · q_002（gates_bedroom / bedroom_0） | - | - | - | 正确 |
+| Spatial Segmentation | 综合分区视角，统计三明治数量 · q_000（office_cubicles_left / private_office_5） | - | - | - | 错误 |
 
 ### 全部实验
 
@@ -111,7 +126,7 @@ GPT-6.1 的实验结果也表明，在部分成功的任务中，也确实是先
 | 不带提示 | 20 | 3 | 5 | 12 | 8/20（40.0%） | 3/20（15.0%） |
 | 带提示 | 20 | 4 | 5 | 11 | 9/20（45.0%） | 4/20（20.0%） |
 | Harness | 9 | 5 | 0 | 4 | 5/9（55.6%） | 5/9（55.6%） |
-| GPT-6.1 Sol 直接观察 | 20 | 13 | 0 | 7 | 13/20（65.0%） | 13/20（65.0%） |
+| GPT-6.1 Sol 直接观察 | 35 | 18 | 0 | 17 | 18/35（51.4%） | 18/35（51.4%） |
 
 ### 共同实验
 

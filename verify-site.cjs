@@ -89,7 +89,7 @@ async function request(route) {
 function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); }
 (async () => {
   const catalog = await request('/api/catalog');
-  assert.equal(catalog.length, 69);
+  assert.equal(catalog.length, 84);
   assert.equal(catalog.length, audit.runs);
   const variants = {};
   let frames = 0, walks = 0, inputSteps = 0, inputImageReferences = 0, directCorrect = 0, alignedFrames = 0;
@@ -142,8 +142,8 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
       }
     }
   }
-  assert.deepEqual(variants, {unhinted: 20, hinted: 20, 'ordered-survey-v6': 9, 'computer-use': 20});
-  assert.ok(frames >= 788, 'The original 777 frames and each newly completed task must remain present');
+  assert.deepEqual(variants, {unhinted: 20, hinted: 20, 'ordered-survey-v6': 9, 'computer-use': 35});
+  assert.equal(frames, 1072, 'Preserve the original 928 frames and all 144 newly recorded frames');
   assert.equal(walks, 128);
   assert.equal(inputSteps, 259);
   assert.equal(frames, audit.counts.trajectory_frames);
@@ -152,13 +152,19 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
   assert.equal(inputSteps, audit.counts.harness_input_steps);
   const accuracy = await request('/api/accuracy');
   assert.equal(accuracy.labels['computer-use'], 'GPT-6.1 Sol 直接观察');
-  assert.equal(accuracy.computer_use.stats.total, 20);
-  assert.equal(accuracy.computer_use.stats.scored, 20);
+  assert.equal(accuracy.computer_use.stats.total, 35);
+  assert.equal(accuracy.computer_use.stats.scored, 35);
+  assert.equal(accuracy.computer_use.stats.correct, 18);
   assert.equal(accuracy.computer_use.stats.correct, directCorrect);
   assert.equal(accuracy.computer_use.stats.complete, true);
   assert.equal(accuracy.harness_cohort.variants['computer-use'].correct, 7, 'The original common cohort must be unchanged');
-  if (audit.image_format === 'lossless-webp') {
-    assert.equal(Object.keys(audit.image_audit).length, audit.unique_images);
+  if (['lossless-webp','mixed-original-and-lossless-webp'].includes(audit.image_format)) {
+    if (audit.image_format === 'lossless-webp') assert.equal(Object.keys(audit.image_audit).length, audit.unique_images);
+    else {
+      assert.equal(audit.additional_direct_observation_revision.added_runs, 15);
+      assert.equal(audit.additional_direct_observation_revision.original_image_files_preserved, true);
+      assert.ok(Object.keys(audit.image_audit).length > 0);
+    }
     for (const [relative, entry] of Object.entries(audit.image_audit)) {
       assert.ok(relative.endsWith('.webp'));
       assert.equal(entry.pixels_verified_identical, true);

@@ -142,7 +142,7 @@
 </div>
 <script src="assets/page_navigation.js" defer></script>
 <script src="assets/frame_playback.js?v=20261013-observation-2"></script>
-<script src="assets/offline-manifest.js?v=20261013-observation-2"></script>
+<script src="assets/offline-manifest.js?v=20261014-direct-35"></script>
 <script src="assets/static_runtime.js"></script>
 <script src="assets/architecture_geometry.js"></script>
 <script>
@@ -756,7 +756,8 @@
         const button=document.createElement('button');button.type='button';button.className='task-button';
         button.setAttribute('aria-current',String(item.question_number===selected));
         button.title=`${item.display_name||item.run_label||item.task}\n任务标识：${item.question_id||'—'}\n${item.variant==='ordered-survey-v6'?'Harness':item.variant_label||variant}`;
-        button.innerHTML=`${esc(item.task_label||item.task)}<small>${esc(item.scene)} / ${esc(item.room)}</small>`;
+        const repeated=questions.some(other=>other.question_number!==item.question_number&&(other.task_key||other.task)===(item.task_key||item.task)&&other.scene===item.scene&&other.room===item.room),identity=item.source_batch||repeated?` · ${(item.question_id||'').split('/').at(-1)}`:'';
+        button.innerHTML=`${esc(item.task_label||item.task)}<small>${esc(item.scene)} / ${esc(item.room)}${esc(identity)}</small>`;
         button.addEventListener('click',()=>{document.querySelector('#questionSelect').value=String(item.question_number);syncRun()});
         return button;
       }));
