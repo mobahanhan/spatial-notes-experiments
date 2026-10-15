@@ -146,7 +146,12 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
     }
   }
   assert.deepEqual(variants, {unhinted: 20, hinted: 20, 'ordered-survey-v6': 9, 'computer-use': 44});
-  assert.equal(frames, 1179, 'Preserve the preceding 1072 records and all 107 continuation records');
+  assert.equal(frames, 1174, 'Replace only the requested Spatial Segmentation q_001: 8 old frames become 3 new frames');
+  const replacement = audit.single_run_replacement;
+  assert.equal(replacement.id, 'computer-use-spatial-segmentation-beechwood-0-int-living-room-1-q-001');
+  assert.equal(replacement.old_frames, 8);
+  assert.equal(replacement.new_frames, 3);
+  assert.equal(replacement.other_92_runs_unchanged, true);
   assert.equal(missingObservations, 1, 'GPU-crash action must remain explicitly without fabricated RGB');
   assert.equal(restarts, 1, 'Do not draw a technical reload as agent movement');
   assert.equal(recoveredMetadata, 1, 'One sidecar was explicitly recovered from redundant native action data');

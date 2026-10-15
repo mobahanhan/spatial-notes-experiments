@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "exported_at": "2026-10-15T14:29:57.272806+08:00",
-  "source_catalog_sha256": "152ec256b04c851c79d987d4f285564f1b817e924dc2d4836b8ce2ca91ca573a",
+  "exported_at": "2026-10-15T16:43:25.480726+08:00",
+  "source_catalog_sha256": "35233f9ddc71378e7ecb5e30ebd06e71a75d0c952543cc61e6f45349c71d8c62",
   "source_article_sha256": "662f4b4c7c37814e972cdc0a887539e69cd43d292152c5a8c66b02cdf262d31b",
   "runs": 93,
   "variants": {
@@ -11,7 +11,7 @@
     "computer-use": 44
   },
   "counts": {
-    "trajectory_frames": 1179,
+    "trajectory_frames": 1174,
     "hidden_blank_judgments": 17,
     "input_image_references": 376,
     "harness_input_steps": 259,
@@ -19,7 +19,7 @@
     "robot_replay_frames": 128,
     "originally_unavailable_observation_frames": 1
   },
-  "unique_images": 1291,
+  "unique_images": 1294,
   "unique_geometry_sets": 43,
   "run_audit": [
     {
@@ -564,8 +564,8 @@
     {
       "id": "computer-use-spatial-segmentation-beechwood-0-int-living-room-1-q-001",
       "variant": "computer-use",
-      "frames": 8,
-      "source_payload_sha256": "3ea7bc3a0b364e9c12f478ab36114e56483ef1e0339e24e5566d471926269bd4",
+      "frames": 3,
+      "source_payload_sha256": "de3e92c567d563dd60748e62abc3ca500435e5adfd7d488d0aeaf2d6deeb6bdd",
       "geometry_key": "geometry/2d36c566ac65b4b4434cdfdbeb10a5af36a7d6061aed5f772bb4da6ee6c6df66"
     },
     {
@@ -1540,10 +1540,10 @@
     "assets/images/fd77adea745b82d518ae04bf7a9d6caf4b19540920f9c565f616c9e6d86b553e.png": "fd77adea745b82d518ae04bf7a9d6caf4b19540920f9c565f616c9e6d86b553e",
     "assets/images/ff741fb56b9f4d86a6c18445f803eb9850543a74dee83b4c14491785eefafcd9.png": "ff741fb56b9f4d86a6c18445f803eb9850543a74dee83b4c14491785eefafcd9",
     "assets/images/ff8bfbc7df3b0f3442913e91b92b408300b21709b6d589d4bc7c70282f1ca2ca.png": "ff8bfbc7df3b0f3442913e91b92b408300b21709b6d589d4bc7c70282f1ca2ca",
-    "assets/offline-manifest.js": "171a76c673c98d392788c90aa436503f7769d78aee68530ef2990a5c6851f9df",
+    "assets/offline-manifest.js": "ae892d1d92c15cd6436b1e03718488ae81569ef1adce2120bf9c6660bcd5a9fc",
     "assets/page_navigation.js": "15be9be9bd2131227bbfe5222a033d6ccf07967c976b9a60638fd60a914fed02",
     "assets/static_runtime.js": "dd15cb1b5926ee769fc14c1046681bc6ab3f09c2f59e4b19d4cb97d37e09d9ba",
-    "experiments.html": "4bcaf37938c768f4863a0a06458adbf76a70d2cf4bda1506a7296e4c11ecc8ed",
+    "experiments.html": "6514043886c96c28ca3cbbcdbe1993126a5ba077680216fdc9315036ab2073cb",
     "index.html": "04ad4f9f0319fd3ed8f7240da2b2f86ccec74388dc064f4c55c7b2014229baa6",
     "reasons.html": "dc80036d5b1292b15de7bc4aab44bcbee8585943c9178d9c87851252a78218c5",
     "使用说明.md": "452944ba3c69f99b6f260cfc95d73391ba80760f955402731c3e19fa3451c189",
@@ -1691,7 +1691,7 @@
     "assets/images/c7369df7a07117c5450a00b122cd70381a2637db64e3d702c52462ab90ce5cd9.webp": "2d0aee90c5a7eb9cdec41985b29f8bcad1d94ebd34bc319d7bf2d14d071ea2fd",
     "assets/data/fb656ea3f2eeb52009589086.js": "7940536b9b99ad509001265f83a014a036e180bc7f5950bb1b84ca1b17503dd0",
     "assets/images/a25ae8f0b29ea92220b7be844097bf60a726156be3592a6a4ff7c1cd1db18713.webp": "0a9001418e8360a9943c73ec7d79c59c38e530eb4dda691a850c415dee857e91",
-    "assets/data/479c44f53147703945c08ab1.js": "b499e976053fd94102255c4b5b9f1a050ad2bbc3bc411e572cf1d26fbfffdf1c",
+    "assets/data/479c44f53147703945c08ab1.js": "f1ec2b5f9808c5bfb2b88bc142b10fd34c8a01351a55f13f3597c988ff8fe7b5",
     "assets/images/02d58c2daf2085a4ab42fca9fb86a27b6d3e13964bd06a08ca5d8d8615daa113.webp": "d5f4238fb955f7a6756f7762511dda2baeb15b3f68e2fc371366cacc3b3b73ce",
     "assets/images/f490195ac74c45fb8067ce1289761946472a2356e6224725d57b69ec3c7a3b4f.webp": "efc5c918ee1ed46eebddd29daa294acd4428e9119b33aff0506ca411b9e5d1e4",
     "assets/images/bbd4fcf6770e871eb4108a1f00a1cd0b3acd0470da25ba745b15808a6cb4b675.webp": "634be04ce72f7ef39c5bcb5011ebeac43cfea70674c1127504238529445fc7f3",
@@ -2122,7 +2122,10 @@
     "assets/images/73aa733dcc82089567642a1a6652c0b0de0f2e716d0ce63c090f7dd10fd7e64f.webp": "99dc3c46d8341b96f2a980d3a7c6a153476703669b59384c464b98a5fbbe0534",
     "assets/images/18c60b61b0985abfd2b556453d037b423d4a5975b31d67e4a64963e98c56199b.webp": "79434644a0190eaba70a670ce4374961faa3797a25ab3d86837c6adcbba5cb6f",
     "assets/images/c566c0cf7626dc66a385d163fe66d6a08d0e2a641c73e0acbedeb1e508df1ab7.webp": "9881276525fb4913cd08665ab4e988a02c4b1f5fcaa08ad0fe622cdb053ed1bd",
-    "assets/images/969bb8c728cea1971a54c3b6fdb644c08c928f09850affcc5c024f8525063db1.webp": "247483f0e110c1992f819c01139b9a8f7188fd7ad3e0208762f075c0826db63f"
+    "assets/images/969bb8c728cea1971a54c3b6fdb644c08c928f09850affcc5c024f8525063db1.webp": "247483f0e110c1992f819c01139b9a8f7188fd7ad3e0208762f075c0826db63f",
+    "assets/images/2c68cbd2076532e8470301472afedeac8b7489f0f2c689168722657d6de4dbce.webp": "0b0bf08b487aeedc7e470702685bb85b4457edaa8b2058804c143c50257a35d0",
+    "assets/images/a5deaaf30dfe46d50d22a2fa0b2f4ae1c9d56a0c7e8c5112c3b9a75114fcb907.webp": "62735c08e52d0f67b442b4ac8e170cfb2521b0d32c467aa2935b3d3c964afae0",
+    "assets/images/c2c2c6f1756452a21708e88c52ec9d8bcc0b9b228fc87f1bfbff2feff5f19082.webp": "893b9a7dc1be33bdbd8aefec0258dfa7bd0eacfc3ab41639b4037dc30abfecdc"
   },
   "image_format": "mixed-original-and-lossless-webp",
   "image_audit": {
@@ -8473,6 +8476,42 @@
         720
       ],
       "pixels_verified_identical": true
+    },
+    "assets/images/2c68cbd2076532e8470301472afedeac8b7489f0f2c689168722657d6de4dbce.webp": {
+      "original_sha256": "2c68cbd2076532e8470301472afedeac8b7489f0f2c689168722657d6de4dbce",
+      "sha256": "0b0bf08b487aeedc7e470702685bb85b4457edaa8b2058804c143c50257a35d0",
+      "bytes": 579784,
+      "original_bytes": 850464,
+      "pixel_rgba_sha256": "24c5e7d172fab999b631c2867648cd2fbece2f8d47f97a07700f70e7676fff03",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "pixels_verified_identical": true
+    },
+    "assets/images/a5deaaf30dfe46d50d22a2fa0b2f4ae1c9d56a0c7e8c5112c3b9a75114fcb907.webp": {
+      "original_sha256": "a5deaaf30dfe46d50d22a2fa0b2f4ae1c9d56a0c7e8c5112c3b9a75114fcb907",
+      "sha256": "62735c08e52d0f67b442b4ac8e170cfb2521b0d32c467aa2935b3d3c964afae0",
+      "bytes": 572060,
+      "original_bytes": 810732,
+      "pixel_rgba_sha256": "e353783051a2ece2325e1a933efc9c8be4b52518c4285db310fa6b94643020c1",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "pixels_verified_identical": true
+    },
+    "assets/images/c2c2c6f1756452a21708e88c52ec9d8bcc0b9b228fc87f1bfbff2feff5f19082.webp": {
+      "original_sha256": "c2c2c6f1756452a21708e88c52ec9d8bcc0b9b228fc87f1bfbff2feff5f19082",
+      "sha256": "893b9a7dc1be33bdbd8aefec0258dfa7bd0eacfc3ab41639b4037dc30abfecdc",
+      "bytes": 166928,
+      "original_bytes": 229969,
+      "pixel_rgba_sha256": "dc234c54194f3d98d21bbaa36d9d3b5e316c4694ecf3e40ab0664633243ff3f5",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "pixels_verified_identical": true
     }
   },
   "review_revision": {
@@ -8920,5 +8959,27 @@
     "lossy_preview_images_added": false,
     "answers_scores_reviews_images_trajectories_model_records_changed": false,
     "network_latency_at_host_not_guaranteed": true
+  },
+  "single_run_replacement": {
+    "id": "computer-use-spatial-segmentation-beechwood-0-int-living-room-1-q-001",
+    "old_recording": "D:\\cmwdelajixiang\\music_train_app\\outputs\\esi-direct-observation-expansion-20261014\\recordings\\spatial-segmentation-beechwood-0-int-living-room-1-q-001\\attempt_001",
+    "new_recording": "D:\\cmwdelajixiang\\music_train_app\\outputs\\esi-direct-observation-rerun-beechwood-q001-20261015\\recordings\\spatial-segmentation-beechwood-0-int-living-room-1-q-001\\attempt_001",
+    "old_frames": 8,
+    "new_frames": 3,
+    "steps": 2,
+    "answer": "1",
+    "ground_truth": "3",
+    "correct": false,
+    "image_sha256": [
+      "2c68cbd2076532e8470301472afedeac8b7489f0f2c689168722657d6de4dbce",
+      "a5deaaf30dfe46d50d22a2fa0b2f4ae1c9d56a0c7e8c5112c3b9a75114fcb907",
+      "c2c2c6f1756452a21708e88c52ec9d8bcc0b9b228fc87f1bfbff2feff5f19082"
+    ],
+    "score_driven_rerun": false,
+    "old_recordings_retained": true,
+    "local_backup": "D:\\cmwdelajixiang\\music_train_app\\outputs\\esi-spatial-trajectory-viewer\\backups\\direct-observation-single-rerun-q001-20261015",
+    "other_92_runs_unchanged": true,
+    "retired_public_images_retained": true,
+    "published_image_pixels_identical": true
   }
 }
