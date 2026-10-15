@@ -37,8 +37,9 @@
     if (url.pathname === '/api/catalog') return manifest.catalog;
     if (url.pathname === '/api/accuracy') return manifest.accuracy;
     if (url.pathname === '/api/data') {
-      const row = await load('run/' + id);
-      const geometry = await load(row.geometry_key);
+      const hinted=manifest.run_geometry?.[id];
+      const [row,prepared] = await Promise.all([load('run/' + id),hinted?load(hinted):Promise.resolve(null)]);
+      const geometry = hinted===row.geometry_key?prepared:await load(row.geometry_key);
       return {...geometry, ...row.data};
     }
     if (url.pathname === '/api/model-input') {

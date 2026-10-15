@@ -777,7 +777,7 @@
     "assets/data/f7ded134058a75737c6f3b69.js": "c81236346e44fd3d96e071877d60d635e009bf2858ef8ce9d73ec201a45baa78",
     "assets/data/f8ebb221c2432961312cf7c9.js": "83d443310a81ec22ee800b71cab58cfa64248f9a71cbcb42c47adda6c1f956ca",
     "assets/data/fbd1c896618390a9fa29fd46.js": "8a75a8778b8049dbb3cddef569aa370576fd9a0cfc9d785719f3b30e11141466",
-    "assets/frame_playback.js": "e6ee30d3ab919d7eb5d53a5332005ca3f526ac6dd0dd29244e17743237fcf3dc",
+    "assets/frame_playback.js": "06d486a22ddbf9b75f2d55b6d27afb35aeb64a6fb966ab30ea4e606ab799e13c",
     "assets/images/005aee9e15230a39fc671fa6e2dd70d66dee12d6b6860faf89af0fba0a33b0cb.png": "005aee9e15230a39fc671fa6e2dd70d66dee12d6b6860faf89af0fba0a33b0cb",
     "assets/images/0083ac7432c4d568c64746dbff974979aa1241588a83927988b9c040f4d5f5d0.png": "0083ac7432c4d568c64746dbff974979aa1241588a83927988b9c040f4d5f5d0",
     "assets/images/008b4d997c29ab855790b9b2bcedab3c3e8271fe979b191e9b1fd195766681b2.png": "008b4d997c29ab855790b9b2bcedab3c3e8271fe979b191e9b1fd195766681b2",
@@ -1540,10 +1540,10 @@
     "assets/images/fd77adea745b82d518ae04bf7a9d6caf4b19540920f9c565f616c9e6d86b553e.png": "fd77adea745b82d518ae04bf7a9d6caf4b19540920f9c565f616c9e6d86b553e",
     "assets/images/ff741fb56b9f4d86a6c18445f803eb9850543a74dee83b4c14491785eefafcd9.png": "ff741fb56b9f4d86a6c18445f803eb9850543a74dee83b4c14491785eefafcd9",
     "assets/images/ff8bfbc7df3b0f3442913e91b92b408300b21709b6d589d4bc7c70282f1ca2ca.png": "ff8bfbc7df3b0f3442913e91b92b408300b21709b6d589d4bc7c70282f1ca2ca",
-    "assets/offline-manifest.js": "22f5a5e4c18aca0c2008ecd1d75f967fe18b0573bc2b2d11d93bdbd9b883d05c",
+    "assets/offline-manifest.js": "171a76c673c98d392788c90aa436503f7769d78aee68530ef2990a5c6851f9df",
     "assets/page_navigation.js": "15be9be9bd2131227bbfe5222a033d6ccf07967c976b9a60638fd60a914fed02",
-    "assets/static_runtime.js": "707e9022c9e31c6b7c3335415655325de0f7a0188317a464e689238efc9294e9",
-    "experiments.html": "28247cab8aaac2e5d59b55cc0f06ff25440fa943ead4220c58267d77d3f8b734",
+    "assets/static_runtime.js": "dd15cb1b5926ee769fc14c1046681bc6ab3f09c2f59e4b19d4cb97d37e09d9ba",
+    "experiments.html": "4bcaf37938c768f4863a0a06458adbf76a70d2cf4bda1506a7296e4c11ecc8ed",
     "index.html": "04ad4f9f0319fd3ed8f7240da2b2f86ccec74388dc064f4c55c7b2014229baa6",
     "reasons.html": "dc80036d5b1292b15de7bc4aab44bcbee8585943c9178d9c87851252a78218c5",
     "使用说明.md": "452944ba3c69f99b6f260cfc95d73391ba80760f955402731c3e19fa3451c189",
@@ -8898,5 +8898,27 @@
     "score_source": "catalog.correct strict Boolean; no process-review or suspected-lucky distinction",
     "hover_and_selected_keep_result_color": true,
     "answers_scores_review_labels_images_and_trajectories_changed": false
+  },
+  "loading_playback_performance_revision": {
+    "date": "2026-10-15",
+    "parallel_run_geometry_hints": 93,
+    "first_image_warms_in_parallel_with_scene": true,
+    "observation_base_interval_ms": 350,
+    "playback_rates": [
+      0.5,
+      1,
+      2,
+      4
+    ],
+    "playing_look_ahead": 6,
+    "paused_look_ahead": 2,
+    "decoded_cache_limit_per_player": 10,
+    "cancel_stale_run_image_requests": true,
+    "presentation_cadence_includes_render_time": true,
+    "static_room_and_furniture_layers_cached": true,
+    "image_geometry_and_progress_remain_atomic": true,
+    "lossy_preview_images_added": false,
+    "answers_scores_reviews_images_trajectories_model_records_changed": false,
+    "network_latency_at_host_not_guaranteed": true
   }
 }

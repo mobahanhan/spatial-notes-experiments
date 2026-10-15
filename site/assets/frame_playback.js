@@ -15,25 +15,38 @@
       this.playToken = 0;
       this.timer = null;
       this.cache = new Map();
+      this.pending = new Map();
+      this.rate = 1;
+      this.lastPresented = 0;
     }
+    now() { return this.options.now ? this.options.now() : (window.performance?.now?.() ?? Date.now()); }
     get count() { return Math.max(0, Number(this.options.count()) || 0); }
     get state() { return {index:this.index, wanted:this.wanted, count:this.count, playing:this.playing, busy:this.busy, error:this.error, active:this.active}; }
     notify() { this.options.onState?.(this.state); }
-    load(url) {
+    load(url, priority = 'high') {
       if (this.image.src === url && this.image.complete && this.image.naturalWidth > 0) return Promise.resolve(this.image);
-      if (this.cache.has(url)) return this.cache.get(url);
+      if (this.cache.has(url)) {
+        const cached = this.cache.get(url);this.cache.delete(url);this.cache.set(url,cached);
+        if(priority==='high'&&this.pending.has(url))this.pending.get(url).image.fetchPriority='high';
+        return cached;
+      }
       const image = this.options.makeImage ? this.options.makeImage() : new Image();
       image.decoding = 'async';
+      image.fetchPriority = priority;
+      let cancel;
       const promise = new Promise((resolve, reject) => {
         const timeout = setTimeout(() => finish(Error('图片加载超时，请重试')), this.options.timeout || 30000);
         let finished = false;
-        function finish(error) {
+        const finish = error => {
           if (finished) return;
           finished = true;
           clearTimeout(timeout);
           image.onload = image.onerror = null;
+          this.pending.delete(url);
+          if(error)image.removeAttribute('src');
           if (error) reject(error); else resolve(image);
-        }
+        };
+        cancel=()=>finish(Error('图片预加载已取消'));
         image.onerror = () => finish(Error('图片加载失败，请重试'));
         image.onload = async () => {
           try {
@@ -42,14 +55,26 @@
             finish();
           } catch (error) { finish(error); }
         };
-        image.src = url;
       });
+      this.pending.set(url,{image,cancel});
       this.cache.set(url, promise);
       promise.catch(() => { if (this.cache.get(url) === promise) this.cache.delete(url); });
-      // Current + two upcoming images, with one spare for rapid seeks.
-      // Never decode an entire experiment into memory.
-      while (this.cache.size > 4) this.cache.delete(this.cache.keys().next().value);
+      image.src = url;
+      // Bound decoded RGB memory; old runs are explicitly cancelled on reset.
+      while (this.cache.size > (this.options.cacheSize || 10)) this.cache.delete(this.cache.keys().next().value);
       return promise;
+    }
+    warm(urls) { for(const url of urls)if(url)this.load(url,'low').catch(()=>{}); }
+    prefetch(index) {
+      const ahead=this.playing?(this.options.lookAhead||6):2,urls=[];
+      for(let next=index+1;next<=Math.min(index+ahead,this.count-1);next++){
+        try{urls.push(this.url(next))}catch{}
+      }
+      this.warm(urls);
+    }
+    setRate(value) {
+      const rate=Number(value);this.rate=Number.isFinite(rate)?Math.max(.25,Math.min(4,rate)):1;
+      if(this.playing&&!this.busy)this.schedule(this.playToken);
     }
     url(index) {
       const route = this.options.url(index);
@@ -96,6 +121,7 @@
             this.display(image, index);
             this.index = index;
             this.busy = false;
+            this.lastPresented = this.now();
             this.options.onCommit(index, this.image);
             if (this.playing && index === this.count - 1) this.pause();
             else this.notify();
@@ -119,13 +145,12 @@
       this.notify();
       try {
         const url = this.url(index);
-        const image = url ? await this.load(url) : null;
+        const imageReady = url ? this.load(url) : Promise.resolve(null);
+        this.prefetch(index);
+        const image = await imageReady;
         if (request !== this.request || !this.active) return false;
         // Start network look-ahead before synchronous 3D rendering, rather than
         // making the next image wait until expensive ray casts have completed.
-        for (let nextIndex = index + 1; nextIndex <= Math.min(index + 2, this.count - 1); nextIndex++) {
-          try { const next = this.url(nextIndex); if (next) this.load(next).catch(() => {}); } catch {}
-        }
         if (!await this.present(image, index, request)) return false;
         return true;
       } catch (error) {
@@ -145,6 +170,7 @@
       const token = ++this.playToken;
       this.notify();
       const start = this.index === this.count - 1 ? 0 : this.wanted;
+      this.prefetch(start);
       const ready = await this.seek(start, {playback:true});
       if (ready && token === this.playToken && this.playing) this.schedule(token);
     }
@@ -156,7 +182,7 @@
         if (this.index + 1 >= this.count) { this.pause(); return; }
         const ready = await this.seek(this.index + 1, {playback:true});
         if (ready && token === this.playToken && this.playing) this.schedule(token);
-      }, this.options.interval || 650);
+      }, Math.max(0,(this.options.interval||350)/this.rate-(this.now()-this.lastPresented)));
     }
     pause() {
       this.playing = false;
@@ -182,6 +208,8 @@
     reset() {
       this.pause();
       this.request++;
+      for(const pending of [...this.pending.values()])pending.cancel();
+      this.pending.clear();
       this.index = -1;
       this.wanted = 0;
       this.busy = false;

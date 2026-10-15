@@ -32,6 +32,10 @@ jobs:
         run: node test-playback.cjs
       - name: Verify displayed progress and pending seeks
         run: node test-progress.cjs
+      - name: Verify parallel loading and geometry hint compatibility
+        run: node test-loading-performance.cjs
+      - name: Verify cached scene layers and drawing order
+        run: node test-scene-layers.cjs
       - name: Configure GitHub Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - name: Upload the static site

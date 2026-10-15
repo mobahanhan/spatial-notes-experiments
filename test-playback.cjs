@@ -20,7 +20,7 @@ function fixture({count=3,interval=650,staticSite=false,paint=false,surface=fals
   vm.runInContext(source,context);
   const f={run:'run-a',count};
   const screen=surface?{dataset:{},hidden:true,width:0,height:0,getContext(){return{drawImage(image){pixels.push(image.src);}};}}:null;
-  const player=context.window.FramePlayback.create({image:initial,surface:screen,count:()=>f.count,url:index=>`/api/frame?id=${f.run}&index=${index}`,interval,
+  const player=context.window.FramePlayback.create({image:initial,surface:screen,count:()=>f.count,url:index=>`/api/frame?id=${f.run}&index=${index}`,interval,now:()=>now,
     onCommit(index,image){if(screen)assert.equal(screen.dataset.displayedFrame,String(index),'RGB pixels must commit with metadata');commits.push({index,src:image.src,decoded:image.complete&&image.naturalWidth>0});},onState(state){states.push(state);}});
   function url(index){const route=`/api/frame?id=${f.run}&index=${index}`;return staticSite?context.window.ESIStatic.resourceURL(route):route;}
   function pending(index){return images.findLast(image=>image.src===url(index)&&image.onload);}
@@ -54,9 +54,9 @@ function fixture({count=3,interval=650,staticSite=false,paint=false,surface=fals
   const rapid=fixture();const a=rapid.player.seek(0);const b=rapid.player.seek(2);
   await rapid.loaded(2);await b;await rapid.loaded(0);await a;
   assert.deepEqual(rapid.commits.map(c=>c.index),[2],'out-of-order image arrival never rolls back the scrubber');
-  const stale=fixture();const old=stale.player.seek(0);const oldImage=stale.images.at(-1);
+  const stale=fixture();const old=stale.player.seek(0);const oldImage=stale.images.find(image=>image.src===stale.url(0));const oldOnload=oldImage.onload;
   stale.run='run-b';stale.player.reset();const fresh=stale.player.seek(0);await stale.loaded(0);await fresh;
-  oldImage.complete=true;oldImage.naturalWidth=640;await oldImage.onload();await old;
+  oldImage.complete=true;oldImage.naturalWidth=640;await oldOnload();await old;
   assert.equal(stale.commits.length,1);assert.ok(stale.commits[0].src.includes('run-b'),'switching experiments cancels stale commits');
   const broken=fixture();const initial=broken.player.seek(0);await broken.loaded(0);await initial;
   const bad=broken.player.seek(1);await broken.fail(1);assert.equal(await bad,false);
@@ -89,5 +89,14 @@ function fixture({count=3,interval=650,staticSite=false,paint=false,surface=fals
   const canvasLatest=canvasRapid.player.seek(2);await canvasRapid.loaded(2);await canvasRapid.flushPaint();
   assert.equal(await canvasOld,false);assert.equal(await canvasLatest,true);assert.deepEqual(canvasRapid.commits.map(commit=>commit.index),[2]);
   assert.equal(canvasRapid.pixels.length,1,'a superseded frame cannot paint before the latest RGB/geometry commit');
+  const faster=fixture({count:12,interval:350});const fastFirst=faster.player.seek(0);await faster.loaded(0);await fastFirst;
+  await faster.player.play();assert.ok(faster.images.some(image=>image.src===faster.url(6)),'six upcoming frames start while playing');
+  await faster.loaded(1);faster.player.setRate(2);await faster.advance(174);assert.equal(faster.player.index,0);
+  await faster.advance(1);assert.equal(faster.player.index,1,'2x uses a 175 ms presentation interval');
+  faster.player.pause();assert.ok(faster.player.cache.size<=10);const pendingBefore=faster.player.pending.size;assert.ok(pendingBefore>0);
+  faster.player.reset();assert.equal(faster.player.pending.size,0);assert.equal(faster.player.cache.size,0);
+  const overlapped=fixture({count:4});const overlapFirst=overlapped.player.seek(0);
+  assert.ok(overlapped.images.some(image=>image.src===overlapped.url(2)),'look-ahead starts before the first image is decoded');
+  overlapped.player.reset();assert.equal(await overlapFirst,false,'cancelled warm-up cannot become a failure or stale paint');
   console.log('Frame playback passed: atomic RGB/geometry paint, queued-paint cancellation, both playback rates, decode-before-commit, slow network, pause, final stop, rapid seeking, run-switch cancellation, errors/retry, visibility, single-frame, timeout and static URL routing.');
 })().catch(error=>{console.error(error);process.exitCode=1});
