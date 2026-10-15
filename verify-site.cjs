@@ -89,10 +89,10 @@ async function request(route) {
 function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); }
 (async () => {
   const catalog = await request('/api/catalog');
-  assert.equal(catalog.length, 84);
+  assert.equal(catalog.length, 93);
   assert.equal(catalog.length, audit.runs);
   const variants = {};
-  let frames = 0, walks = 0, inputSteps = 0, inputImageReferences = 0, directCorrect = 0, alignedFrames = 0;
+  let frames = 0, walks = 0, inputSteps = 0, inputImageReferences = 0, directCorrect = 0, alignedFrames = 0, missingObservations = 0, restarts = 0, recoveredMetadata = 0;
   for (const run of catalog) {
     variants[run.variant] = (variants[run.variant] || 0) + 1;
     const data = await request('/api/data?id=' + encodeURIComponent(run.id));
@@ -108,9 +108,12 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
     assert.ok(!data.task_observation || data.task_observation.status !== 'skipped');
     assert.ok(!/^\s*跳过[；;。．.\s]*$/.test(data.task_observation?.text || ''));
     for (let index = 0; index < data.trajectory.length; index++) {
-      image('/api/frame?id=' + encodeURIComponent(run.id) + '&index=' + index);
       frames++;
       const pose = data.trajectory[index];
+      if (pose.image) image('/api/frame?id=' + encodeURIComponent(run.id) + '&index=' + index);
+      else { assert.equal(pose.observation_missing, true); assert.equal(run.variant, 'computer-use'); missingObservations++; }
+      if (pose.segment_break_before) { assert.equal(pose.action, 'technical_restart'); restarts++; }
+      if (pose.metadata_recovery) { assert.equal(pose.metadata_recovery.original_rgb_changed, false); recoveredMetadata++; }
       if (pose.observation_camera) {
         const camera = pose.observation_camera, correction = pose.observation_alignment;
         assert.ok(Number.isInteger(camera.source_frame_index) && camera.source_frame_index >= 0 && camera.source_frame_index < index);
@@ -118,7 +121,7 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
         assert.equal(correction.observation_pose_frame_index, camera.source_frame_index);
         assert.deepEqual(camera.position, data.trajectory[camera.source_frame_index].position);
         assert.deepEqual(camera.quaternion_xyzw, data.trajectory[camera.source_frame_index].quaternion_xyzw);
-        const originalHash = audit.image_format === 'lossless-webp' ? audit.image_audit[pose.image].original_sha256 : path.basename(pose.image, '.png');
+        const originalHash = audit.image_audit?.[pose.image]?.original_sha256 || path.basename(pose.image, path.extname(pose.image));
         assert.equal(originalHash, correction.image_sha256, 'Only the original audited image may use this observation pose');
         assert.equal(data.observation_alignment_audit.original_images_actions_and_recorded_poses_preserved, true);
         alignedFrames++;
@@ -142,8 +145,11 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
       }
     }
   }
-  assert.deepEqual(variants, {unhinted: 20, hinted: 20, 'ordered-survey-v6': 9, 'computer-use': 35});
-  assert.equal(frames, 1072, 'Preserve the original 928 frames and all 144 newly recorded frames');
+  assert.deepEqual(variants, {unhinted: 20, hinted: 20, 'ordered-survey-v6': 9, 'computer-use': 44});
+  assert.equal(frames, 1179, 'Preserve the preceding 1072 records and all 107 continuation records');
+  assert.equal(missingObservations, 1, 'GPU-crash action must remain explicitly without fabricated RGB');
+  assert.equal(restarts, 1, 'Do not draw a technical reload as agent movement');
+  assert.equal(recoveredMetadata, 1, 'One sidecar was explicitly recovered from redundant native action data');
   assert.equal(walks, 128);
   assert.equal(inputSteps, 259);
   assert.equal(frames, audit.counts.trajectory_frames);
@@ -152,17 +158,18 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
   assert.equal(inputSteps, audit.counts.harness_input_steps);
   const accuracy = await request('/api/accuracy');
   assert.equal(accuracy.labels['computer-use'], 'GPT-6.1 Sol 直接观察');
-  assert.equal(accuracy.computer_use.stats.total, 35);
-  assert.equal(accuracy.computer_use.stats.scored, 35);
-  assert.equal(accuracy.computer_use.stats.correct, 18);
+  assert.equal(accuracy.computer_use.stats.total, 44);
+  assert.equal(accuracy.computer_use.stats.scored, 44);
+  assert.equal(accuracy.computer_use.stats.correct, 22);
   assert.equal(accuracy.computer_use.stats.correct, directCorrect);
   assert.equal(accuracy.computer_use.stats.complete, true);
   assert.equal(accuracy.harness_cohort.variants['computer-use'].correct, 7, 'The original common cohort must be unchanged');
   if (['lossless-webp','mixed-original-and-lossless-webp'].includes(audit.image_format)) {
     if (audit.image_format === 'lossless-webp') assert.equal(Object.keys(audit.image_audit).length, audit.unique_images);
     else {
-      assert.equal(audit.additional_direct_observation_revision.added_runs, 15);
-      assert.equal(audit.additional_direct_observation_revision.original_image_files_preserved, true);
+      assert.equal(audit.additional_direct_observation_revision.added_runs, 9);
+      assert.equal(audit.additional_direct_observation_revision.original_recording_image_files_preserved, true);
+      assert.equal(audit.additional_direct_observation_revision.original_image_pixels_preserved, true);
       assert.ok(Object.keys(audit.image_audit).length > 0);
     }
     for (const [relative, entry] of Object.entries(audit.image_audit)) {

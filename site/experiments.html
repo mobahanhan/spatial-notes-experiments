@@ -142,7 +142,7 @@
 </div>
 <script src="assets/page_navigation.js" defer></script>
 <script src="assets/frame_playback.js?v=20261013-observation-2"></script>
-<script src="assets/offline-manifest.js?v=20261014-direct-35"></script>
+<script src="assets/offline-manifest.js?v=152ec256b04c851c"></script>
 <script src="assets/static_runtime.js"></script>
 <script src="assets/architecture_geometry.js"></script>
 <script>
@@ -413,7 +413,7 @@
   function drawViewProjection(p,q,color,maxDistance,report=false){const sampled=sampleViewProjection(p,q,maxDistance);drawConeEnvelope(p,sampled,color);const apex=project(p);if(apex){ctx.save();ctx.beginPath();ctx.arc(apex.x,apex.y,4.5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.restore()}if(report){const counts=sampled.counts,status=document.querySelector('#projectionStatus');status.hidden=false;status.textContent=`视场 横 ${viewHorizontalFovDeg}° × 纵 ${viewVerticalFovDeg}° · 地面 ${counts.ground} · 墙体 ${counts.wall} · 延伸 ${counts.open}`}}
   function drawTrajectory(){
     const poses=data.trajectory||[];if(!poses.length)return;const shown=poses.slice(0,step+1);
-    if(toggles.path.checked&&shown.length>1)drawLine(shown.map(record=>observationCamera(record).position),css('--cyan'),3);
+    if(toggles.path.checked&&shown.length>1){let segment=[];for(const record of shown){if(record.segment_break_before){if(segment.length>1)drawLine(segment,css('--cyan'),3);segment=[]}segment.push(observationCamera(record).position)}if(segment.length>1)drawLine(segment,css('--cyan'),3)}
     shown.forEach((record,i)=>{const pose=observationCamera(record),p=project(pose.position);if(!p)return;ctx.beginPath();ctx.arc(p.x,p.y,i===step?5.5:2.7,0,Math.PI*2);ctx.fillStyle=i===step?css('--current'):css('--cyan');ctx.fill();if(i===step){ctx.strokeStyle=css('--cyan');ctx.lineWidth=2;ctx.stroke()}if(toggles.rays.checked&&i!==step&&i%Math.max(1,Math.ceil(shown.length/10))===0)drawArrow(pose.position,pose.quaternion_xyzw,rgba(css(roomLayoutMode?'--cyan':'--orange'),.72),.42,1)});
     const status=document.querySelector('#projectionStatus');if(roomLayoutMode){status.hidden=true;if(toggles.rays.checked&&step<poses.length){const pose=observationCamera(poses[step]);drawArrow(pose.position,pose.quaternion_xyzw,css('--current'),.65,2)}return}
     if(toggles.rays.checked&&step<poses.length){const pose=observationCamera(poses[step]);drawViewProjection(pose.position,pose.quaternion_xyzw,css('--orange'),viewMaxDistance(pose.position),true)}else status.hidden=true

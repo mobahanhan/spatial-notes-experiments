@@ -118,6 +118,15 @@ GPT-6.1 的实验结果也表明，在部分成功的任务中，也确实是先
 | Counting w Occlusion | 检查遮挡区域，统计三明治数量 · q_001（hotel_gym_spa / spa_1） | - | - | - | 错误 |
 | Spatial Segmentation | 综合分区视角，统计三明治数量 · q_002（gates_bedroom / bedroom_0） | - | - | - | 正确 |
 | Spatial Segmentation | 综合分区视角，统计三明治数量 · q_000（office_cubicles_left / private_office_5） | - | - | - | 错误 |
+| Category Ambiguity | 区分相似食物，统计三明治数量 · q_001（Merom_0_garden / playroom_0） | - | - | - | 错误 |
+| Category Ambiguity | 区分相似食物，统计三明治数量 · q_002（house_double_floor_lower / garage_0） | - | - | - | 正确 |
+| Category Ambiguity | 区分相似食物，统计三明治数量 · q_003（gates_bedroom / bedroom_0） | - | - | - | 正确 |
+| Counting w Occlusion | 检查遮挡区域，统计三明治数量 · q_002（Ihlen_1_int / living_room_0） | - | - | - | 错误 |
+| Counting w Occlusion | 检查遮挡区域，统计三明治数量 · q_004（Ihlen_0_int / living_room_0） | - | - | - | 错误 |
+| Counting w Occlusion | 检查遮挡区域，统计三明治数量 · q_000（office_cubicles_right / private_office_1） | - | - | - | 错误 |
+| Spatial Segmentation | 综合分区视角，统计三明治数量 · q_004（Merom_0_garden / childs_room_0） | - | - | - | 错误 |
+| Spatial Segmentation | 综合分区视角，统计三明治数量 · q_001（office_cubicles_right / private_office_2） | - | - | - | 正确 |
+| Spatial Segmentation | 综合分区视角，统计三明治数量 · q_001（office_cubicles_left / meeting_room_0） | - | - | - | 正确 |
 
 ### 全部实验
 
@@ -126,7 +135,7 @@ GPT-6.1 的实验结果也表明，在部分成功的任务中，也确实是先
 | 不带提示 | 20 | 3 | 5 | 12 | 8/20（40.0%） | 3/20（15.0%） |
 | 带提示 | 20 | 4 | 5 | 11 | 9/20（45.0%） | 4/20（20.0%） |
 | Harness | 9 | 5 | 0 | 4 | 5/9（55.6%） | 5/9（55.6%） |
-| GPT-6.1 Sol 直接观察 | 35 | 18 | 0 | 17 | 18/35（51.4%） | 18/35（51.4%） |
+| GPT-6.1 Sol 直接观察 | 44 | 22 | 0 | 22 | 22/44（50.0%） | 22/44（50.0%） |
 
 ### 共同实验
 
