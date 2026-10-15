@@ -28,6 +28,10 @@
     .playback-status{margin:7px 0 0;font-size:11px;line-height:1.5;color:var(--muted)}.playback-status:empty{display:none}.playback-status[data-error="true"]{color:#a33a25}.image-retry[hidden]{display:none}.image-retry{margin-top:7px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);padding:5px 8px;font-size:11px;cursor:pointer}.play:disabled,.walk-controls button:disabled{opacity:.5;cursor:default}
     .experiment-methods{border:1px solid var(--line);border-radius:7px;background:var(--panel2);margin:0 0 12px;padding:9px 10px;font-size:12px;line-height:1.65}.experiment-methods summary{cursor:pointer;color:var(--text);font-weight:600}.experiment-methods summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.experiment-methods dl{margin:10px 0 0}.experiment-methods dt{color:var(--accent);font-weight:600;margin:12px 0 3px}.experiment-methods dt:first-child{margin-top:0}.experiment-methods dd{margin:0;color:var(--text);overflow-wrap:anywhere}
     .dataset-switch{grid-template-columns:repeat(2,minmax(0,1fr))}.variant-button{min-width:0}.task-observation{border:1px solid var(--orange-soft);border-radius:8px;background:var(--orange-bg);padding:13px;margin:13px 0}.task-observation[hidden],.section[hidden]{display:none}.observation-text{margin:0;font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}.observation-source{margin:8px 0 0;font-size:10px;line-height:1.5;color:var(--muted)}.observation-warning{color:#995330}.cu-state{display:grid;gap:8px;font-size:11px}.cu-row{display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px;align-items:start}.cu-row>span{color:var(--muted)}.cu-row strong{overflow-wrap:anywhere;font-weight:500}.cu-milestone{padding:8px 9px;background:var(--orange-bg);border-radius:6px;line-height:1.6}.walk-controls{display:flex;align-items:center;gap:8px;margin-top:8px}.walk-controls input{min-width:0;flex:1;accent-color:var(--accent)}.walk-controls button{border:1px solid var(--line);border-radius:5px;background:var(--panel2);padding:5px 8px;font-size:11px}.walk-replay-select{width:100%;font-size:11px;padding:5px;border:1px solid var(--line);border-radius:5px;background:var(--panel2)}
+    .task-button[data-answer-status="correct"]{background:#e6f4ec;color:#205c40;box-shadow:inset 3px 0 #438c61}.task-button[data-answer-status="incorrect"]{background:#fbe9e7;color:#8a3533;box-shadow:inset 3px 0 #bf5c56}
+    .task-button[data-answer-status="correct"]:hover{background:#d7ecdf}.task-button[data-answer-status="incorrect"]:hover{background:#f5d9d5}
+    .task-button[data-answer-status="correct"][aria-current="true"]{background:#cce7d6;box-shadow:inset 3px 0 #438c61,inset 0 0 0 1.5px #438c61}.task-button[data-answer-status="incorrect"][aria-current="true"]{background:#f1d0cc;box-shadow:inset 3px 0 #bf5c56,inset 0 0 0 1.5px #bf5c56}
+    .task-button[data-answer-status="correct"] small,.task-button[data-answer-status="incorrect"] small{color:inherit;opacity:.85}.task-button:focus-visible{outline:2px solid var(--text);outline-offset:1px}
   </style>
 </head>
 <body>
@@ -754,8 +758,11 @@
       const heading=document.createElement('h3');heading.textContent=task.replaceAll('_',' ');
       group.append(heading,...items.map(item=>{
         const button=document.createElement('button');button.type='button';button.className='task-button';
+        const answerStatus=item.correct===true?'correct':item.correct===false?'incorrect':'unscored',answerLabel=answerStatus==='correct'?'答案正确':answerStatus==='incorrect'?'答案错误':'尚未评分';
+        button.dataset.answerStatus=answerStatus;
         button.setAttribute('aria-current',String(item.question_number===selected));
-        button.title=`${item.display_name||item.run_label||item.task}\n任务标识：${item.question_id||'—'}\n${item.variant==='ordered-survey-v6'?'Harness':item.variant_label||variant}`;
+        button.title=`${item.display_name||item.run_label||item.task}\n任务标识：${item.question_id||'—'}\n${item.variant==='ordered-survey-v6'?'Harness':item.variant_label||variant}\n${answerLabel}`;
+        button.setAttribute('aria-label',`${item.display_name||item.run_label||item.task} · ${answerLabel}`);
         const repeated=questions.some(other=>other.question_number!==item.question_number&&(other.task_key||other.task)===(item.task_key||item.task)&&other.scene===item.scene&&other.room===item.room),identity=item.source_batch||repeated?` · ${(item.question_id||'').split('/').at(-1)}`:'';
         button.innerHTML=`${esc(item.task_label||item.task)}<small>${esc(item.scene)} / ${esc(item.room)}${esc(identity)}</small>`;
         button.addEventListener('click',()=>{document.querySelector('#questionSelect').value=String(item.question_number);syncRun()});
