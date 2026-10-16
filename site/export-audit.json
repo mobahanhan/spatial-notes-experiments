@@ -2,7 +2,7 @@
   "schema_version": 1,
   "exported_at": "2026-10-15T16:43:25.480726+08:00",
   "source_catalog_sha256": "35233f9ddc71378e7ecb5e30ebd06e71a75d0c952543cc61e6f45349c71d8c62",
-  "source_article_sha256": "e5993ace1085833af8a72ff45497d965589139187bb238a6e0fe0ad20852ceb0",
+  "source_article_sha256": "924bc74ddc57b66c8cd92d2515924384ae8eb24431d46d84a1252ef5bd23fcdd",
   "runs": 93,
   "variants": {
     "unhinted": 20,
@@ -675,7 +675,7 @@
     }
   ],
   "file_sha256": {
-    "article.md": "e5993ace1085833af8a72ff45497d965589139187bb238a6e0fe0ad20852ceb0",
+    "article.md": "924bc74ddc57b66c8cd92d2515924384ae8eb24431d46d84a1252ef5bd23fcdd",
     "assets/architecture_geometry.js": "f6999f9582a3f9419d3959d291e3d4b8f9dc30548b1e497456654a2ffce36220",
     "assets/blog.css": "835890e9de96c34ff00dc14147be2032279af780ed572b78b30258921ddff841",
     "assets/blog.js": "be4df34faeeea9b1f06a8ff177f935c574ad62b9aa13a18caf6e3ac6d18b85c7",
@@ -1544,7 +1544,7 @@
     "assets/page_navigation.js": "15be9be9bd2131227bbfe5222a033d6ccf07967c976b9a60638fd60a914fed02",
     "assets/static_runtime.js": "dd15cb1b5926ee769fc14c1046681bc6ab3f09c2f59e4b19d4cb97d37e09d9ba",
     "experiments.html": "6514043886c96c28ca3cbbcdbe1993126a5ba077680216fdc9315036ab2073cb",
-    "index.html": "d25c8afe7d772848a0487d0811da94e7865601a9c03d1236e04bbca860dabb6c",
+    "index.html": "dad7d9573757471a0b0b0fff62f64e391e65e814a27efe4d61a8b93cfbd6eacc",
     "reasons.html": "dc80036d5b1292b15de7bc4aab44bcbee8585943c9178d9c87851252a78218c5",
     "使用说明.md": "452944ba3c69f99b6f260cfc95d73391ba80760f955402731c3e19fa3451c189",
     "assets/images/22af5cff5b3b90c070c6ba04782da6169220414330b2ebef7b1ffc743d5bd60d.webp": "ad4dae3617fad815ec8e5f4e8ea91524789fff176d048255aa111150bf81329b",
@@ -8983,16 +8983,32 @@
     "published_image_pixels_identical": true
   },
   "article_sync_revision": {
-    "date": "2026-10-15",
+    "date": "2026-10-16",
     "source_name": "New Doc.md",
-    "source_article_sha256": "e5993ace1085833af8a72ff45497d965589139187bb238a6e0fe0ad20852ceb0",
-    "previous_source_article_sha256": "662f4b4c7c37814e972cdc0a887539e69cd43d292152c5a8c66b02cdf262d31b",
+    "source_article_sha256": "924bc74ddc57b66c8cd92d2515924384ae8eb24431d46d84a1252ef5bd23fcdd",
+    "previous_source_article_sha256": "e5993ace1085833af8a72ff45497d965589139187bb238a6e0fe0ad20852ceb0",
     "published_markdown_byte_identical_to_source": true,
+    "local_markdown_byte_identical_to_source": true,
     "top_level_sections": 6,
     "updated_files": [
       "index.html",
       "article.md",
       "export-audit.json"
     ]
-  }
+  },
+  "article_sync_revision_history": [
+    {
+      "date": "2026-10-15",
+      "source_name": "New Doc.md",
+      "source_article_sha256": "e5993ace1085833af8a72ff45497d965589139187bb238a6e0fe0ad20852ceb0",
+      "previous_source_article_sha256": "662f4b4c7c37814e972cdc0a887539e69cd43d292152c5a8c66b02cdf262d31b",
+      "published_markdown_byte_identical_to_source": true,
+      "top_level_sections": 6,
+      "updated_files": [
+        "index.html",
+        "article.md",
+        "export-audit.json"
+      ]
+    }
+  ]
 }
