@@ -1,3 +1,4 @@
+import {materialsShell,mountMaterials,mountRuntime} from './materials.js?v=20261022-materials';
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const dump = (v) => typeof v === 'string' ? v : JSON.stringify(v, null, 2);
@@ -12,12 +13,12 @@ const METRICS = {
   RB_llm_conditioned:['RB_llm（条件处理）','score'], RB_alg_conditioned:['RB_alg（条件处理）','score'], RL_F_conditioned:['Faithfulness（条件处理）','score'],
 };
 const metricOrder = Object.keys(METRICS);
-const defaultState = {view:'overview', bench:'ALL', overviewBench:'ALL', category:'ALL', cohort:'ALL', language:'ALL', change:'ALL', search:'', page:0, selected:null, compare:'both', tabs:{original:'answer',current:'answer'}};
+const defaultState = {view:'overview', taskPanel:'answers', bench:'ALL', overviewBench:'ALL', category:'ALL', cohort:'ALL', language:'ALL', change:'ALL', search:'', page:0, selected:null, compare:'both', tabs:{original:'answer',current:'answer'}};
 let state = {...defaultState, tabs:{...defaultState.tabs}};
 try {const s=JSON.parse(localStorage.getItem('rag-archive-state-v1')); if(s) state={...state,...s,tabs:{...state.tabs,...s.tabs}};} catch {}
 const hash=new URLSearchParams(location.hash.slice(1));
 if(hash.has('task')) {state.selected=hash.get('task');state.view='experiments';}
-else if(['overview','experiments','protocol'].includes(location.hash.slice(1))) state.view=location.hash.slice(1);
+else if(['overview','experiments','methods','protocol'].includes(location.hash.slice(1))) state.view=location.hash.slice(1);
 let summary, index, filtered=[], activeDetail=null, loadVersion=0, dialogValue='', hoverTimer, toastTimer;
 const taskCache=new Map(), judgeCache=new Map();
 function remember(){try{localStorage.setItem('rag-archive-state-v1',JSON.stringify(state));}catch{}}
@@ -25,7 +26,7 @@ function putCache(cache,k,v,max){cache.delete(k);cache.set(k,v);if(cache.size>ma
 async function loadJSON(path){const r=await fetch(path);if(!r.ok)throw new Error(`HTTP ${r.status} · ${path}`);return r.json();}
 function toast(s){$('toast').textContent=s;$('toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').style.display='none',2200);}
 async function copy(s){try{await navigator.clipboard.writeText(s);toast('已复制');}catch{toast('无法自动复制，请在内容窗口手动复制');}}
-function navigate(view){if(!['overview','experiments','protocol'].includes(view))return;state.view=view;document.querySelectorAll('.view').forEach(el=>el.hidden=el.id!==view);document.querySelectorAll('.header [data-view]').forEach(b=>{if(b.dataset.view===view)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});history.replaceState(null,'',view==='experiments'&&state.selected?`#task=${state.selected}`:`#${view}`);remember();if(view==='experiments'&&!activeDetail)selectTask(state.selected??filtered[0]?.key,false);}
+function navigate(view){if(!['overview','experiments','methods','protocol'].includes(view))return;state.view=view;document.querySelectorAll('.view').forEach(el=>el.hidden=el.id!==view);document.querySelectorAll('.header [data-view]').forEach(b=>{if(b.dataset.view===view)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});history.replaceState(null,'',view==='experiments'&&state.selected?`#task=${state.selected}`:`#${view}`);remember();if(view==='experiments'&&!activeDetail)selectTask(state.selected??filtered[0]?.key,false);}
 function benchButtons(container, selected){$(container).innerHTML=['ALL',...BENCHES].map(b=>`<button data-bench="${b}" class="${selected===b?'active':''}" aria-pressed="${selected===b}">${b==='ALL'?'全部':b}<small>${b==='ALL'?summary.tasks:summary.counts[b]}</small></button>`).join('');}
 function metricPairs(){const groups=new Map();for(const r of summary.metrics){const k=`${r.benchmark}|${r.subtask}|${r.metric}`;if(!groups.has(k))groups.set(k,{benchmark:r.benchmark,subtask:r.subtask,metric:r.metric});groups.get(k)[r.mode]=r;}return [...groups.values()].sort((a,b)=>BENCHES.indexOf(a.benchmark)-BENCHES.indexOf(b.benchmark)||metricOrder.indexOf(a.metric)-metricOrder.indexOf(b.metric)||a.subtask.localeCompare(b.subtask));}
 function nativeValue(v,type){return type==='signed'?fmt(v,4):`${fmt(v*100)}${type==='rate'?'%':''}`;}
@@ -93,7 +94,12 @@ function pill(s){return `<span class="status-pill ${s.kind==='binary'?(s.value==
 function renderDetail(){
   const d=activeDetail;if(!d)return;
   const r=d.meta;
-  $('detail').innerHTML=`<div class="task-meta"><span class="badge bench">${esc(r.benchmark)}</span><span>${esc(CATEGORY[r.category]??r.category)}</span>${r.domain?`<span>· ${esc(r.domain)}</span>`:''}<span>· ${esc(r.cohort_label)}</span><span class="badge">${esc(r.language)}</span></div><h1 class="question-title">${esc(d.question)}</h1>${d.question.length>900?'<button class="quiet question-toggle" data-expand-question>展开完整题目 ↕</button>':''}<details class="reference"><summary>参考答案与原始标签（不属于模型输入）</summary><pre>${esc(dump(d.reference))}</pre>${d.history.length?`<details><summary>题目保存的历史上下文 · ${d.history.length} 条</summary><pre>${esc(dump(d.history))}</pre></details>`:''}</details><div class="compare-toolbar"><div class="segmented" role="group" aria-label="显示版本">${[['both','并列对照'],['original','只看原版'],['current','只看当前版']].map(([k,l])=>`<button class="${state.compare===k?'active':''}" data-compare="${k}" aria-pressed="${state.compare===k}">${l}</button>`).join('')}</div><span>${esc(summary.scopes[r.benchmark])}</span></div><div class="comparison ${state.compare==='both'?'':'single'}">${['original','current'].filter(m=>state.compare==='both'||state.compare===m).map(m=>versionHTML(m,d.versions[m])).join('')}</div><div class="detail-footer">${esc(r.id)}<br>${esc(r.cohort)}<br>原始回答 SHA-256 · original ${d.versions.original.score.raw_answer_sha256}<br>current ${d.versions.current.score.raw_answer_sha256}</div>`;
+  const taskTabs=`<div class="task-panels" role="group" aria-label="本题记录栏目">${[['answers','回答对照'],['materials','源材料与分块'],['runtime','本题运行差异']].map(([key,title])=>`<button data-task-panel="${key}" class="${state.taskPanel===key?'active':''}" aria-pressed="${state.taskPanel===key}">${title}</button>`).join('')}</div>`;
+  const answers=`<div class="compare-toolbar"><div class="segmented" role="group" aria-label="显示版本">${[['both','并列对照'],['original','只看原版'],['current','只看当前版']].map(([k,l])=>`<button class="${state.compare===k?'active':''}" data-compare="${k}" aria-pressed="${state.compare===k}">${l}</button>`).join('')}</div><span>${esc(summary.scopes[r.benchmark])}</span></div><div class="comparison ${state.compare==='both'?'':'single'}">${['original','current'].filter(m=>state.compare==='both'||state.compare===m).map(m=>versionHTML(m,d.versions[m])).join('')}</div>`;
+  const body=state.taskPanel==='materials'?materialsShell(d):state.taskPanel==='runtime'?'<div id="runtimePanel"></div>':answers;
+  $('detail').innerHTML=`<div class="task-meta"><span class="badge bench">${esc(r.benchmark)}</span><span>${esc(CATEGORY[r.category]??r.category)}</span>${r.domain?`<span>· ${esc(r.domain)}</span>`:''}<span>· ${esc(r.cohort_label)}</span><span class="badge">${esc(r.language)}</span></div><h1 class="question-title">${esc(d.question)}</h1>${d.question.length>900?'<button class="quiet question-toggle" data-expand-question>展开完整题目 ↕</button>':''}<details class="reference"><summary>参考答案与原始标签（不属于模型输入）</summary><pre>${esc(dump(d.reference))}</pre>${d.history.length?`<details><summary>题目保存的历史上下文 · ${d.history.length} 条</summary><pre>${esc(dump(d.history))}</pre></details>`:''}</details>${taskTabs}${body}<div class="detail-footer">${esc(r.id)}<br>${esc(r.cohort)}<br>原始回答 SHA-256 · original ${d.versions.original.score.raw_answer_sha256}<br>current ${d.versions.current.score.raw_answer_sha256}</div>`;
+  if(state.taskPanel==='materials')mountMaterials($('materialPanel'),d,openDialog);
+  if(state.taskPanel==='runtime')mountRuntime($('runtimePanel'),d);
 }
 function versionHTML(mode,v){const tab=state.tabs[mode]??'answer';return `<section class="version ${mode==='current'?'current-version':''}"><div class="version-heading"><h2>${modeLabel(mode)}</h2>${pill(v.status)}</div><div class="version-tabs" role="tablist" aria-label="${modeLabel(mode)}记录">${[['answer','回答'],['evidence','检索材料'],['input','模型输入'],['raw','原始输出'],['score','评分记录']].map(([k,l])=>`<button role="tab" id="tab-${mode}-${k}" aria-controls="panel-${mode}" aria-selected="${k===tab}" class="${k===tab?'active':''}" data-mode="${mode}" data-tab="${k}">${l}</button>`).join('')}</div><div class="version-content" id="panel-${mode}" role="tabpanel" aria-labelledby="tab-${mode}-${tab}">${panelHTML(mode,v,tab)}</div></section>`;}
 function panelHTML(mode,v,tab){
@@ -126,6 +132,7 @@ function wire(){
     if(b.dataset.view){navigate(b.dataset.view);return;}
     if(b.dataset.bench){if(b.closest('#overviewBench')){state.overviewBench=b.dataset.bench;renderOverview();remember();}else{state.bench=b.dataset.bench;fillOptions();applyFilters();if(filtered[0])selectTask(filtered[0].key);}return;}
     if(b.dataset.task){selectTask(b.dataset.task);return;}
+    if(b.dataset.taskPanel){state.taskPanel=b.dataset.taskPanel;remember();renderDetail();return;}
     if(b.dataset.tab){state.tabs[b.dataset.mode]=b.dataset.tab;remember();renderDetail();return;}
     if(b.dataset.compare){state.compare=b.dataset.compare;remember();renderDetail();return;}
     if(b.dataset.io){openDialog(ioData(b.dataset.io,b.dataset.mode));return;}

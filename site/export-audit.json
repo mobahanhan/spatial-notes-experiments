@@ -9016,8 +9016,26 @@
     "path": "rag/",
     "tasks": 1200,
     "answers": 2400,
-    "manifest_sha256": "fb6ce1d5f5e87403958005e99555111990b03cab61ef2ccf0599bb9b74cc54a3",
+    "manifest_sha256": "f0943fc1502ceef863c4f7261e9a08864b5e401b8c900a5be3627f6f279a10c2",
     "existing_esi_data_images_answers_and_trajectories_unchanged": true,
-    "existing_page_changes": "navigation links only; RAG opens in separate tab"
+    "existing_page_changes": "navigation links only; RAG opens in separate tab",
+    "material_revision": {
+      "counts": {
+        "tasks": 1200,
+        "document_instances": 26555,
+        "original_chunks": 128243,
+        "current_chunks": 129668
+      },
+      "original_positions": {
+        "unique_exact_match": 127364,
+        "ambiguous_exact_match": 879
+      },
+      "unique_texts": 12766,
+      "publicly_masked_documents": 18,
+      "publicly_masked_spans": 21,
+      "same_length_unicode_codepoint_masking": true,
+      "original_answers_inputs_scores_unchanged": true,
+      "new_model_calls": 0
+    }
   }
 }

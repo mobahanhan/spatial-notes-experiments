@@ -28,6 +28,8 @@ jobs:
         run: node verify-site.cjs
       - name: Verify paired RAG archive, answer hashes, and project-path routing
         run: node verify-rag.cjs
+      - name: Verify source material text, actual chunks, offsets, evidence links and compressed secret scan
+        run: node verify-materials.cjs
       - name: Verify cached navigation and playback lifecycle
         run: node test-navigation.cjs
       - name: Verify load-aware observation and robot playback

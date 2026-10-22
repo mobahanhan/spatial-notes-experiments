@@ -6,8 +6,9 @@
   <meta name="description" content="RAG 原版与当前版的 1,200 个配对任务：题目、材料、模型输入输出与原生评分记录。">
   <title>RAG 实验记录 · 原版 / 当前版</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="app.css">
-  <script type="module" src="app.js"></script>
+  <link rel="stylesheet" href="app.css?v=20261022-materials">
+  <link rel="stylesheet" href="materials.css?v=20261022-materials">
+  <script type="module" src="app.js?v=20261022-materials"></script>
 </head>
 <body>
   <a class="skip" href="#workspace">跳到实验内容</a>
@@ -16,6 +17,7 @@
     <nav aria-label="主导航">
       <button data-view="overview" aria-current="page">结果总览</button>
       <button data-view="experiments">逐题对照</button>
+      <button data-view="methods">方法对照</button>
       <button data-view="protocol">评分与来源</button>
     </nav>
     <a class="archive-back" href="../index.html">空间实验 ↗</a>
@@ -56,6 +58,36 @@
         <div id="detail" aria-live="polite"></div>
       </div>
     </section>
+    <section id="methods" class="view protocol" hidden>
+      <p class="eyebrow">SOURCE → CHUNKS → RETRIEVAL → EVIDENCE</p><h1>原版与当前版，流程哪里不同<span>.</span></h1>
+      <p class="lede">下面区分本次实际运行、所有版本共享的适配，以及代码支持但没有启用的功能。本实验不是只改变一个组件的消融实验。</p>
+      <p class="method-copy">逐题对照中新增“源材料与分块”和“本题运行差异”：可查看 26,555 份候选材料实例、128,243 个实际原版分块及 129,668 个当前版分块，定位最终送入模型的片段，而不只看回答。</p>
+      <div class="method-flow"><div><strong>原版</strong><span>候选原文 → 原生递归切分 → 未归一化向量 / L2 → 取 3 块 → 原生提示词 → 回答</span></div><div><strong>当前版</strong><span>冻结的定位分块 → 归一化向量＋BM25 → RRF＋去重 → 取 3 块 → 抽取原文窗口 → 带来源 ID 的提示词 → 回答</span></div></div>
+      <h2 class="method-heading">本次确实发生的差异</h2>
+      <div class="table-wrap"><table class="method-table"><thead><tr><th>环节</th><th>原版实际设置</th><th>当前版实际设置</th></tr></thead><tbody>
+        <tr><th>运行代码</th><td>来自修改前归档的原版实现；保留原生切分、HF 嵌入、FAISS 检索与问答提示词。</td><td>重构后的 myrag 模块；不是把旧代码换一个名称。</td></tr>
+        <tr><th>原材料</th><td colspan="2">同一题使用相同的冻结候选文段。不是两版分别挑材料，也不是 Benchmark 全量语料；标签、答案与相关性标注不进入检索索引。</td></tr>
+        <tr><th>分块算法</th><td>RecursiveCharacterTextSplitter；按段落、换行、空格递归分割；每个输入页面独立切分。</td><td>page-boundary-v1；页内滑动窗口，在后半窗口优先寻找换行、中文标点、英文句号空格、空格等边界。</td></tr>
+        <tr><th>分块参数</th><td colspan="2">最大块长 1,000 字符，重叠目标 200 字符，不是 Token 数。参数相同不代表切出的块相同。</td></tr>
+        <tr><th>运行时分块</th><td>从冻结 chunks 无缝恢复候选页面，再用原版算法切分。网页展示实际保存的原版索引片段，不用新切分器替代。</td><td>直接使用预处理时冻结的 chunks，不在答题时重新切分。</td></tr>
+        <tr><th>定位元数据</th><td>原始索引有来源、页码、片段正文和索引 ID，没有保存字符位置；网页额外的唯一原文匹配定位会注明为派生。</td><td>原始记录保存稳定 chunk ID、source、page、start/end。字符位置以 Unicode 码点计数，左闭右开。</td></tr>
+        <tr><th>嵌入模型</th><td colspan="2">同一 shibing624/text2vec-base-chinese 与固定 revision 183bb99aa7af74355fb58d16edf8c13ae7c5433e。没有更换更强的嵌入模型，也没有在这些题上训练。</td></tr>
+        <tr><th>向量与距离</th><td>原 HuggingFaceEmbeddings 默认输出，不额外归一化；FAISS IndexFlatL2。</td><td>归一化向量；FAISS IndexFlatIP，相当于余弦相似度；另检查零向量和非法数值。</td></tr>
+        <tr><th>召回、融合与去重</th><td>单路向量检索，返回前 3 块。</td><td>向量与 BM25 两路各最多 12 个候选；RRF 权重各 0.5、常数 60，融合最多 12 个；按来源/页码/区间去重，选 3 块。不是直接相加 BM25 与余弦原始分数。</td></tr>
+        <tr><th>BM25 分词</th><td>没有这一路。</td><td>NFKC 规范化；英文与标识符分词；中文单字及重叠二元词；k1=1.5，b=0.75。</td></tr>
+        <tr><th>证据窗口</th><td>将检索得到的原始块放进上下文。</td><td>按查询词匹配选择最多 3 个重点句，再保留邻句、合并连续区间；没有词面匹配时保留原块。不调用模型改写。一个 chunk 可产生多个窗口，所以返回窗口数可以大于 3。</td></tr>
+        <tr><th>上下文预算</th><td>格式化原生前 3 个片段，没有当前版的 6,500 字符证据预算逻辑。</td><td>证据正文总预算 6,500 字符；保留实际截取区间。格式、问题和系统提示不等于这个证据正文预算。</td></tr>
+        <tr><th>提示词与角色</th><td>原生问答模板作为 user 消息；使用页码引用，且包含“来自同一篇文档不同页”的假设，这对多来源任务可能不合适。</td><td>system/user 分离，EVIDENCE_JSON 与 S1、S2 引用；明确文档/历史不构成系统指令，历史用于消解指代，不作新证据，要求按问题语言回答。</td></tr>
+        <tr><th>答题模型</th><td colspan="2">使用同一 GPT-6.1 Sol 调用通道与共享输出上限/低推理强度；模型名称按服务返回记录，不据此独立证明底层型号。不是换答题模型带来的对比。</td></tr>
+        <tr><th>可追溯记录</th><td>原生来源列表、实际索引；大部分调用输入保存，最早复用的 40 份当前版输入未保存。</td><td>额外有逐路召回 ID、融合候选、最终选择、区间与引用诊断。页面的当前版检索轨迹来自保存记录，不是事后重跑。</td></tr>
+      </tbody></table></div>
+      <h2 class="method-heading">共享适配与批次差异</h2>
+      <p class="method-copy">两版都直接接收公开文本，而非重新跑 PDF/OCR；共享模型通道、最多 1,024 个输出 tokens、低推理强度，以及 JSON answer / abstain / citations 契约。补充批和后两批按同一方式向两版提供已发布历史前缀；后两批额外使用 strict JSON Schema。首批、补充批及后两批的格式说明位置/约束有差异，不能说所有 1,200 题都在完全相同的生成协议下运行。</p>
+      <div class="table-wrap"><table><thead><tr><th>批次</th><th>题数</th><th>输出与历史适配</th></tr></thead><tbody><tr><td>首批（含最早 40 题）</td><td>100</td><td>保留原生提示词并追加共享 JSON 格式；40 份当前版复用回答经指纹核验，不重复计数。</td></tr><tr><td>补充批</td><td>100</td><td>共享格式说明及已发布历史前缀；没有 API 侧 strict JSON Schema。</td></tr><tr><td>追加 A / B</td><td>500＋500</td><td>共享格式说明放在最后一条 user 消息末尾，使用 API strict JSON Schema；历史按相同方式提供给两版。</td></tr></tbody></table></div>
+      <h2 class="method-heading">代码支持，但本次未启用</h2><p class="method-copy">当前项目支持 CrossEncoder 重排序、证据充分性检查、缺口驱动补检索和停滞停止，但这 1,200 条当前版保存的检索轨迹均只有一轮，reranker 为空，没有证据检查器记录。这些能力不能写成本次已验证的提升来源。此处的“证据检查器”也不是后续用于评分的裁判。</p>
+      <h2 class="method-heading">工程变化，不冒充已测能力提升</h2><p class="method-copy">常规应用还改为模块化检索接口、不可变 FAISS＋JSON 版本快照、构建原子切换、模型/分块配置指纹和更明确的错误处理。旧持久化方案依赖 docstore pickle；当前存储不读取 pickle。不过这次当前版 QA 使用内存快照，并没有通过这些工程改动测得回答能力提升。</p>
+      <div class="warning">结论边界：切块、向量距离、检索、证据处理与提示词同时变化。这是整套流程的配对比较，不是单因素消融，不能把结果变化单独归因于某一项。</div>
+    </section>
     <section id="protocol" class="view protocol" hidden>
       <p class="eyebrow">METHOD & PROVENANCE</p><h1>评分与来源<span>.</span></h1>
       <p class="lede">原 Bench 定义优先。同一 Bench 内统一评分，跨 Bench 统一展示结构，不强行统一分数。</p>
@@ -65,6 +97,7 @@
         <dl class="definitions"><dt>RGB</dt><dd>抗噪声、整合、反事实回答按答案组规则；拒答采用 Rej*。反事实还需分别观察 ED* 与 CR*；CR* 只以检出的错误为分母。题目颜色不代表所有反事实子能力均通过。</dd><dt>HotpotQA</dt><dd>完整保留 Answer EM 和 token F1。没有模型预测的 (title, sentence_id) 支持事实，SP/Joint 不可计算；不以任意 F1 阈值定义“正确”。</dd><dt>CRAG</dt><dd>correct +1、missing 0、incorrect −1；同时报告正确率、缺答率、错误率与综合分。使用锁定的 Llama tokenizer 进行 75-token 处理，再按原生规则和替代语义裁判判定。</dd><dt>MTRAG-UN</dt><dd>按 answerability 进行拒答/澄清门控，再报告条件处理后的 RB_llm、RB_alg 与 Faithfulness。它们是连续指标，不是答对题数。主表使用样本加权均值，四领域等权宏均值单列。</dd><dt>FreshStack</dt><dd>原生指标是 α-nDCG@10、Coverage@20、Recall@50。历史候选池 QA 没有官方全库排名，因此只能展示问题与回答，不能虚构官方检索成绩。</dd></dl>
         <h2 id="limits">缺失与适配边界</h2><p>五类实验均存在输入、候选资料或输出协议适配，因此属于“原生指标定义下的本地适配实验”，不是官方完整协议复现。涉及模型裁判的部分使用服务返回标识为 GPT-6.1 Sol 的替代裁判，并非历史论文裁判的精确复现。</p><p>标准是在看到部分结果后统一的，不是预注册独立盲测；生成与裁判属于同模型家族，存在自评偏差。单次非随机子样本的差值不证明总体或统计显著提升。缺失指标保留未采集，不填 0。</p><p>少数最早复用回答没有保留下实际调用的完整输入，页面明确标注缺失，不从参考答案或新代码补造。本页“检索材料”来自保存的返回片段；“模型输入”显示经指纹校验的输入原文，两者不会混称。</p>
         <h2 id="sources">来源与下载</h2><div class="source-links"><a href="evaluation-standard.md" download>评分标准 Markdown ↗</a><a href="results.md" download>最终结果 Markdown ↗</a><a href="audit.md" download>最终核验记录 ↗</a><a href="data/provenance.json" download>来源与哈希 JSON ↗</a></div><div id="provenance"></div>
+        <p>候选原文来自本次冻结材料，不是补抓的网页或 Benchmark 全量语料。公开展示副本会对疑似凭据格式（包括技术文档中的示例/占位符）作等长星号遮盖，逐文标注；原始哈希与公开副本哈希分开记录，Unicode 字符位置不变。本地实验原材料、已有回答和评分不作修改。</p>
       </article></div>
     </section>
   </main>
