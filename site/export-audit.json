@@ -1543,8 +1543,8 @@
     "assets/offline-manifest.js": "ae892d1d92c15cd6436b1e03718488ae81569ef1adce2120bf9c6660bcd5a9fc",
     "assets/page_navigation.js": "15be9be9bd2131227bbfe5222a033d6ccf07967c976b9a60638fd60a914fed02",
     "assets/static_runtime.js": "dd15cb1b5926ee769fc14c1046681bc6ab3f09c2f59e4b19d4cb97d37e09d9ba",
-    "experiments.html": "6514043886c96c28ca3cbbcdbe1993126a5ba077680216fdc9315036ab2073cb",
-    "index.html": "dad7d9573757471a0b0b0fff62f64e391e65e814a27efe4d61a8b93cfbd6eacc",
+    "experiments.html": "33af1ea5ce2fce5710758f96fea68ef05d8184ee1efc133d69e2d7f64f5872ee",
+    "index.html": "d682d74c396536f5f36fe21205b808a7a4ab0182e184c1e36e926d5a3b4dbcd7",
     "reasons.html": "dc80036d5b1292b15de7bc4aab44bcbee8585943c9178d9c87851252a78218c5",
     "使用说明.md": "452944ba3c69f99b6f260cfc95d73391ba80760f955402731c3e19fa3451c189",
     "assets/images/22af5cff5b3b90c070c6ba04782da6169220414330b2ebef7b1ffc743d5bd60d.webp": "ad4dae3617fad815ec8e5f4e8ea91524789fff176d048255aa111150bf81329b",
@@ -9010,5 +9010,14 @@
         "export-audit.json"
       ]
     }
-  ]
+  ],
+  "rag_archive_addition": {
+    "date": "2026-10-22",
+    "path": "rag/",
+    "tasks": 1200,
+    "answers": 2400,
+    "manifest_sha256": "fb6ce1d5f5e87403958005e99555111990b03cab61ef2ccf0599bb9b74cc54a3",
+    "existing_esi_data_images_answers_and_trajectories_unchanged": true,
+    "existing_page_changes": "navigation links only; RAG opens in separate tab"
+  }
 }

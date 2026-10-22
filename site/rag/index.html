@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RAG 原版与当前版的 1,200 个配对任务：题目、材料、模型输入输出与原生评分记录。">
+  <title>RAG 实验记录 · 原版 / 当前版</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="app.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#workspace">跳到实验内容</a>
+  <header class="header">
+    <a class="brand" href="#overview"><span class="brand-dot" aria-hidden="true"></span>RAG <span>实验记录</span></a>
+    <nav aria-label="主导航">
+      <button data-view="overview" aria-current="page">结果总览</button>
+      <button data-view="experiments">逐题对照</button>
+      <button data-view="protocol">评分与来源</button>
+    </nav>
+    <a class="archive-back" href="../index.html">空间实验 ↗</a>
+    <span class="header-note">PAIRED EXPERIMENTS / 2026.10</span>
+  </header>
+  <div id="boot" role="status">正在读取已保存实验…</div>
+  <main id="workspace" hidden>
+    <section id="overview" class="view overview">
+      <div class="section-heading"><div><p class="eyebrow">SAME QUESTIONS. NATIVE METRICS.</p><h1>原版与当前版，逐项看结果<span>.</span></h1><p class="lede">包含最早的实验。保留改善，也保留退步；不同 Bench，不混算一个“总体正确率”。</p></div><button class="primary" data-view="experiments">查看实验记录 <span aria-hidden="true">↗</span></button></div>
+      <div id="totals" class="totals"></div>
+      <div id="overviewBench" class="bench-tabs" aria-label="按 Benchmark 查看汇总"></div>
+      <div class="table-heading"><h2>原生指标</h2><span><i class="swatch original"></i>原版 <i class="swatch current"></i>当前版</span></div>
+      <p class="muted compact">比例显示为 %；连续分数显示为 0–100；CRAG Score 保留 −1～1。差值由未舍入数据计算。</p>
+      <div class="table-wrap"><table class="metric-table"><thead><tr><th>Benchmark / 能力</th><th>指标</th><th>每版 n</th><th>原版</th><th>当前版</th><th>变化</th><th class="chart-col">对照</th></tr></thead><tbody id="metricRows"></tbody></table></div>
+      <div id="metricNotes" class="notes"></div>
+      <div class="section-heading smaller"><h2>数据质量与覆盖</h2><button class="quiet" data-view="protocol">查看评分说明 →</button></div>
+      <div id="qualityTable" class="table-wrap"></div>
+      <p class="disclaimer">这是非随机选定子集上的本地适配实验，部分指标采用替代裁判；不是官方完整榜单成绩，也不据此宣称统计显著提升。</p>
+    </section>
+    <section id="experiments" class="view explorer" hidden>
+      <aside class="sidebar">
+        <div class="side-heading"><h1>实验索引</h1><button id="resetFilters" class="quiet">重置</button></div>
+        <label class="search-label"><span class="sr-only">搜索题目或 ID</span><input id="search" type="search" placeholder="搜索题目 / ID / 关键词" autocomplete="off"></label>
+        <div id="taskBench" class="bench-tabs side-tabs" aria-label="Benchmark 筛选"></div>
+        <div class="filter-grid">
+          <label>任务类型<select id="category"><option value="ALL">全部类型</option></select></label>
+          <label>实验批次<select id="cohort"><option value="ALL">全部批次</option></select></label>
+          <label>语言<select id="language"><option value="ALL">全部语言</option><option value="en">英文</option><option value="zh">中文</option></select></label>
+          <label>变化<select id="change"><option value="ALL">全部变化</option><option value="improved">当前改善</option><option value="regressed">当前退步</option><option value="same">相同</option><option value="uncollected">未采集 / 未定义</option></select></label>
+        </div>
+        <div class="list-heading"><span id="listCount"></span><span title="左侧为原版，右侧为当前版">原 / 今</span></div>
+        <div id="taskList" class="task-list"></div>
+        <div class="pagination"><button id="pagePrev" aria-label="上一页">←</button><span id="pageLabel"></span><button id="pageNext" aria-label="下一页">→</button></div>
+        <p class="list-legend"><span class="dot success"></span>命中 <span class="dot failure"></span>未命中 <span class="dot continuous"></span>连续分数 <span class="dot unavailable"></span>未采集</p>
+      </aside>
+      <div id="detailScroll" class="detail-scroll">
+        <div class="detail-toolbar"><span id="taskPosition" class="muted"></span><div><button id="taskPrev" aria-label="上一题">← 上一题</button><button id="taskNext" aria-label="下一题">下一题 →</button><button id="copyLink">复制链接</button></div></div>
+        <div id="detail" aria-live="polite"></div>
+      </div>
+    </section>
+    <section id="protocol" class="view protocol" hidden>
+      <p class="eyebrow">METHOD & PROVENANCE</p><h1>评分与来源<span>.</span></h1>
+      <p class="lede">原 Bench 定义优先。同一 Bench 内统一评分，跨 Bench 统一展示结构，不强行统一分数。</p>
+      <div class="protocol-layout"><nav aria-label="说明目录"><a href="#scope">实验范围</a><a href="#rules">评分规则</a><a href="#limits">缺失与限制</a><a href="#sources">原始记录</a></nav><article>
+        <h2 id="scope">实验范围</h2><p>共四批：100＋100＋500＋500＝1,200 个独立题目，原版与当前版各一份，共 2,400 份回答。最早的 40 题已包含在首批 100 题中，不重复计数；SciFact 是另一组纯检索实验，不在本页分母中。</p><p>本页只整理保存的实验，没有重新答题。早期回答也采用本次统一评分口径，不把旧助手通过率与新 F1 拼接。四批的输入与格式协议不同，来源批次始终保留。</p>
+        <h2 id="rules">原生评分，不做事后答案美化</h2><p>合法的约定 JSON 取完整 answer 正文；格式不合规则保留完整原文。不会根据参考答案删去解释、抽取有利的短答案、修复 JSON，或补写拒答关键词。布尔 abstain 不等于原生自然语言拒答。</p>
+        <dl class="definitions"><dt>RGB</dt><dd>抗噪声、整合、反事实回答按答案组规则；拒答采用 Rej*。反事实还需分别观察 ED* 与 CR*；CR* 只以检出的错误为分母。题目颜色不代表所有反事实子能力均通过。</dd><dt>HotpotQA</dt><dd>完整保留 Answer EM 和 token F1。没有模型预测的 (title, sentence_id) 支持事实，SP/Joint 不可计算；不以任意 F1 阈值定义“正确”。</dd><dt>CRAG</dt><dd>correct +1、missing 0、incorrect −1；同时报告正确率、缺答率、错误率与综合分。使用锁定的 Llama tokenizer 进行 75-token 处理，再按原生规则和替代语义裁判判定。</dd><dt>MTRAG-UN</dt><dd>按 answerability 进行拒答/澄清门控，再报告条件处理后的 RB_llm、RB_alg 与 Faithfulness。它们是连续指标，不是答对题数。主表使用样本加权均值，四领域等权宏均值单列。</dd><dt>FreshStack</dt><dd>原生指标是 α-nDCG@10、Coverage@20、Recall@50。历史候选池 QA 没有官方全库排名，因此只能展示问题与回答，不能虚构官方检索成绩。</dd></dl>
+        <h2 id="limits">缺失与适配边界</h2><p>五类实验均存在输入、候选资料或输出协议适配，因此属于“原生指标定义下的本地适配实验”，不是官方完整协议复现。涉及模型裁判的部分使用服务返回标识为 GPT-6.1 Sol 的替代裁判，并非历史论文裁判的精确复现。</p><p>标准是在看到部分结果后统一的，不是预注册独立盲测；生成与裁判属于同模型家族，存在自评偏差。单次非随机子样本的差值不证明总体或统计显著提升。缺失指标保留未采集，不填 0。</p><p>少数最早复用回答没有保留下实际调用的完整输入，页面明确标注缺失，不从参考答案或新代码补造。本页“检索材料”来自保存的返回片段；“模型输入”显示经指纹校验的输入原文，两者不会混称。</p>
+        <h2 id="sources">来源与下载</h2><div class="source-links"><a href="evaluation-standard.md" download>评分标准 Markdown ↗</a><a href="results.md" download>最终结果 Markdown ↗</a><a href="audit.md" download>最终核验记录 ↗</a><a href="data/provenance.json" download>来源与哈希 JSON ↗</a></div><div id="provenance"></div>
+      </article></div>
+    </section>
+  </main>
+  <dialog id="jsonDialog"><div class="dialog-header"><h2 id="dialogTitle"></h2><button id="closeDialog" aria-label="关闭">关闭 ×</button></div><p id="dialogNote" class="muted"></p><pre id="dialogText"></pre><button id="copyJson">复制内容</button></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <div id="hoverCard" class="hover-card" hidden><strong id="hoverTitle"></strong><pre id="hoverText"></pre></div>
+  <noscript>此页需要浏览器启用 JavaScript；可直接阅读 <a href="results.md">最终结果文件</a>。</noscript>
+</body>
+</html>

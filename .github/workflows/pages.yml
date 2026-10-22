@@ -26,6 +26,8 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Verify completeness, relative paths, and known secret patterns
         run: node verify-site.cjs
+      - name: Verify paired RAG archive, answer hashes, and project-path routing
+        run: node verify-rag.cjs
       - name: Verify cached navigation and playback lifecycle
         run: node test-navigation.cjs
       - name: Verify load-aware observation and robot playback
