@@ -41,7 +41,7 @@ function renderOverview(){
     const chart=type==='signed'?'<span class="muted">−1 ～ 1</span>':`<div class="mini-bars" aria-label="原版 ${esc(nativeValue(a.value,type))}；当前版 ${esc(nativeValue(b.value,type))}"><div><i class="original" style="width:${Math.min(100,Math.max(0,a.value*100))}%"></i></div><div><i class="current" style="width:${Math.min(100,Math.max(0,b.value*100))}%"></i></div></div>`;
     return `<tr><td>${esc(r.benchmark)}${r.subtask==='ALL'?'':`<div class="sub">${esc(CATEGORY[r.subtask]??r.subtask)}</div>`}</td><td>${name}</td><td>${a.n}${r.metric==='CR_star'?'<sup>¹</sup>':''}</td><td>${nativeValue(a.value,type)}</td><td>${nativeValue(b.value,type)}</td><td class="${color}">${delta}</td><td>${chart}</td></tr>`;
   });
-  if(state.overviewBench==='ALL'||state.overviewBench==='FreshStack')rows.push('<tr><td>FreshStack</td><td>α-nDCG@10 / Coverage@20 / Recall@50</td><td>240</td><td>未采集</td><td>未采集</td><td>—</td><td>缺官方全库排名</td></tr>');
+  if(state.overviewBench==='ALL'||state.overviewBench==='FreshStack')rows.push('<tr><td>FreshStack · 旧问答</td><td>α-nDCG@10 / Coverage@20 / Recall@50</td><td>240</td><td>旧问答未采集</td><td>旧问答未采集</td><td>—</td><td><a href="retrieval.html">全库检索补测 ↗</a></td></tr>');
   $('metricRows').innerHTML=rows.join('');
   const notes=[
     '¹ RGB CR* 仅以已检出错误为分母：原版 4/16，当前版 5/11。纠正率上升，但错误检测率下降，不能只看 CR*。',
@@ -51,6 +51,7 @@ function renderOverview(){
   ];
   $('metricNotes').innerHTML=notes.filter((_,i)=>state.overviewBench==='ALL'||['RGB','CRAG','MTRAG-UN','HotpotQA'][i]===state.overviewBench).map(t=>`<p>${t}</p>`).join('');
   const quality=[['批次构成',summary.cohorts.map(c=>`${c.label}：${c.count}`).join('；')],['JSON 输出格式',`原版 1,200/1,200 合规；当前版 1,155/1,200 合规，45 份不合规仍保留在分母。`],['实际输入存档',`${summary.inputs_verified.toLocaleString()} 份保存输入通过指纹校验；${summary.inputs_unavailable} 份早期复用输入未保存，逐题明确标注。`],['裁判请求',`${summary.judge_usage.physical_dispatches.toLocaleString()} 次物理请求；${summary.judge_usage.successful_physical_requests.toLocaleString()} 次成功。7 次历史失败/结果不明尝试均已获准恢复，不是 7 份待评分回答。`],['裁判用量',`${summary.judge_usage.reported_total_tokens.toLocaleString()} 个服务返回 tokens，不含原始生成；7 次历史尝试用量不明，不能据此推算账单。`],['不可补造的成绩','HotpotQA SP/Joint、MTRAG 官方全库检索、FreshStack 官方检索指标均未采集。'],['补充诊断','旧助手通过率、词面分数、候选池覆盖不代替原生主指标；未另做统一独立盲评。']];
+  for(const row of quality)if(row[0]==='不可补造的成绩')row[1]='HotpotQA SP/Joint、MTRAG 官方全库检索及旧 FreshStack 问答的全库排名未采集。新增 FreshStack 全库检索补测另页记录，不追填进旧问答过程。';
   $('qualityTable').innerHTML=`<table><tbody>${quality.map(([a,b])=>`<tr><th>${a}</th><td>${esc(b)}</td></tr>`).join('')}</tbody></table>`;
   $('provenance').innerHTML=`<p class="provenance-note">结果更新时间：${esc(summary.updated_at)}<br>评分标准 SHA-256：${esc(summary.protocol_sha256)}<br>所有原始输入与回答文件的哈希、评分器来源及完整核验信息保存在下载文件中。</p>`;
 }
@@ -115,7 +116,7 @@ function scoreHTML(mode,v){
   if(s.hotpot_answer)for(const[k,n]of[['em','Answer EM'],['f1','Answer F1'],['precision','Token Precision'],['recall','Token Recall']])metrics.push([n,fmt(s.hotpot_answer[k]*100)]);
   if(s.crag_final_decision)metrics.push(['原生最终判定',s.crag_final_decision],['CRAG 得分',{correct:1,missing:0,incorrect:-1}[s.crag_final_decision]]);
   if(s.mtrag_conditioned)for(const[k,val]of Object.entries(s.mtrag_conditioned))metrics.push([`${k}（条件处理）`,val===null?'未定义':fmt(val*100)]);
-  let extra=s.benchmark==='FreshStack'?'<p class="warning">官方 α-nDCG@10、Coverage@20、Recall@50 未采集。这里不以自定义答案通过率替代。</p>':'';
+  let extra=s.benchmark==='FreshStack'?`<p class="warning">这份旧问答没有保存全库检索成绩，不以自定义答案通过率替代。<a href="retrieval.html#task=${activeDetail.meta.key}">查看同题独立全库检索补测 ↗</a></p>`:'';
   if(s.benchmark==='HotpotQA')extra='<p class="explanation">SP/Joint 未采集。F1 是连续词面分数，不按自定义阈值转成正确率。</p>';
   return `<div class="score-grid">${metrics.map(([k,v])=>`<div class="score-row"><span>${esc(k)}</span><strong>${esc(v)}</strong></div>`).join('')}</div>${extra}<h3 class="component-heading">保存的裁判记录 · ${v.judges.length}</h3><p class="explanation">按各 Bench 原生流程及条件门控执行；门控后不适用的组件不会重复评分。点击阶段可查看实际输入、输出与判定。</p>${v.judges.map((j,i)=>`<details class="judge" data-judge="${esc(j.path)}" data-mode="${mode}" data-judge-index="${i}"><summary>${esc(j.stage)}${j.suffix?` · ${esc(j.suffix)}`:''}</summary><div class="judge-content"><p class="explanation">展开后按需读取</p></div></details>`).join('')}<div class="io-buttons"><button class="io-button" data-io="score" data-mode="${mode}">完整评分 JSON ↗</button></div>`;
 }

@@ -7,8 +7,10 @@
   "public_url": "https://mobahanhan.github.io/spatial-notes-experiments/rag/",
   "files_sha256": {
     "app.css": "efe4018e65deee3b196f43c8eee584f6ac6f38211211cc64fadc366c8c7b813d",
-    "app.js": "d91028c337018f83bbfe0697da05c06010947c077537d955ce9d25a4bd68b47a",
+    "app.js": "6417ce16d64d3a82887246d1a24eaa64a8bc4bce2433c098e0384eed45f641a1",
     "audit.md": "1048de968118bc7ff51dfc709f72eacd58454597c814ea81768de938857b36a0",
+    "data/full-retrieval/protocol.json": "3f4b79635685aa365c755fe4451a16431c53d70bddac93298f69f53e502bfc38",
+    "data/full-retrieval/summary.json": "c2d393a86b25f76bdc1b0f02e62d82cf705d39a93da34e71377001f6da50b8c7",
     "data/index.json": "e13c0a15ccc8e6dc0df23a165292d0c53260e464917634e1b397bfe92931bfb4",
     "data/judges/002f01017678d209f6010edd5eb94a1d403000f1c56cd73bdd4c2273049b24cf.json": "530fb35eda8c2815c71b3bc632935722462b145085df6501ba9e943c6d4a6212",
     "data/judges/003161f06ccc6a816afa35b6d6ed28814f480e35f3b3c9005f9d11167c373cbf.json": "0213b13569a5f9b10acfcfec5e7e8ea7e383a776683883a0622a31a18068fa60",
@@ -4900,12 +4902,15 @@
     "data/tasks/ffccb7013b32fc53a452.json": "958c6d653e0f5dac095ffd0807b41008161a14f2fb1daba5adb0b8290337781d",
     "data/tasks/ffd0eaeabdd763467d48.json": "695be625bef5b1abe14e330fd364c4276d84ab168e273a33369e77f914d3de33",
     "evaluation-standard.md": "b88a03cbd3a405fa39a7682c3a97eb12070f1b73d106fa7d407b5865a1eed026",
-    "index.html": "670992e71ffcc31615d13130691431e02f9771c23ed759334587dfdfb81ead2c",
+    "index.html": "7893abc5e291d9d3d7de99e3fa67e30c226572c9974ff72f1929b40c4f6da70b",
     "materials.css": "ea8794dd787ae794a5bd750b9be926e92501be186222f78172124992a999246e",
     "materials.js": "63a3bd3f574ab322ac49853fcea0cc7d5e7974e0ba86e0f3c8c31f9e32f228fa",
-    "results.md": "f53c84cfaf7ff39709eb13b09ccd32d23a4fd13693df2c39eae159fc7865a29d"
+    "results.md": "f53c84cfaf7ff39709eb13b09ccd32d23a4fd13693df2c39eae159fc7865a29d",
+    "retrieval.css": "6f54f2a93109b32dbb673a81854050483a9914fd1b7defccb3bfc80ad839b794",
+    "retrieval.html": "5abee99207c542862c216e222140d3d279cea33c1bfec128a53a45fd923ca2dd",
+    "retrieval.js": "af2c0c9ec3b60a8624882c8e68e8a37813605738c2b2a5d6c4d2f1e849de7aa8"
   },
-  "revision": "20261022-materials",
+  "revision": "20261023-full-corpus-ir",
   "material_archive": {
     "counts": {
       "tasks": 1200,
@@ -4923,5 +4928,14 @@
     "same_length_unicode_codepoint_masking": true,
     "original_answers_inputs_scores_unchanged": true,
     "new_model_calls": 0
+  },
+  "freshstack_ir_addition": {
+    "status": "running",
+    "questions": 240,
+    "completed_rankings": 0,
+    "corpus_documents": 271816,
+    "protocol_sha256": "c3efb4a2605c485272a95c52601b1d02f5baf85a040d23ed965d38ec1fbd0079",
+    "old_qa_records_unchanged": true,
+    "paid_api_calls": 0
   }
 }
