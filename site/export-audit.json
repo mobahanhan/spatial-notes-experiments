@@ -9016,7 +9016,7 @@
     "path": "rag/",
     "tasks": 1200,
     "answers": 2400,
-    "manifest_sha256": "d5cc2fb12be04fa2f0aa113efef43e2357eaf5b2cc72a4b92ed654afa221fbe6",
+    "manifest_sha256": "9def0c5bc643ba5e361084780f81242fe8ac89fda162cceb3f34f220d01df7cc",
     "existing_esi_data_images_answers_and_trajectories_unchanged": true,
     "existing_page_changes": "navigation links only; RAG opens in separate tab",
     "material_revision": {
@@ -9038,9 +9038,9 @@
       "new_model_calls": 0
     },
     "freshstack_ir": {
-      "status": "running",
+      "status": "complete",
       "questions": 240,
-      "completed_rankings": 0,
+      "completed_rankings": 480,
       "corpus_documents": 271816,
       "protocol_sha256": "c3efb4a2605c485272a95c52601b1d02f5baf85a040d23ed965d38ec1fbd0079",
       "old_qa_records_unchanged": true,

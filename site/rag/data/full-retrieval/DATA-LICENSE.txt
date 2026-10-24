@@ -1,0 +1,8 @@
+FreshStack benchmark data attribution
+
+Authors: Nandan Thakur, Jimmy Lin, Sam Havens, Michael Carbin, Omar Khattab, Andrew Drozdov; and original source contributors.
+Dataset: https://huggingface.co/datasets/freshstack/corpus-oct-2024
+Queries/nuggets: https://huggingface.co/datasets/freshstack/queries-oct-2024
+Dataset license: CC-BY-SA 4.0, https://creativecommons.org/licenses/by-sa/4.0/
+Public source copies may have credential-shaped strings masked with equal-length asterisks. Full-corpus rankings and metric records are locally derived retrieval results, not official leaderboard submissions.
+Official scoring code: https://github.com/fresh-stack/freshstack/tree/f1c4ec96477f5100f10c83798d33b3101db727fa (Apache-2.0).
