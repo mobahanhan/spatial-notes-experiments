@@ -157,3 +157,25 @@ GPT-6.1 的实验结果也表明，在部分成功的任务中，也确实是先
 ### 其他方案的难度
 
 如果走造数据训练这一条，训练出一个十分有效的 VLM 需要比较大参数量的预训练模型，不太可行。如果使用一个小模型的话，首先还是需要算力和环境，目前这个问题也难以解决；然后可能需要一些刷榜的策略，难度未知，有效性难以保证，价值也不大。
+
+## 七、普通 Benchmark 对照实验（2026-11-01）
+
+本轮使用 4router API 的 gpt-6.1-sol，运行 Benchmark 标准任务模块，不启用 Harness、点云或额外定制探索提示。实验记录中选择“普通 Benchmark · GPT-6.1 Sol”，可查看逐步原图、镜头轨迹、完整输入与输出。
+
+| 任务类型 | 场景 / 房间 | 提交答案 | 标准答案 | 结果 | 观测步数 |
+| --- | --- | ---: | ---: | --- | ---: |
+| Category Ambiguity | Beechwood_0_garden / living_room_0 | 3 | 3 | 正确 | 4 |
+| Illumination Variability | Beechwood_0_int / living_room_1 | 1 | 3 | 错误 | 30 |
+| Illumination Variability | Beechwood_1_int / playroom_0 | 1 | 3 | 错误 | 30 |
+| Spatial Segmentation | Beechwood_1_int / playroom_0 | 3 | 3 | 正确 | 3 |
+| Spatial Segmentation | grocery_store_cafe / dining_room_0 | 2 | 5 | 错误 | 2 |
+
+| 实验条件 | 已评测任务 | 答案正确 | 错误 | 答案正确率 |
+| --- | ---: | ---: | ---: | ---: |
+| 普通 Benchmark · GPT-6.1 Sol | 5 | 2 | 3 | 2/5（40.0%） |
+
+这五项共保存 69 次观测和 71 条模型调用记录。两个 Illumination Variability 任务均耗尽 30 步后补答 1；grocery_store_cafe / dining_room_0 的 Spatial Segmentation 在第 2 步主动停止，回答 2。终局补答复用最后一张图，不计作新增观测。
+
+普通流程采用每次平移 0.25 米、转向 15°，最多 30 步、置信度阈值 0.8；min_steps=3 只约束置信度阈值停止，模型仍可更早主动 stop。图像最长边 768、JPEG 质量 75；模型接收近期视图和动作历史。这些设置与 Harness 的动作幅度、输入和停止规则不同，分数差异只作描述性对照。
+
+本节“正确 / 错误”按保存的最终答案评分；未将其作为新增的人工过程复核。三维陈设只用于人工查看，不进入模型输入。

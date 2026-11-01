@@ -89,10 +89,10 @@ async function request(route) {
 function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); }
 (async () => {
   const catalog = await request('/api/catalog');
-  assert.equal(catalog.length, 93);
+  assert.equal(catalog.length, 98);
   assert.equal(catalog.length, audit.runs);
   const variants = {};
-  let frames = 0, walks = 0, inputSteps = 0, inputImageReferences = 0, directCorrect = 0, alignedFrames = 0, missingObservations = 0, restarts = 0, recoveredMetadata = 0;
+  let frames = 0, walks = 0, inputSteps = 0, plainInputSteps = 0, plainObservationSteps = 0, plainCorrect = 0, inputImageReferences = 0, directCorrect = 0, alignedFrames = 0, missingObservations = 0, restarts = 0, recoveredMetadata = 0;
   for (const run of catalog) {
     variants[run.variant] = (variants[run.variant] || 0) + 1;
     const data = await request('/api/data?id=' + encodeURIComponent(run.id));
@@ -102,6 +102,15 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
       assert.equal(typeof data.result.correct, 'boolean');
       assert.ok(data.submission?.answer, 'A direct-observation answer must be a saved submission');
       directCorrect += Number(data.result.correct);
+    }
+    if (run.variant === 'plain-gpt61') {
+      assert.equal(run.model, 'gpt-6.1-sol');
+      assert.equal(run.experiment_condition, 'plain_benchmark');
+      assert.equal(run.harness_enabled, false);
+      assert.equal(run.pointcloud_enabled, false);
+      assert.equal(data.trajectory.length, run.decision_records);
+      plainCorrect += Number(data.result.correct);
+      plainObservationSteps += run.steps;
     }
     assert.ok(data.room_geometry.polygons.length);
     assert.ok(data.objects.length);
@@ -126,7 +135,7 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
         assert.equal(data.observation_alignment_audit.original_images_actions_and_recorded_poses_preserved, true);
         alignedFrames++;
       }
-      if (run.variant !== 'ordered-survey-v6') continue;
+      if (!['ordered-survey-v6', 'plain-gpt61'].includes(run.variant)) continue;
       const inputs = await request('/api/model-input?id=' + encodeURIComponent(run.id) + '&index=' + index);
       for (const call of [...inputs.calls, ...inputs.unmatched_calls]) {
         for (const saved of call.images) {
@@ -136,7 +145,10 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
           }
         }
       }
-      inputSteps++;
+      if (run.variant === 'plain-gpt61') {
+        assert.equal(inputs.calls.length, 1, 'Every ordinary decision must retain its exact saved request');
+        plainInputSteps++;
+      } else inputSteps++;
     }
     for (let replay = 0; replay < (data.walk_replays || []).length; replay++) {
       for (let index = 0; index < data.walk_replays[replay].frames.length; index++) {
@@ -145,8 +157,12 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
       }
     }
   }
-  assert.deepEqual(variants, {unhinted: 20, hinted: 20, 'ordered-survey-v6': 9, 'computer-use': 44});
-  assert.equal(frames, 1174, 'Replace only the requested Spatial Segmentation q_001: 8 old frames become 3 new frames');
+  assert.deepEqual(variants, {unhinted: 20, hinted: 20, 'ordered-survey-v6': 9, 'computer-use': 44, 'plain-gpt61': 5});
+  assert.equal(frames, 1245, 'Preserve 1174 existing records and add 71 ordinary model decisions');
+  assert.equal(audit.plain_gpt61_revision.old_catalog_objects_preserved, true);
+  assert.equal(plainCorrect, 2);
+  assert.equal(plainObservationSteps, 69);
+  assert.equal(plainInputSteps, 71);
   const replacement = audit.single_run_replacement;
   assert.equal(replacement.id, 'computer-use-spatial-segmentation-beechwood-0-int-living-room-1-q-001');
   assert.equal(replacement.old_frames, 8);
@@ -161,6 +177,7 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
   assert.equal(alignedFrames, audit.observation_alignment_revision.annotated_frames);
   assert.equal(walks, audit.counts.robot_replay_frames);
   assert.equal(inputSteps, audit.counts.harness_input_steps);
+  assert.equal(plainInputSteps, audit.counts.plain_input_steps);
   const accuracy = await request('/api/accuracy');
   assert.equal(accuracy.labels['computer-use'], 'GPT-6.1 Sol 直接观察');
   assert.equal(accuracy.computer_use.stats.total, 44);
@@ -169,6 +186,10 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
   assert.equal(accuracy.computer_use.stats.correct, directCorrect);
   assert.equal(accuracy.computer_use.stats.complete, true);
   assert.equal(accuracy.harness_cohort.variants['computer-use'].correct, 7, 'The original common cohort must be unchanged');
+  assert.equal(accuracy.overall['plain-gpt61'].correct, 2);
+  assert.equal(accuracy.overall['plain-gpt61'].total, 5);
+  assert.equal(accuracy.overall['plain-gpt61'].percent, 40);
+  assert.equal(accuracy.harness_cohort.variants['plain-gpt61'], undefined, 'A five-task baseline must not change the original nine-task denominator');
   if (['lossless-webp','mixed-original-and-lossless-webp'].includes(audit.image_format)) {
     if (audit.image_format === 'lossless-webp') assert.equal(Object.keys(audit.image_audit).length, audit.unique_images);
     else {
@@ -189,5 +210,5 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
   const abort = new AbortController();
   abort.abort();
   await assert.rejects(context.window.fetch('/api/data', {signal: abort.signal}), {name: 'AbortError'});
-  console.log(JSON.stringify({verified: true, files: files.length, bytes, runs: catalog.length, variants, frames, walks, inputSteps, inputImageReferences, alignedFrames, scripts, knownSecretFindings: 0, projectPathSafe: true, networkRequests: 0}, null, 2));
+  console.log(JSON.stringify({verified: true, files: files.length, bytes, runs: catalog.length, variants, frames, walks, inputSteps, plainInputSteps, plainObservationSteps, inputImageReferences, alignedFrames, scripts, knownSecretFindings: 0, projectPathSafe: true, networkRequests: 0}, null, 2));
 })().catch(error => { console.error(error.message); process.exitCode = 1; });

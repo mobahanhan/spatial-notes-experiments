@@ -48,7 +48,8 @@
         <button class="variant-button" id="hintedVariant" type="button" data-variant="hinted" aria-pressed="false"><span>带提示</span><span class="variant-rate" id="hintedAccuracy">统计中…</span></button>
         <button class="variant-button" id="harnessVariant" type="button" data-variant="ordered-survey-v6" aria-pressed="false"><span>Harness</span><span class="variant-rate" id="harnessAccuracy">统计中…</span></button>
         <button class="variant-button" id="computerUseVariant" type="button" data-variant="computer-use" aria-pressed="false" title="GPT-6.1 Sol 直接观察"><span style="white-space:normal;line-height:1.35">GPT-6.1 Sol 直接观察</span><span class="variant-rate" id="computerUseTabAccuracy">统计中…</span></button>
-        <select id="variantSelect" aria-label="实验版本" hidden><option value="unhinted">不带提示</option><option value="hinted">带提示</option><option value="ordered-survey-v6">Harness</option><option value="computer-use">GPT-6.1 Sol 直接观察</option></select>
+        <button class="variant-button" id="plainGpt61Variant" type="button" data-variant="plain-gpt61" aria-pressed="false" style="grid-column:1/-1"><span>普通 Benchmark · GPT-6.1 Sol</span><span class="variant-rate" id="plainGpt61Accuracy">统计中…</span></button>
+        <select id="variantSelect" aria-label="实验版本" hidden><option value="unhinted">不带提示</option><option value="hinted">带提示</option><option value="ordered-survey-v6">Harness</option><option value="computer-use">GPT-6.1 Sol 直接观察</option><option value="plain-gpt61">普通 Benchmark · GPT-6.1 Sol</option></select>
       </div>
       <details class="experiment-methods" id="experimentMethods">
         <summary>实验栏目说明</summary>
@@ -57,6 +58,7 @@
           <dt>带提示</dt><dd>GPT-5.5 在加入为每道题定制的、带有明显提醒与暗示功能的提示词后所得的结果。提示包括物体的大小、需要采用空间探索方法而非常识推断等。</dd>
           <dt>Harness</dt><dd>在本框架下进行实验所得的结果。</dd>
           <dt>GPT-6.1 Sol 直接观察</dt><dd>不采用模型动作接口，而是由 GPT-6.1 Sol 使用 Computer use 功能直接观察并操作手操网页，得到的实验结果。</dd>
+          <dt>普通 Benchmark · GPT-6.1 Sol</dt><dd>2026-11-01 使用 4router API 的 gpt-6.1-sol，运行标准任务模块；不启用 Harness、点云或额外定制提示。五项独立实验，最多 30 步；普通平移 0.25 米、转向 15°，采用 Benchmark 默认停止规则。</dd>
         </dl>
       </details>
       <input class="task-filter" id="taskFilter" type="search" placeholder="搜索任务、场景或房间…" aria-label="搜索任务、场景或房间">
@@ -147,7 +149,7 @@
 </div>
 <script src="assets/page_navigation.js" defer></script>
 <script src="assets/frame_playback.js?v=20261015-performance-1"></script>
-<script src="assets/offline-manifest.js?v=6e613b88a9386441"></script>
+<script src="assets/offline-manifest.js?v=9d1be1211d334cfc"></script>
 <script src="assets/static_runtime.js?v=20261015-performance-1"></script>
 <script src="assets/architecture_geometry.js"></script>
 <script>
@@ -565,7 +567,7 @@
   }
   function renderModelInputRecord(pose){
     const allowed=data?.run?.variant==='ordered-survey-v6'&&pose;
-    if(!allowed){modelInputKey='';modelInputPayload=null;modelInputError='';closeModelInputPopup();document.querySelector('#modelInputBody').replaceChildren();return}
+    if(!allowed&&!(data?.run?.variant==='plain-gpt61'&&pose)){modelInputKey='';modelInputPayload=null;modelInputError='';closeModelInputPopup();document.querySelector('#modelInputBody').replaceChildren();return}
     const key=`${currentRunId}:${step}`;
     if(key!==modelInputKey){modelInputKey=key;modelInputPayload=null;modelInputSelectedCall=0;modelInputError=''}
     document.querySelector('#modelInputStep').textContent=`记录 ${step+1}/${data.trajectory.length} · 原始步骤 ${pose.step??step+1}`;
@@ -619,6 +621,7 @@
   function renderModelOutputRecord(pose){
     const control=document.querySelector('#modelOutputControl'),popup=document.querySelector('#modelOutputPopup'),pre=document.querySelector('#modelOutputJson'),mode=document.querySelector('#modelOutputMode');
     control.hidden=data?.run?.variant!=='ordered-survey-v6'||!pose;
+    if(data?.run?.variant==='plain-gpt61'&&pose)control.hidden=false;
     if(control.hidden){closeModelOutputPopup();pre.textContent='';return}
     const record=modelOutputRecord(pose.raw_output),rawMode=mode.dataset.mode==='raw';
     pre.dataset.kind=record.kind;pre.textContent=record.kind==='missing'?'本步骤未保存原始模型输出。':rawMode?record.raw:record.formatted;pre.scrollTop=0;
@@ -739,7 +742,7 @@
   function renderAccuracyStats(){
     const variant=document.querySelector('#variantSelect').value,section=document.querySelector('#harnessAccuracySection');
     section.hidden=variant!=='ordered-survey-v6';
-    const ids={unhinted:'#unhintedAccuracy',hinted:'#hintedAccuracy','ordered-survey-v6':'#harnessAccuracy'};
+    const ids={unhinted:'#unhintedAccuracy',hinted:'#hintedAccuracy','ordered-survey-v6':'#harnessAccuracy','plain-gpt61':'#plainGpt61Accuracy'};
     for(const [key,id] of Object.entries(ids)){
       const stats=accuracyReport?.overall?.[key];
       document.querySelector(id).textContent=stats?`${accuracyValue(stats)} · ${accuracyFraction(stats)}`:accuracyError?'统计不可用':'统计中…';
@@ -788,7 +791,7 @@
   }
   function syncVariantButtons(){const value=document.querySelector('#variantSelect').value;document.querySelectorAll('.variant-button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.variant===value)))}
   function syncRun(){syncQuestionOptions();const number=Number(document.querySelector('#questionSelect').value),variant=document.querySelector('#variantSelect').value,entry=catalog.find(item=>item.question_number===number&&item.variant===variant);syncVariantButtons();renderTaskList();renderAccuracyStats();if(entry)loadRun(entry.id)}
-  function initCatalog(items){catalog=items||[];if(!catalog.length){fetch('/api/data',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`HTTP ${r.status}`);return r.json()}).then(init).catch(showLoadError);return}const controls=document.querySelector('#runControls'),select=document.querySelector('#questionSelect'),variantSelect=document.querySelector('#variantSelect');controls.hidden=false;select.addEventListener('change',syncRun);variantSelect.addEventListener('change',syncRun);document.querySelectorAll('.variant-button').forEach(button=>button.addEventListener('click',()=>{if(variantSelect.value===button.dataset.variant)return;variantSelect.value=button.dataset.variant;variantSelect.dispatchEvent(new Event('change',{bubbles:true}))}));document.querySelector('#taskFilter').addEventListener('input',renderTaskList);syncRun()}
+  function initCatalog(items){catalog=items||[];if(!catalog.length){fetch('/api/data',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`HTTP ${r.status}`);return r.json()}).then(init).catch(showLoadError);return}const controls=document.querySelector('#runControls'),select=document.querySelector('#questionSelect'),variantSelect=document.querySelector('#variantSelect');controls.hidden=false;select.addEventListener('change',syncRun);variantSelect.addEventListener('change',syncRun);document.querySelectorAll('.variant-button').forEach(button=>button.addEventListener('click',()=>{if(variantSelect.value===button.dataset.variant)return;variantSelect.value=button.dataset.variant;variantSelect.dispatchEvent(new Event('change',{bubbles:true}))}));document.querySelector('#taskFilter').addEventListener('input',renderTaskList);const requested=typeof location==='object'?new URLSearchParams(location.search).get('variant'):null;if(requested&&catalog.some(item=>item.variant===requested))variantSelect.value=requested;syncRun()}
   function setInteractionMode(mode){interactionMode=mode;syncLayoutControls()}
   function syncFovControls(){horizontalFovInput.value=viewHorizontalFovDeg;verticalFovInput.value=viewVerticalFovDeg;horizontalFovValue.value=`${viewHorizontalFovDeg}°`;verticalFovValue.value=`${viewVerticalFovDeg}°`}
   function applyFov(axis,value){const numeric=Number(value);if(axis==='horizontal')viewHorizontalFovDeg=clamp(Number.isFinite(numeric)?numeric:DEFAULT_HORIZONTAL_FOV_DEG,30,120);else viewVerticalFovDeg=clamp(Number.isFinite(numeric)?numeric:DEFAULT_VERTICAL_FOV_DEG,15,90);syncFovControls();try{localStorage.setItem('esi-view-horizontal-fov-70x50',String(viewHorizontalFovDeg));localStorage.setItem('esi-view-vertical-fov-70x50',String(viewVerticalFovDeg))}catch{}projectionCache.clear();scheduleRender()}
