@@ -1,0 +1,14 @@
+.rgb-tabs{display:flex;gap:5px;margin:10px 0}.rgb-tabs button,.rgb-open,.rgb-modal button{border:1px solid var(--line);border-radius:6px;padding:7px 10px;background:var(--panel);color:var(--text);cursor:pointer;font:inherit;font-size:12px}
+.rgb-tabs button[aria-pressed=true]{background:var(--orange-bg);border-color:var(--orange);color:var(--text)}
+.rgb-status{font-size:11px;color:var(--muted);line-height:1.6;min-height:3.2em}.rgb-preview{width:100%;aspect-ratio:16/10;object-fit:contain;background:#0b101a;border-radius:6px;margin:8px 0}
+.rgb-preview[hidden]{display:none}.rgb-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rgb-actions a{color:var(--accent);font-size:11px}.rgb-note{font-size:10px;line-height:1.55;color:var(--muted);margin:9px 0 0}
+.rgb-modal{position:fixed;inset:0;background:#121b22a3;z-index:160;display:flex;align-items:center;justify-content:center;padding:22px}.rgb-modal[hidden]{display:none}
+.rgb-dialog{width:min(1180px,96vw);background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 22px 85px #0006}
+.rgb-dialog-head{padding:13px 16px;display:flex;justify-content:space-between;gap:10px;align-items:center}.rgb-dialog-head strong{font-size:14px}.rgb-modal-body{height:min(76vh,800px);position:relative;background:#0b101a}.rgb-modal-body iframe{border:0;width:100%;height:100%;display:block}.rgb-modal-loading{position:absolute;top:45%;left:0;right:0;text-align:center;color:#b8c5d6;font-size:13px;pointer-events:none}
+.rgb-dialog-foot{display:flex;justify-content:space-between;padding:10px 16px;align-items:center;font-size:11px;color:var(--muted);gap:8px}.rgb-dialog-foot span{flex:1}
+@media(max-width:760px){.top-meta{display:none}.rgb-modal{padding:8px}.rgb-modal-body{height:72vh}.rgb-dialog-foot{flex-wrap:wrap}}
+
+.rgb-group-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0;font-size:12px}.rgb-group-row[hidden]{display:none}.rgb-group-row select{max-width:100%;padding:8px;border:1px solid #cad5df;border-radius:6px;background:#fff;color:#183141}
+
+#rgbModelPanels{margin:14px 0;border-top:1px solid #ccd6db;padding-top:12px}#rgbModelPanels summary{font-weight:600;cursor:pointer}#rgbModelPanelList figure{margin:12px 0}#rgbModelPanelList img{width:100%;height:auto;border-radius:6px;background:#101722}#rgbModelPanelList figcaption{font-size:11px;line-height:1.6;overflow-wrap:anywhere;color:#52646d;margin-top:5px}
+.rgb-stop-status{font-size:11px;line-height:1.6;margin-top:7px;color:var(--muted)}.rgb-stop-unverified{color:#a13428}

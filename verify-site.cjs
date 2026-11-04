@@ -53,6 +53,12 @@ assert.equal(secretFindings.length, 0, JSON.stringify(secretFindings));
 
 function localFile(address) {
   const url = new URL(address, baseURI);
+  const external=audit.external_assets;
+  if(external&&url.href.startsWith(external.public_prefix)){
+    const relative=decodeURIComponent(url.href.slice(external.public_prefix.length));
+    const folder=path.resolve(__dirname,external.repository_directory),file=path.resolve(folder,relative);
+    assert.ok(file.startsWith(folder+path.sep));assert.ok(fs.statSync(file).size>0);return file;
+  }
   assert.equal(url.origin, projectURL.origin, 'Dependency leaves the static hosting origin');
   assert.ok(url.pathname.startsWith(projectURL.pathname), 'Dependency loses the project-site prefix');
   const relative = decodeURIComponent(url.pathname.slice(projectURL.pathname.length));
@@ -89,10 +95,10 @@ async function request(route) {
 function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); }
 (async () => {
   const catalog = await request('/api/catalog');
-  assert.equal(catalog.length, 98);
+  assert.equal(catalog.length, 107);
   assert.equal(catalog.length, audit.runs);
   const variants = {};
-  let frames = 0, walks = 0, inputSteps = 0, plainInputSteps = 0, plainObservationSteps = 0, plainCorrect = 0, inputImageReferences = 0, directCorrect = 0, alignedFrames = 0, missingObservations = 0, restarts = 0, recoveredMetadata = 0;
+  let cloudInputSteps = 0, frames = 0, walks = 0, inputSteps = 0, plainInputSteps = 0, plainObservationSteps = 0, plainCorrect = 0, inputImageReferences = 0, directCorrect = 0, alignedFrames = 0, missingObservations = 0, restarts = 0, recoveredMetadata = 0;
   for (const run of catalog) {
     variants[run.variant] = (variants[run.variant] || 0) + 1;
     const data = await request('/api/data?id=' + encodeURIComponent(run.id));
@@ -135,7 +141,7 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
         assert.equal(data.observation_alignment_audit.original_images_actions_and_recorded_poses_preserved, true);
         alignedFrames++;
       }
-      if (!['ordered-survey-v6', 'plain-gpt61'].includes(run.variant)) continue;
+      if (!['ordered-survey-v6', 'plain-gpt61', 'harness-rgb-v2'].includes(run.variant)) continue;
       const inputs = await request('/api/model-input?id=' + encodeURIComponent(run.id) + '&index=' + index);
       for (const call of [...inputs.calls, ...inputs.unmatched_calls]) {
         for (const saved of call.images) {
@@ -148,7 +154,7 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
       if (run.variant === 'plain-gpt61') {
         assert.equal(inputs.calls.length, 1, 'Every ordinary decision must retain its exact saved request');
         plainInputSteps++;
-      } else inputSteps++;
+      } else if(run.variant==='harness-rgb-v2')cloudInputSteps++; else inputSteps++;
     }
     for (let replay = 0; replay < (data.walk_replays || []).length; replay++) {
       for (let index = 0; index < data.walk_replays[replay].frames.length; index++) {
@@ -157,8 +163,8 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
       }
     }
   }
-  assert.deepEqual(variants, {unhinted: 20, hinted: 20, 'ordered-survey-v6': 9, 'computer-use': 44, 'plain-gpt61': 5});
-  assert.equal(frames, 1245, 'Preserve 1174 existing records and add 71 ordinary model decisions');
+  assert.deepEqual(variants, {unhinted: 20, hinted: 20, 'ordered-survey-v6': 9, 'computer-use': 44, 'plain-gpt61': 5, 'harness-rgb-v2':9});
+  assert.equal(frames,1456,'Preserve 1245 existing records and add 211 cloud Harness decisions');
   assert.equal(audit.plain_gpt61_revision.old_catalog_objects_preserved, true);
   assert.equal(plainCorrect, 2);
   assert.equal(plainObservationSteps, 69);
@@ -176,8 +182,24 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
   assert.equal(frames, audit.counts.trajectory_frames);
   assert.equal(alignedFrames, audit.observation_alignment_revision.annotated_frames);
   assert.equal(walks, audit.counts.robot_replay_frames);
-  assert.equal(inputSteps, audit.counts.harness_input_steps);
+  assert.equal(cloudInputSteps,211);
+  assert.equal(inputSteps+cloudInputSteps, audit.counts.harness_input_steps);
   assert.equal(plainInputSteps, audit.counts.plain_input_steps);
+  for(const run of catalog.filter(r=>r.variant==='harness-rgb-v2')){
+    const data=await request('/api/data?id='+encodeURIComponent(run.id));
+    const cloud=await request('/api/rgb-geometry?id='+encodeURIComponent(run.id));
+    assert.equal(cloud.length,data.trajectory.length);
+    for(let i=0;i<cloud.length;i++){
+      assert.equal(cloud[i].view_id,data.trajectory[i].view_id);
+      const original=audit.image_audit[data.trajectory[i].image]?.original_sha256;
+      assert.equal(cloud[i].image_sha256,original,'Cloud/RGB must bind to the same actual saved input');
+      for(const item of [cloud[i].local,cloud[i].fusion,...cloud[i].fusion.groups]){
+        localFile(item.preview_url);localFile(item.report_url);localFile(item.viewer_url);
+        const url=new URL(item.viewer_url,baseURI);localFile(url.searchParams.get('snapshot'));localFile(url.searchParams.get('report'));
+        assert.ok(item.packed);
+      }
+    }
+  }
   const accuracy = await request('/api/accuracy');
   assert.equal(accuracy.labels['computer-use'], 'GPT-6.1 Sol 直接观察');
   assert.equal(accuracy.computer_use.stats.total, 44);
@@ -186,6 +208,8 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
   assert.equal(accuracy.computer_use.stats.correct, directCorrect);
   assert.equal(accuracy.computer_use.stats.complete, true);
   assert.equal(accuracy.harness_cohort.variants['computer-use'].correct, 7, 'The original common cohort must be unchanged');
+  assert.equal(accuracy.overall['harness-rgb-v2'].total,9);
+  assert.equal(accuracy.overall['harness-rgb-v2'].correct,5);
   assert.equal(accuracy.overall['plain-gpt61'].correct, 2);
   assert.equal(accuracy.overall['plain-gpt61'].total, 5);
   assert.equal(accuracy.overall['plain-gpt61'].percent, 40);
@@ -203,9 +227,10 @@ function image(route) { localFile(context.window.ESIStatic.resourceURL(route)); 
       assert.equal(entry.pixels_verified_identical, true);
       assert.match(entry.original_sha256, /^[0-9a-f]{64}$/);
       assert.match(entry.pixel_rgba_sha256, /^[0-9a-f]{64}$/);
-      assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root, relative))).digest('hex'), entry.sha256);
+      assert.equal(crypto.createHash('sha256').update(fs.readFileSync(fs.existsSync(path.join(root,relative))?path.join(root,relative):path.join(__dirname,audit.external_assets.files[relative].repository_path))).digest('hex'), entry.sha256);
     }
   }
+  for(const item of Object.values(audit.external_assets.files)){const file=path.resolve(__dirname,item.repository_path);assert.equal(crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'),item.sha256);assert.ok(fs.statSync(file).size<100_000_000);}
   assert.equal((await context.window.fetch('/api/not-exported')).status, 404);
   const abort = new AbortController();
   abort.abort();

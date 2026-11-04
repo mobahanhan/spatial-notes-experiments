@@ -1,0 +1,6 @@
+<!doctype html><meta charset="utf-8"><title>RGB 点云快照</title><style>body{background:#0d141f;color:#ddd;font:14px system-ui;padding:20px}</style><p id="status">加载保存的点云快照…</p><script>
+(async()=>{try{const base="https://raw.githubusercontent.com/mobahanhan/spatial-notes-experiments/main/archive-assets/cloud-v2-20261104/",query=new URLSearchParams(location.search),snapshot=query.get('snapshot'),report=query.get('report');
+function allowed(url,suffix){return typeof url==='string'&&url.startsWith(base+'cloud/')&&new RegExp('^[a-f0-9]{64}\.'+suffix+'$').test(url.slice((base+'cloud/').length))}
+if(!allowed(snapshot,'html\.gz')||!allowed(report,'json'))throw Error('未知快照');const response=await fetch(snapshot);if(!response.ok)throw Error('点云快照 HTTP '+response.status);const bytes=new Uint8Array(await response.arrayBuffer());let page=bytes[0]===31&&bytes[1]===139?await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text():new TextDecoder().decode(bytes);
+page=page.replaceAll('src="images/','src="'+base+'images/').replaceAll('href="images/','href="'+base+'images/').replaceAll('href="report.json"','href="'+report+'"');document.open();document.write(page);document.close()}catch(error){document.getElementById('status').textContent=error.message}})();
+</script>

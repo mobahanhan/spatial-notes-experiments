@@ -42,6 +42,7 @@
       const geometry = hinted===row.geometry_key?prepared:await load(row.geometry_key);
       return {...geometry, ...row.data};
     }
+    if (url.pathname === '/api/rgb-geometry') return load('cloud/' + id);
     if (url.pathname === '/api/model-input') {
       const frames = await load('inputs/' + id);
       const index = Number(url.searchParams.get('index'));

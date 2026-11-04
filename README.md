@@ -5,7 +5,7 @@ This repository publishes a frozen static snapshot of the research document and 
 ## Pages
 
 - `site/index.html`: 当前文档
-- `site/experiments.html`: 实验记录, including the five saved experiment variants
+- `site/experiments.html`: 实验记录, including the six saved experiment variants
 - `site/reasons.html`: the separately generated Chinese step-record reader
 - `site/rag/index.html`: RAG original/current comparison, 1,200 paired tasks and
   2,400 saved answers, including the earliest experiments.
@@ -24,7 +24,7 @@ The ESI document/viewer navigation opens RAG in a separate tab to keep the ESI
 canvas and playback state intact. Original ESI data, scores and images are not
 changed by the RAG addition.
 
-The snapshot contains 98 runs, 1245 trajectory records, 128 robot replay frames, 259 Harness input steps and 71 ordinary-Benchmark input steps. One newly recorded action has no RGB because of a GPU failure; it stays explicitly empty rather than being fabricated. The latest nine tasks contribute 97 engine actions and 107 records, with 106 original RGB frames. Every WebP conversion is lossless and its decoded RGBA pixels are checked against the original PNG. A size-budget repack may replace published PNG encodings; original experiment PNGs remain untouched and recoverable, as do prior Git snapshots. Saved geometry, model inputs and outputs are retained. The standalone Chinese reader still covers its original 49 records; it is not an expanded 93-record reader. New direct-observation summaries are in the main viewer.
+The snapshot contains 107 runs, 1456 trajectory records, 128 robot replay frames, 470 Harness input steps and 71 ordinary-Benchmark input steps. One newly recorded action has no RGB because of a GPU failure; it stays explicitly empty rather than being fabricated. The latest nine tasks contribute 97 engine actions and 107 records, with 106 original RGB frames. Every WebP conversion is lossless and its decoded RGBA pixels are checked against the original PNG. A size-budget repack may replace published PNG encodings; original experiment PNGs remain untouched and recoverable, as do prior Git snapshots. Saved geometry, model inputs and outputs are retained. The standalone Chinese reader still covers its original 49 records; it is not an expanded 93-record reader. New direct-observation summaries are in the main viewer.
 
 The direct-observation column covers 44 tasks: the original 20 and 24 additional UI-only tasks from Category Ambiguity, Counting w Occlusion and Spatial Segmentation (eight additional questions per type). Each additional question uses a separate GPT-6.1 Sol Agent with no parent conversation inherited. The latest nine were completed in the background in-app browser; no manual browser opening or model API was required. Each question is limited to 30 engine actions cumulatively across technical recovery attempts. Scoring follows the final submission and is never given as retry feedback. Latest-batch accuracy is 4/9 (44.4%); cumulative accuracy is 22/44 (50.0%). The original common cohort remains 7/9 (77.8%). The preceding 84 catalog objects and 35 reviewed rows are exactly preserved. New questions have no unhinted, hinted or Harness counterpart and show `-` there. Connectivity and Correspondence direct observations retain the user's answer-correctness-only review policy. Incorrect answers are not discarded.
 
@@ -32,7 +32,7 @@ Two latest-batch questions encountered GPU failures and resumed the same questio
 
 New run provenance identifies any batch-local dependency-loading override. The simulator, dependency wheels and private task manifests are not deployed or executed by this static website. No existing simulator environment package or system DLL was replaced for this continuation.
 
-All website dependencies are under `site/`. Links and data/image paths are relative, allowing deployment under a GitHub project-site path. The export does not automatically synchronize with later local experiment changes.
+The original archive dependencies are under `site/`. The new cloud media is content-addressed under `archive-assets/cloud-v2-20261104/` in this same public repository and loaded from GitHub Raw on demand to keep the Pages artifact below 1 GB. New cloud media requires network access; the separately preserved original offline exports remain self-contained. Links and data/image paths are relative, allowing deployment under a GitHub project-site path. The export does not automatically synchronize with later local experiment changes.
 
 ## Verification and publishing
 
@@ -51,3 +51,7 @@ The original static export and its ZIP remain separately preserved on the local 
 Five independently completed standard-task runs were added under `plain-gpt61`, labelled “普通 Benchmark · GPT-6.1 Sol”. They use 4router gpt-6.1-sol with no Harness, point cloud, extra exploration hints or forced survey. Answers are 3, 1, 1, 3, 2 against references 3, 3, 3, 3, 5: 2/5 correct (40%). There are 69 observation steps and 71 saved model calls; two terminal estimates reuse the final image. Full saved inputs and outputs are available per decision. The original 93 catalog entries, curated reviews and original nine-task comparison are preserved. The document appendix reports this new condition separately.
 
 The added images and 169 earlier published PNGs use verified lossless WebP; decoded RGBA pixels are unchanged. Original recordings are untouched, and replaced published PNGs are backed up outside the site and retained in Git history. The publication is kept below the existing conservative 1 GB budget; RAG archives are unchanged.
+
+## Repaired RGB Harness batch (2026-11-04)
+
+Nine Category Ambiguity runs are available under `harness-rgb-v2`, labelled “点云 Harness（修复版）”. They use 4router gpt-6.1-sol, RGB-only depth/fusion and a 30-decision budget: 5/9 numerically correct; 3 validation-rejected decisions across 211 steps. The original 98 catalog entries and reviewed judgments remain. The homepage adds the paired before/after table. Every observation, camera pose and point-cloud snapshot is bound to its saved actual model input. Interactive cloud snapshots use gzip packaging of the saved HTML; original recordings and raw point-cloud files remain in the local experiment archive. Packed snapshot reports and original input/output records are read on demand. This single paired run does not establish stable accuracy improvement.

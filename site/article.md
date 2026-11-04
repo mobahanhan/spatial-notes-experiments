@@ -179,3 +179,23 @@ GPT-6.1 的实验结果也表明，在部分成功的任务中，也确实是先
 普通流程采用每次平移 0.25 米、转向 15°，最多 30 步、置信度阈值 0.8；min_steps=3 只约束置信度阈值停止，模型仍可更早主动 stop。图像最长边 768、JPEG 质量 75；模型接收近期视图和动作历史。这些设置与 Harness 的动作幅度、输入和停止规则不同，分数差异只作描述性对照。
 
 本节“正确 / 错误”按保存的最终答案评分；未将其作为新增的人工过程复核。三维陈设只用于人工查看，不进入模型输入。
+
+## Category Ambiguity：修复后重测
+
+[查看点云 Harness（修复版）的三维轨迹与逐步记录](/visualization/?variant=harness-rgb-v2)
+
+gpt-6.1-sol · 4router · 每题最多 30 步 · RGB 估计点云融合。全部 9 项完成初始流程。答案正确 5/9（55.6%），上一轮为 4/9（44.4%）；校验拒绝从 69/255 次决策降为 3/211。四项通过停止门控，其中仍有两项答错。
+
+| Task | Scene / room | ID | 旧答案 | 新答案 | 标准答案 | 结果 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Category Ambiguity | Beechwood_0_garden / living_room_0 | q_000 | 3 | 2 | 3 | 错误 |
+| Category Ambiguity | hall_glass_ceiling / bathroom_0 | q_001 | 3 | 3 | 3 | 正确 |
+| Category Ambiguity | house_double_floor_lower / kitchen_0 | q_004 | 5 | 5 | 5 | 正确 |
+| Category Ambiguity | house_double_floor_upper / bedroom_0 | q_002 | 2 | 3 | 4 | 错误 |
+| Category Ambiguity | Merom_1_int / childs_room_0 | q_002 | 3 | 4 | 4 | 正确 |
+| Category Ambiguity | office_cubicles_right / lobby_0 | q_004 | 1 | 5 | 5 | 正确 |
+| Category Ambiguity | Merom_0_garden / playroom_0 | q_001 | 1 | 1 | 3 | 错误 |
+| Category Ambiguity | house_double_floor_lower / garage_0 | q_002 | 4 | 3 | 4 | 错误 |
+| Category Ambiguity | gates_bedroom / bedroom_0 | q_003 | 2 | 3 | 3 | 正确 |
+
+表中的旧答案来自同组 Category Ambiguity 的修复前运行；原有 Harness 栏目保留其历史混合任务记录。这是同组单次重跑的描述性结果，不能据此确认稳定提升。三维房间用于人工对照；实验点云为当时保存的 RGB 估计，独立分组的位置关系未知。

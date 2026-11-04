@@ -34,7 +34,7 @@
     .task-button[data-answer-status="correct"] small,.task-button[data-answer-status="incorrect"] small{color:inherit;opacity:.85}.task-button:focus-visible{outline:2px solid var(--text);outline-offset:1px}
     .playback-controls{display:flex;align-items:center;gap:7px}.playback-rate{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);white-space:nowrap}.playback-rate select{padding:4px;border:1px solid var(--line);border-radius:5px;background:var(--panel)}
   </style>
-</head>
+<link rel="stylesheet" href="assets/harness_cloud.css"></head>
 <body>
 <div class="app">
   <header class="topbar">
@@ -49,7 +49,8 @@
         <button class="variant-button" id="harnessVariant" type="button" data-variant="ordered-survey-v6" aria-pressed="false"><span>Harness</span><span class="variant-rate" id="harnessAccuracy">统计中…</span></button>
         <button class="variant-button" id="computerUseVariant" type="button" data-variant="computer-use" aria-pressed="false" title="GPT-6.1 Sol 直接观察"><span style="white-space:normal;line-height:1.35">GPT-6.1 Sol 直接观察</span><span class="variant-rate" id="computerUseTabAccuracy">统计中…</span></button>
         <button class="variant-button" id="plainGpt61Variant" type="button" data-variant="plain-gpt61" aria-pressed="false" style="grid-column:1/-1"><span>普通 Benchmark · GPT-6.1 Sol</span><span class="variant-rate" id="plainGpt61Accuracy">统计中…</span></button>
-        <select id="variantSelect" aria-label="实验版本" hidden><option value="unhinted">不带提示</option><option value="hinted">带提示</option><option value="ordered-survey-v6">Harness</option><option value="computer-use">GPT-6.1 Sol 直接观察</option><option value="plain-gpt61">普通 Benchmark · GPT-6.1 Sol</option></select>
+<button class="variant-button" id="cloudHarnessVariant" type="button" data-variant="harness-rgb-v2" aria-pressed="false" style="grid-column:1/-1"><span>点云 Harness（修复版）</span><span class="variant-rate" id="cloudHarnessAccuracy">统计中…</span></button>
+        <select id="variantSelect" aria-label="实验版本" hidden><option value="unhinted">不带提示</option><option value="hinted">带提示</option><option value="ordered-survey-v6">Harness</option><option value="computer-use">GPT-6.1 Sol 直接观察</option><option value="plain-gpt61">普通 Benchmark · GPT-6.1 Sol</option><option value="harness-rgb-v2">点云 Harness（修复版）</option></select>
       </div>
       <details class="experiment-methods" id="experimentMethods">
         <summary>实验栏目说明</summary>
@@ -60,7 +61,7 @@
           <dt>GPT-6.1 Sol 直接观察</dt><dd>不采用模型动作接口，而是由 GPT-6.1 Sol 使用 Computer use 功能直接观察并操作手操网页，得到的实验结果。</dd>
           <dt>普通 Benchmark · GPT-6.1 Sol</dt><dd>2026-11-01 使用 4router API 的 gpt-6.1-sol，运行标准任务模块；不启用 Harness、点云或额外定制提示。五项独立实验，最多 30 步；普通平移 0.25 米、转向 15°，采用 Benchmark 默认停止规则。</dd>
         </dl>
-      </details>
+      <p><b>点云 Harness（修复版）</b>：gpt-6.1-sol 通过 4router 接口使用修复后的 Harness，开启 RGB 估计点云融合与决策支持，每题最多 30 步。当前栏目为同组 9 项独立重测。</p></details>
       <input class="task-filter" id="taskFilter" type="search" placeholder="搜索任务、场景或房间…" aria-label="搜索任务、场景或房间">
       <select id="questionSelect" aria-label="观察任务"></select>
       <div class="task-list" id="taskList"></div>
@@ -149,9 +150,10 @@
 </div>
 <script src="assets/page_navigation.js" defer></script>
 <script src="assets/frame_playback.js?v=20261015-performance-1"></script>
-<script src="assets/offline-manifest.js?v=9d1be1211d334cfc"></script>
-<script src="assets/static_runtime.js?v=20261015-performance-1"></script>
+<script src="assets/offline-manifest.js?v=3b3abb8594b2add4"></script>
+<script src="assets/static_runtime.js?v=3b3abb8594b2add4"></script>
 <script src="assets/architecture_geometry.js"></script>
+<script src="assets/harness_cloud.js"></script>
 <script>
 (() => {
   const canvas=document.querySelector('#view');let ctx=canvas.getContext('2d');
@@ -507,8 +509,8 @@
     ctx.setTransform(dpr,0,0,dpr,0,0);return true;
   }
   function resize(){measureCanvas();renderObjectList();render()}
-  function harnessPhaseForPose(pose){const action=pose?.action_result||{},record=pose?.harness_state_record||{};return action.recovery_phase_after_action||action.recovery_phase_before_action||record.recovery_phase_after_action||record.recovery_phase||'未记录'}
-  function renderHarnessState(pose){const section=document.querySelector('#harnessSection'),host=document.querySelector('#harnessState'),isHarness=data?.run?.variant==='ordered-survey-v6';section.hidden=!isHarness;if(!isHarness)return;if(!pose){host.textContent='—';return}const belief=pose.belief||{},regions=belief.blind_regions||[],directions=['front','left','rear','right'],directionHtml=directions.map(direction=>{const region=regions.find(item=>item.region_type==='out_of_view'&&item.direction===direction),raw=region?.status||'unseen',status=['checked','partial','unseen'].includes(raw)?raw:'unseen';return`<span class="direction-chip ${status}">${direction} · ${esc(raw)}</span>`}).join(''),occlusions=regions.filter(item=>item.region_type==='occlusion'),occlusionHtml=occlusions.length?`<div class="blind-list">${occlusions.map(item=>{const raw=item.status||'unseen',status=['checked','partial','unseen'].includes(raw)?raw:'unseen';return`<div class="blind-item ${status}"><i></i><span>${esc(item.region_id)}<br><small>${esc(item.description)}</small></span><small>${esc(raw)}</small></div>`}).join('')}</div>`:'无对象遮挡记录',plan=pose.navigation_plan||{},actionResult=pose.action_result||{},phase=harnessPhaseForPose(pose),selected=pose.selected_action?.name||pose.action||'—',selectedArgs=pose.selected_action?.arguments&&Object.keys(pose.selected_action.arguments).length?` ${JSON.stringify(pose.selected_action.arguments)}`:'',execution=actionResult.success===true?'执行成功':actionResult.success===false?'执行失败':'未执行/终止帧';host.innerHTML=`<div class="harness-row"><span>协议阶段</span><div><span class="phase-chip">${esc(phase)}</span></div></div><div class="harness-row"><span>选定动作</span><strong>${esc(selected+selectedArgs)}</strong></div><div class="harness-row"><span>Harness 结果</span><div><strong>${esc(execution)}</strong><br><span>${esc(actionResult.reason||actionResult.operation||'—')}</span></div></div><div class="harness-row"><span>四方向账本</span><div class="direction-ledger">${directionHtml}</div></div><div class="harness-row"><span>锁定目标</span><div><strong>${esc(plan.target_region_id||'未锁定')}</strong><br><span>chosen side: ${esc(plan.chosen_side||'none')}</span></div></div><div class="harness-row"><span>success evidence</span><div>${esc(describe(plan.success_evidence)||(plan.target_region_id?'未提供':'不适用（本步没有对象绕行计划）'))}</div></div><div class="harness-row"><span>对象盲区</span><div>${occlusionHtml}</div></div>`}
+  function harnessPhaseForPose(pose){if(data?.run?.variant==='harness-rgb-v2')return pose?.harness_state_record?.initial_survey_phase_at_input||pose?.harness_state_record?.initial_survey_phase||'未记录';const action=pose?.action_result||{},record=pose?.harness_state_record||{};return action.recovery_phase_after_action||action.recovery_phase_before_action||record.recovery_phase_after_action||record.recovery_phase||'未记录'}
+  function renderHarnessState(pose){const section=document.querySelector('#harnessSection'),host=document.querySelector('#harnessState'),isHarness=['ordered-survey-v6','harness-rgb-v2'].includes(data?.run?.variant);section.hidden=!isHarness;if(!isHarness)return;if(!pose){host.textContent='—';return}if(data.run.variant==='harness-rgb-v2'){const record=pose.harness_state_record||{},assessment=record.geometry_assessment,intent=record.exploration_intent,action=pose.selected_action||{},receipt=pose.action_result||{};host.innerHTML=`<div class="harness-row"><span>初始流程阶段</span><strong>${esc(harnessPhaseForPose(pose))}</strong></div><div class="harness-row"><span>选定动作</span><strong>${esc(action.name||pose.action||'—')} ${esc(JSON.stringify(action.arguments||{}))}</strong></div><div class="harness-row"><span>执行结果</span><strong>${esc(receipt.reason||receipt.operation||'未执行')}</strong></div><div class="harness-row"><span>本步点云评估</span><div>${esc(assessment?.status?assessment.status+' · '+assessment.reason:'本步未更新评估')}</div></div><div class="harness-row"><span>观察意图</span><div>${esc(intent?.region_id?intent.region_id+' · '+intent.expected_visibility_gain:'本步未提交位移观察意图')}</div></div><div class="harness-row"><span>点云参与方式</span><div>${esc(intent?.geometry_use?intent.geometry_use+' · '+intent.geometry_reason:'—')}</div></div>`;return}const belief=pose.belief||{},regions=belief.blind_regions||[],directions=['front','left','rear','right'],directionHtml=directions.map(direction=>{const region=regions.find(item=>item.region_type==='out_of_view'&&item.direction===direction),raw=region?.status||'unseen',status=['checked','partial','unseen'].includes(raw)?raw:'unseen';return`<span class="direction-chip ${status}">${direction} · ${esc(raw)}</span>`}).join(''),occlusions=regions.filter(item=>item.region_type==='occlusion'),occlusionHtml=occlusions.length?`<div class="blind-list">${occlusions.map(item=>{const raw=item.status||'unseen',status=['checked','partial','unseen'].includes(raw)?raw:'unseen';return`<div class="blind-item ${status}"><i></i><span>${esc(item.region_id)}<br><small>${esc(item.description)}</small></span><small>${esc(raw)}</small></div>`}).join('')}</div>`:'无对象遮挡记录',plan=pose.navigation_plan||{},actionResult=pose.action_result||{},phase=harnessPhaseForPose(pose),selected=pose.selected_action?.name||pose.action||'—',selectedArgs=pose.selected_action?.arguments&&Object.keys(pose.selected_action.arguments).length?` ${JSON.stringify(pose.selected_action.arguments)}`:'',execution=actionResult.success===true?'执行成功':actionResult.success===false?'执行失败':'未执行/终止帧';host.innerHTML=`<div class="harness-row"><span>协议阶段</span><div><span class="phase-chip">${esc(phase)}</span></div></div><div class="harness-row"><span>选定动作</span><strong>${esc(selected+selectedArgs)}</strong></div><div class="harness-row"><span>Harness 结果</span><div><strong>${esc(execution)}</strong><br><span>${esc(actionResult.reason||actionResult.operation||'—')}</span></div></div><div class="harness-row"><span>四方向账本</span><div class="direction-ledger">${directionHtml}</div></div><div class="harness-row"><span>锁定目标</span><div><strong>${esc(plan.target_region_id||'未锁定')}</strong><br><span>chosen side: ${esc(plan.chosen_side||'none')}</span></div></div><div class="harness-row"><span>success evidence</span><div>${esc(describe(plan.success_evidence)||(plan.target_region_id?'未提供':'不适用（本步没有对象绕行计划）'))}</div></div><div class="harness-row"><span>对象盲区</span><div>${occlusionHtml}</div></div>`}
   function closeModelInputPopup(restoreFocus=false){
     clearTimeout(modelInputHideTimer);const popup=document.querySelector('#modelInputPopup'),button=document.querySelector('#modelInputButton');
     popup.hidden=true;popup.dataset.pinned='false';button.setAttribute('aria-expanded','false');
@@ -566,7 +568,7 @@
     if(!document.querySelector('#modelInputPopup').hidden)paintModelInputRecord();
   }
   function renderModelInputRecord(pose){
-    const allowed=data?.run?.variant==='ordered-survey-v6'&&pose;
+    const allowed=['ordered-survey-v6','harness-rgb-v2'].includes(data?.run?.variant)&&pose;
     if(!allowed&&!(data?.run?.variant==='plain-gpt61'&&pose)){modelInputKey='';modelInputPayload=null;modelInputError='';closeModelInputPopup();document.querySelector('#modelInputBody').replaceChildren();return}
     const key=`${currentRunId}:${step}`;
     if(key!==modelInputKey){modelInputKey=key;modelInputPayload=null;modelInputSelectedCall=0;modelInputError=''}
@@ -620,7 +622,7 @@
   }
   function renderModelOutputRecord(pose){
     const control=document.querySelector('#modelOutputControl'),popup=document.querySelector('#modelOutputPopup'),pre=document.querySelector('#modelOutputJson'),mode=document.querySelector('#modelOutputMode');
-    control.hidden=data?.run?.variant!=='ordered-survey-v6'||!pose;
+    control.hidden=!['ordered-survey-v6','harness-rgb-v2'].includes(data?.run?.variant)||!pose;
     if(data?.run?.variant==='plain-gpt61'&&pose)control.hidden=false;
     if(control.hidden){closeModelOutputPopup();pre.textContent='';return}
     const record=modelOutputRecord(pose.raw_output),rawMode=mode.dataset.mode==='raw';
@@ -686,24 +688,25 @@
   function commitStep(value){
     const poses=data.trajectory||[];step=Math.max(0,Math.min(Math.max(0,poses.length-1),Number(value)||0));
     document.querySelector('#scrubber').value=step;document.querySelector('#stepCount').textContent=poses.length?step+1:'—';
-    const pose=poses[step],actionResult=pose?.action_result||{},phase=actionResult.recovery_phase_after_action||actionResult.recovery_phase_before_action;
+    const pose=poses[step],actionResult=pose?.action_result||{},phase=data?.run?.variant==='harness-rgb-v2'?harnessPhaseForPose(pose):actionResult.recovery_phase_after_action||actionResult.recovery_phase_before_action;
     const alignmentNote=document.querySelector('#observationAlignmentNote');alignmentNote.hidden=!pose?.observation_alignment;alignmentNote.textContent=pose?.observation_alignment?`图像对齐：本帧原始截图仍是帧 ${pose.observation_camera.source_frame_index+1} 的视角，三维视域已按截图对齐。动作与原始位姿保留。`:'';
     document.querySelector('#stepLabel').innerHTML=pose?`<b>帧 ${step+1}/${poses.length}</b> · ${esc(pose.action||pose.kind||'camera')}${phase?` · ${esc(phase)}`:''} · (${pose.position.map(v=>v.toFixed(2)).join(', ')})`:'<b>帧 0</b> · 尚无轨迹';
     renderDecisionRecord(pose);renderHarnessState(pose);renderComputerUseState(pose);
-    if(pose){const forward=cameraFrame(pose.quaternion_xyzw).f,selected=pose.selected_action||{},harnessDetail=data?.run?.variant==='ordered-survey-v6'?`\nview: ${pose.view_id||'—'}\nharness phase: ${actionResult.recovery_phase_before_action||'idle'} → ${actionResult.recovery_phase_after_action||'idle'}\nmodel selected action: ${selected.name||pose.action||'—'} ${selected.arguments?JSON.stringify(selected.arguments):''}\nexecution: ${actionResult.success===true?'success':actionResult.success===false?'failed':'not executed'} · ${actionResult.reason||actionResult.operation||'—'}`:'';document.querySelector('#selection').textContent=`camera\nposition: ${pose.position.map(v=>v.toFixed(4)).join(', ')}\noptical axis (-Z): ${forward.map(v=>v.toFixed(4)).join(', ')}\nquaternion xyzw: ${pose.quaternion_xyzw.map(v=>v.toFixed(4)).join(', ')}${harnessDetail}\naction: ${pose.action||'—'}\nanswer: ${pose.answer??'—'}\nconfidence: ${pose.confidence??'—'}`}
+    if(pose){const forward=cameraFrame(pose.quaternion_xyzw).f,selected=pose.selected_action||{},harnessDetail=['ordered-survey-v6','harness-rgb-v2'].includes(data?.run?.variant)?`\nview: ${pose.view_id||'—'}\nharness phase: ${actionResult.recovery_phase_before_action||'idle'} → ${actionResult.recovery_phase_after_action||'idle'}\nmodel selected action: ${selected.name||pose.action||'—'} ${selected.arguments?JSON.stringify(selected.arguments):''}\nexecution: ${actionResult.success===true?'success':actionResult.success===false?'failed':'not executed'} · ${actionResult.reason||actionResult.operation||'—'}`:'';document.querySelector('#selection').textContent=`camera\nposition: ${pose.position.map(v=>v.toFixed(4)).join(', ')}\noptical axis (-Z): ${forward.map(v=>v.toFixed(4)).join(', ')}\nquaternion xyzw: ${pose.quaternion_xyzw.map(v=>v.toFixed(4)).join(', ')}${harnessDetail}\naction: ${pose.action||'—'}\nanswer: ${pose.answer??'—'}\nconfidence: ${pose.confidence??'—'}`}
     if(pose?.observation_camera){const observed=observationCamera(pose),axis=cameraFrame(observed.quaternion_xyzw).f;document.querySelector('#selection').textContent+=`\n\nimage-aligned camera (source frame ${observed.source_frame_index+1})\noptical axis (-Z): ${axis.map(v=>v.toFixed(4)).join(', ')}\nquaternion xyzw: ${observed.quaternion_xyzw.map(v=>v.toFixed(4)).join(', ')}`}
     render();
+    window.dispatchEvent(new CustomEvent("esi:committed-frame",{detail:{id:currentRunId,index:step,cloud:!!data?.rgb_geometry}}));
   }
   function fit(){const r=data.room_geometry.bbox_world_xy;center=[(r[0]+r[2])/2,(r[1]+r[3])/2,1];if(roomLayoutMode){const rect=canvas.getBoundingClientRect(),width=rect.width||w,height=rect.height||h;distance=Math.max(3,Math.min(width,height)*.82*Math.max((r[2]-r[0])/Math.max(120,width-100),(r[3]-r[1])/Math.max(160,height-190)))}else distance=Math.max(5,Math.hypot(r[2]-r[0],r[3]-r[1])*1.25)}
   function init(payload){
     data=payload;document.title=data.run?.display_name?`${data.run.display_name} · ESI Spatial Viewer`:'ESI Spatial Viewer';
     projectionCache.clear();wallSegmentsCache=null;selectedRoomName=null;hoveredRoomName=null;projectedRoomLabels=[];roomObjectMembership.clear();roomLayoutMode=false;renderRoomRegionList();syncLayoutControls();if(framePlayer.index>=0)framePlayer.reset();if(render.layers)render.layers.key=null;
     geometryViewState=null;layoutViewState=null;
-    const room=data.room_geometry,isHarness=data.run?.variant==='ordered-survey-v6';
+    const room=data.room_geometry,isHarness=['ordered-survey-v6','harness-rgb-v2'].includes(data.run?.variant);
     document.querySelector('#scene').textContent=data.scene;document.querySelector('#room').textContent=`${data.room} · ${room.source_type==='omnigibson_room_instance_segmentation'?'分割多边形':'边界框回退'}`;
     document.querySelector('#question').textContent=data.question;document.querySelector('#coverage').textContent=`${room.wall_segment_count||room.vertex_count||0} wall segments · ${room.wall_prism_count||0} asset parts · ${Number(room.area_m2||0).toFixed(2)} m²`;
     document.querySelector('#poseCount').textContent=data.trajectory.length;const viewsChip=document.querySelector('#uniqueViewsChip');viewsChip.hidden=!isHarness&&data.run?.variant!=='computer-use';document.querySelector('#uniqueViews').textContent=data.run?.unique_views??'—';
-    const result=data.result||{},correct=result.correct===true?'正确':result.correct===false?'错误':'未知',variantLabel=isHarness?'Harness':data.run?.variant_label||(result.variant==='hinted'?'带提示':result.variant==='ordered-survey-v6'?'Harness':'不带提示');
+    const result=data.result||{},correct=result.correct===true?'正确':result.correct===false?'错误':'未知',variantLabel=isHarness?(data.run?.variant==='harness-rgb-v2'?'点云 Harness（修复版）':'Harness'):data.run?.variant_label||(result.variant==='hinted'?'带提示':result.variant==='ordered-survey-v6'?'Harness':'不带提示');
     document.querySelector('#result').innerHTML=data.result?`<span><b>${esc(variantLabel)}</b> · ${correct}</span><span>回答：<b>${esc(result.final_answer??'—')}</b></span><span>标准答案：${esc(result.ground_truth??'—')} · 置信度：${esc(result.confidence??'—')}</span>`:'—';
     const slider=document.querySelector('#scrubber');slider.max=Math.max(0,data.trajectory.length-1);measureCanvas();fit();renderObjectList();renderTaskObservation();initWalk();setStep(0);
   }
@@ -727,7 +730,7 @@
   }
   async function loadRun(id){
     const serial=++loadSerial;activeLoadController?.abort();closeModelOutputPopup();closeModelInputPopup();modelInputKey='';modelInputPayload=null;
-    document.querySelector('#modelOutputControl').hidden=true;document.querySelector('#retryLoad').hidden=true;currentRunId=id;framePlayer.reset();walkPlayer.reset();
+    document.querySelector('#modelOutputControl').hidden=true;document.querySelector('#retryLoad').hidden=true;currentRunId=id;window.dispatchEvent(new CustomEvent("esi:run-loading",{detail:{id}}));framePlayer.reset();walkPlayer.reset();
     if(window.ESIStatic){try{framePlayer.warm([window.ESIStatic.resourceURL(`/api/frame?id=${encodeURIComponent(id)}&index=0`)])}catch{}}
     ctx.clearRect(0,0,w,h);delete canvas.dataset.displayedFrame;delete canvas.dataset.displayedWalkFrame;delete canvas.dataset.runId;document.querySelector('#stepCount').textContent='—';document.querySelector('#stepLabel').textContent='载入当前任务图片…';
     document.querySelector('#walkPanel').hidden=true;document.querySelector('#taskObservationSection').hidden=true;document.querySelector('#computerUseSection').hidden=true;
@@ -742,7 +745,7 @@
   function renderAccuracyStats(){
     const variant=document.querySelector('#variantSelect').value,section=document.querySelector('#harnessAccuracySection');
     section.hidden=variant!=='ordered-survey-v6';
-    const ids={unhinted:'#unhintedAccuracy',hinted:'#hintedAccuracy','ordered-survey-v6':'#harnessAccuracy','plain-gpt61':'#plainGpt61Accuracy'};
+    const ids={unhinted:'#unhintedAccuracy',hinted:'#hintedAccuracy','ordered-survey-v6':'#harnessAccuracy','plain-gpt61':'#plainGpt61Accuracy','harness-rgb-v2':'#cloudHarnessAccuracy'};
     for(const [key,id] of Object.entries(ids)){
       const stats=accuracyReport?.overall?.[key];
       document.querySelector(id).textContent=stats?`${accuracyValue(stats)} · ${accuracyFraction(stats)}`:accuracyError?'统计不可用':'统计中…';
